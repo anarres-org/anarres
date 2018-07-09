@@ -1,0 +1,90 @@
+---
+
+# Common
+
+base_domain:
+data_path: /data
+
+user_uid_1000:
+group_gid_1000: "{{ user_uid_1000 }}"
+
+docker_db_image: mariadb:10.3
+
+## Following values will be used for the root account of every docker database
+db_pass: "s3cr3t"  # CHANGEME!
+db_config_port: 3306
+
+## anarres-sec
+
+ssh_port: 2222
+
+## Gitea
+
+gitea_domain: "git.{{ base_domain }}"
+gitea_docker_image: gitea/gitea:1.4
+
+### DB
+
+gitea_db_service_name: gitea-db
+gitea_db_name: gitea
+gitea_db_user: gitea
+gitea_db_user_pass: 'changeme'  # CHANGEME!
+
+gitea_path_conf: "{{ data_path }}/gitea/conf"
+gitea_ssh_port: 22
+gitea_internal_web_port: 3000
+
+## Transmission
+
+transmission_domain: "torrent.{{ base_domain }}"
+transmission_docker_image: linuxserver/transmission:latest
+transmission_internal_web_port: 9091
+
+transmission_user:
+transmission_pass:
+
+transmission_directory:
+  conf: "{{ data_path }}/transmission/conf"
+  downloads: "{{ data_path }}/transmission/downloads"
+  watch: "{{ data_path }}/transmission/watch"
+
+transmission_timezone: Europe/Berlin
+
+## Wallabag
+
+wallabag_domain: "wallabag.{{ base_domain }}"
+wallabag_docker_image: wallabag/wallabag:latest
+
+wallabag_path_images: "{{ data_path }}/wallabag/images"
+
+### DB
+
+wallabag_db_service_name: wallabag-db
+wallabag_db_name: wallabag
+wallabag_db_user: wallabag
+wallabag_db_user_pass: 'changeme'  # CHANGEME!
+
+wallabag_internal_web_port: 4000
+
+## Selfoss
+
+selfoss_domain: "selfoss.{{ base_domain }}"
+selfoss_docker_image: hardware/selfoss:latest
+
+selfoss_path_data: "{{ data_path }}/selfoss/data"
+
+selfoss_internal_web_port: 4001
+
+
+## Syncthing
+
+syncthing_domain: "syncthing.{{ base_domain }}"
+syncthing_docker_image: syncthing/syncthing:latest
+
+syncthing_directory:
+  conf: "{{ data_path }}/syncthing/conf"
+  data: "{{ data_path }}/syncthing"
+
+syncthing_internal_web_port: 8384
+syncthing_listening_port: 22000
+syncthing_discovery_port: 21027

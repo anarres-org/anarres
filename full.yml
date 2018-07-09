@@ -1,0 +1,354 @@
+---
+
+
+- name: Initial tasks
+  hosts: all
+  tasks:
+    - name: Create data directory
+      file:
+        path: "{{ data_path }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+  tags: init
+
+- name: Deploy common
+  hosts: all
+  roles:
+    - role: anarres-common
+  tags: common
+
+- name: Deploy sec
+  hosts: all
+  roles:
+    - role: anarres-sec
+  tags: sec
+
+- name: Setup requiered web iptables rules
+  hosts: all
+  tasks:
+    - name: Add iptables rules for HTTP and HTTPS
+      iptables_raw:
+        name: web_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
+      tags: iptables
+  tags: web-iptables
+
+- name: Deploy web related services
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: anarres-letsencrypt
+    - role: anarres-nginx
+  vars:
+    - domain: "{{ base_domain }}"
+  tags: web-base
+
+## Gitea
+
+- name: Prepare gitea deployment
+  hosts: all
+  tasks:
+    - name: Create gitea configuration directory
+      file:
+        path: "{{ gitea_path_conf }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+
+    - name: Configure gitea
+      template:
+        src: gitea-app.ini.j2
+        dest: "{{ gitea_path_conf }}/app.ini"
+        force: "{{ override | default('no') }}"
+  tags: gitea
+
+- name: Deploy gitea in docker
+  hosts: all
+  vars:
+    service_name: gitea
+    docker_image: "{{ gitea_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ service_name }}":/data \
+      -v "{{ gitea_path_conf }}/app.ini":/data/gitea/conf/app.ini \
+      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+    service_db_name: "{{ gitea_db_service_name }}"
+    db_name: "{{ gitea_db_name }}"
+    db_user: "{{ gitea_db_user }}"
+    db_user_pass: "{{ gitea_db_user_pass }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: gitea
+
+- name: Get gitea subdomain Let's Encrypt certificate
+  hosts: all
+  vars:
+    domain: "{{ gitea_domain }}"
+  roles:
+    - role: letsencrypt-request
+  tags: gitea
+
+- name: Configure ningx proxy for gitea
+  hosts: all
+  vars:
+    domain: "{{ gitea_domain }}"
+    binded_port: "{{ gitea_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+  tags: gitea
+
+## Transmission
+
+- name: Prepare transmission deployment
+  hosts: all
+  tasks:
+    - name: Create transmission directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ transmission_directory }}"
+
+    - name: Configure transmission
+      template:
+        src: transmission-settings.json.j2
+        dest: "{{ transmission_directory.conf }}/settings.json"
+        force: "{{ override | default('no') }}"
+  tags: transmission
+
+- name: Setup requiered transmission iptables rules
+  hosts: all
+  tasks:
+    - name: Add iptables rules for transmission
+      iptables_raw:
+        name: transmission_rules
+        weight: 20
+        rules: |
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port | default('51413') }} -j ACCEPT
+      tags: iptables
+  tags: transmission
+
+- name: Deploy transmission in docker
+  hosts: all
+  vars:
+    enable_db: false
+    service_name: transmission
+    docker_image: "{{ transmission_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ transmission_directory.conf }}":/config \
+      -v "{{ transmission_directory.downloads }}":/downloads \
+      -v "{{ transmission_directory.watch }}":/watch \
+      -e "PGID=1000" -e "PUID=1000" \
+      -e "TZ={{ transmission_timezone }}" \
+      -p "{{ transmission_internal_web_port }}:9091" -p 51413:51413 \
+      -p 51413:51413/udp \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: transmission
+
+- name: Get transmission subdomain Let's Encrypt certificate
+  hosts: all
+  vars:
+    domain: "{{ transmission_domain }}"
+  roles:
+    - role: letsencrypt-request
+  tags: transmission
+
+- name: Configure ningx proxy for transmission
+  hosts: all
+  vars:
+    domain: "{{ transmission_domain }}"
+    binded_port: "{{ transmission_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+  tags: transmission
+
+## Wallabag
+
+- name: Prepare wallabag deployment
+  hosts: all
+  tasks:
+    - name: Create wallabag images directory
+      file:
+        path: "{{ wallabag_path_images }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: 0700
+  tags: wallabag
+
+- name: Deploy wallabag in docker
+  hosts: all
+  vars:
+    create_volume: false
+    service_name: wallabag
+    docker_image: "{{ wallabag_docker_image }}"
+    create_user_and_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ wallabag_internal_web_port }}:80" \
+      -v "{{ wallabag_path_images }}":/var/www/wallabag/web/assets/images \
+      --network "{{ service_name }}" \
+      -e "MYSQL_ROOT_PASSWORD={{ db_pass }}" \
+      -e "SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain }}" \
+      -e "SYMFONY__ENV__FOSUSER_CONFIRMATION=false" \
+      -e "SYMFONY__ENV__DATABASE_DRIVER=pdo_mysql" \
+      -e "SYMFONY__ENV__DATABASE_HOST={{ service_db_name }}" \
+      -e "SYMFONY__ENV__DATABASE_PORT=3306" \
+      -e "SYMFONY__ENV__DATABASE_NAME={{ wallabag_db_name }}" \
+      -e "SYMFONY__ENV__DATABASE_USER={{ wallabag_db_user }}" \
+      -e "SYMFONY__ENV__DATABASE_PASSWORD={{ wallabag_db_user_pass }}" \
+      "{{ docker_image }}"
+    service_db_name: "{{ wallabag_db_service_name }}"
+    db_name: "{{ wallabag_db_name }}"
+    db_user: "{{ wallabag_db_user }}"
+    db_user_pass: "{{ wallabag_db_user_pass }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: wallabag
+
+- name: Get wallabag subdomain Let's Encrypt certificate
+  hosts: all
+  vars:
+    domain: "{{ wallabag_domain }}"
+  roles:
+    - role: letsencrypt-request
+  tags: wallabag
+
+- name: Configure ningx proxy for wallabag
+  hosts: all
+  vars:
+    domain: "{{ wallabag_domain }}"
+    binded_port: "{{ wallabag_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+  tags: wallabag
+
+## Selfoss
+
+#  TODO: configuration template <06-07-18, m0u>
+#  TODO: external db <06-07-18, m0u>
+
+#
+#- name: Prepare selfoss deployment
+#  hosts: all
+#  tasks:
+#    - name: Create selfoss data directory
+#      file:
+#        path: "{{ selfoss_path_data }}"
+#        state: directory
+#        owner: "{{ user_uid_1000 }}"
+#        group: "{{ group_gid_1000 }}"
+#        mode: 0700
+#  tags: selfoss
+#
+#- name: Deploy selfoss in docker
+#  hosts: all
+#  vars:
+#    create_volume: false
+#    service_name: selfoss
+#    docker_image: "{{ selfoss_docker_image }}"
+#    enable_db: false
+#    docker_command: |
+#      /usr/bin/docker run --rm --name "{{ service_name }}" \
+#      -e GID=0 -e UID=0 \
+#      -p "{{ selfoss_internal_web_port }}:8888" \
+#      -v "{{ selfoss_path_data }}":/var/www/html/data \
+#      "{{ docker_image }}"
+#  roles:
+#    - role: generic_docker_systemd
+#  tags: selfoss
+#
+#- name: Get selfoss subdomain Let's Encrypt certificate
+#  hosts: all
+#  vars:
+#    domain: "{{ selfoss_domain }}"
+#  roles:
+#    - role: letsencrypt-request
+#  tags: selfoss
+#
+#- name: Configure ningx proxy for selfoss
+#  hosts: all
+#  vars:
+#    domain: "{{ selfoss_domain }}"
+#    binded_port: "{{ selfoss_internal_web_port }}"
+#  roles:
+#    - role: add_nginx_proxy_conf
+#  tags: selfoss
+
+## Syncthing
+
+- name: Prepare syncthing deployment
+  hosts: all
+  tasks:
+    - name: Create syncthing images directory
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ syncthing_directory }}"
+  tags: syncthing
+
+- name: Setup requiered syncthing iptables rules
+  hosts: all
+  tasks:
+    - name: Add iptables rules for syncthing
+      iptables_raw:
+        name: syncthing_rules
+        weight: 20
+        rules: |
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port | default('21027') }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port | default('22000') }} -j ACCEPT
+      tags: iptables
+  tags: syncthing
+
+- name: Deploy syncthing in docker
+  hosts: all
+  vars:
+    create_volume: false
+    service_name: syncthing
+    docker_image: "{{ syncthing_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ syncthing_directory.conf }}":/var/syncthing/config \
+      -v "{{ syncthing_directory.data }}":/var/syncthing \
+      -p "{{ syncthing_internal_web_port }}:8384" \
+      -p "{{ syncthing_listening_port }}:22000" \
+      -p "{{ syncthing_discovery_port }}:21027/udp" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: syncthing
+
+- name: Get syncthing subdomain Let's Encrypt certificate
+  hosts: all
+  vars:
+    domain: "{{ syncthing_domain }}"
+  roles:
+    - role: letsencrypt-request
+  tags: syncthing
+
+- name: Configure ningx proxy for syncthing
+  hosts: all
+  vars:
+    domain: "{{ syncthing_domain }}"
+    binded_port: "{{ syncthing_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+  tags: syncthing
