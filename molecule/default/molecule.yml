@@ -32,10 +32,14 @@ provisioner:
       ansible_sudo: true
       user_uid_1000: vagrant
       base_domain: anarres.local
+      db_pass: changeme
       ssh_port: 22
       gitea_port: 66
+      gitea_db_user_pass: changeme
       transmission_user: transmission
       transmission_pass: transmission
+      transmission_timezone: Europe/Berlin
+      wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
