@@ -1,5 +1,7 @@
 ---
 
+## You must fill the empty variables
+
 # Common
 
 base_domain:
@@ -11,7 +13,7 @@ group_gid_1000: "{{ user_uid_1000 }}"
 docker_db_image: mariadb:10.3
 
 ## Following values will be used for the root account of every docker database
-db_pass: "s3cr3t"  # CHANGEME!
+db_pass:
 db_config_port: 3306
 
 ## anarres-sec
@@ -28,7 +30,7 @@ gitea_docker_image: gitea/gitea:1.4
 gitea_db_service_name: gitea-db
 gitea_db_name: gitea
 gitea_db_user: gitea
-gitea_db_user_pass: 'changeme'  # CHANGEME!
+gitea_db_user_pass:
 
 gitea_path_conf: "{{ data_path }}/gitea/conf"
 gitea_ssh_port: 22
@@ -48,7 +50,7 @@ transmission_directory:
   downloads: "{{ data_path }}/transmission/downloads"
   watch: "{{ data_path }}/transmission/watch"
 
-transmission_timezone: Europe/Berlin
+transmission_timezone: # Example: Europe/Berlin
 
 ## Wallabag
 
@@ -62,7 +64,7 @@ wallabag_path_images: "{{ data_path }}/wallabag/images"
 wallabag_db_service_name: wallabag-db
 wallabag_db_name: wallabag
 wallabag_db_user: wallabag
-wallabag_db_user_pass: 'changeme'  # CHANGEME!
+wallabag_db_user_pass:
 
 wallabag_internal_web_port: 4000
 
@@ -88,3 +90,14 @@ syncthing_directory:
 syncthing_internal_web_port: 8384
 syncthing_listening_port: 22000
 syncthing_discovery_port: 21027
+
+## OpenVPN
+
+openvpn_domain: "openvpn.{{ base_domain }}"
+openvpn_docker_image: kylemanna/openvpn:latest
+
+openvpn_port: 1194
+openvpn_protocol: udp
+
+openvpn_ca_pass:
+openvpn_ca_CN: "{{ openvpn_domain }}"
