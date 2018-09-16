@@ -27,9 +27,16 @@ provisioner:
   options:
     extra-vars:
       testing: true
-      ssh_port: 22
-      gitea_ssh_port: 77
       docker_registry_mirror: http://172.16.100.1:5000
+      ansible_become: true
+      ansible_sudo: true
+      user_uid_1000: vagrant
+      base_domain: anarres.local
+      ssh_port: 22
+      gitea_port: 66
+      transmission_user: transmission
+      transmission_pass: transmission
+      openvpn_ca_pass: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
     ANSIBLE_ROLES_PATH: ../../../../roles/
