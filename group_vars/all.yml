@@ -50,7 +50,7 @@ transmission_directory:
   downloads: "{{ data_path }}/transmission/downloads"
   watch: "{{ data_path }}/transmission/watch"
 
-transmission_timezone: # Example: Europe/Berlin
+transmission_timezone:  # Example: Europe/Berlin
 
 ## Wallabag
 
