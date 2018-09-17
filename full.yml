@@ -243,64 +243,63 @@
 #  TODO: external db <06-07-18, m0u>
 
 #
-#- name: Prepare selfoss deployment
-#  hosts: all
-#  tasks:
-#    - name: Create selfoss data directory
-#      file:
-#        path: "{{ selfoss_path_data }}"
-#        state: directory
-#        owner: "{{ user_uid_1000 }}"
-#        group: "{{ group_gid_1000 }}"
-#        mode: 0700
-#  tags: selfoss
+# - name: Prepare selfoss deployment
+#   hosts: all
+#   tasks:
+#     - name: Create selfoss data directory
+#       file:
+#         path: "{{ selfoss_path_data }}"
+#         state: directory
+#         owner: "{{ user_uid_1000 }}"
+#         group: "{{ group_gid_1000 }}"
+#         mode: 0700
+#   tags: selfoss
 #
-#- name: Deploy selfoss in docker
-#  hosts: all
-#  vars:
-#    create_volume: false
-#    service_name: selfoss
-#    docker_image: "{{ selfoss_docker_image }}"
-#    enable_db: false
-#    docker_command: |
-#      /usr/bin/docker run --rm --name "{{ service_name }}" \
-#      -e GID=0 -e UID=0 \
-#      -p "{{ selfoss_internal_web_port }}:8888" \
-#      -v "{{ selfoss_path_data }}":/var/www/html/data \
-#      "{{ docker_image }}"
-#  roles:
-#    - role: generic_docker_systemd
-#  tags: selfoss
+# - name: Deploy selfoss in docker
+#   hosts: all
+#   vars:
+#     create_volume: false
+#     service_name: selfoss
+#     docker_image: "{{ selfoss_docker_image }}"
+#     enable_db: false
+#     docker_command: |
+#       /usr/bin/docker run --rm --name "{{ service_name }}" \
+#       -e GID=0 -e UID=0 \
+#       -p "{{ selfoss_internal_web_port }}:8888" \
+#       -v "{{ selfoss_path_data }}":/var/www/html/data \
+#       "{{ docker_image }}"
+#   roles:
+#     - role: generic_docker_systemd
+#   tags: selfoss
 #
-#- name: Get selfoss subdomain Let's Encrypt certificate
-#  hosts: all
-#  vars:
-#    domain: "{{ selfoss_domain }}"
-#  roles:
-#    - role: letsencrypt-request
-#  tags: selfoss
+# - name: Get selfoss subdomain Let's Encrypt certificate
+#   hosts: all
+#   vars:
+#     domain: "{{ selfoss_domain }}"
+#   roles:
+#     - role: letsencrypt-request
+#   tags: selfoss
 #
-#- name: Configure ningx proxy for selfoss
-#  hosts: all
-#  vars:
-#    domain: "{{ selfoss_domain }}"
-#    binded_port: "{{ selfoss_internal_web_port }}"
-#  roles:
-#    - role: add_nginx_proxy_conf
-#  tags: selfoss
+# - name: Configure ningx proxy for selfoss
+#   hosts: all
+#   vars:
+#     domain: "{{ selfoss_domain }}"
+#     binded_port: "{{ selfoss_internal_web_port }}"
+#   roles:
+#     - role: add_nginx_proxy_conf
+#   tags: selfoss
 
 ## Syncthing
 
 - name: Prepare syncthing deployment
   hosts: all
   tasks:
-    - name: Create syncthing images directory
+    - name: Create syncthing directories
       file:
         path: "{{ item.value }}"
         state: directory
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
-        mode: 0700
       with_dict: "{{ syncthing_directory }}"
   tags: syncthing
 
@@ -352,3 +351,73 @@
   roles:
     - role: add_nginx_proxy_conf
   tags: syncthing
+
+## OpenVPN
+
+#  TODO: is this really needed? since the docker has full net capabilities <19-08-18, m0u>
+- name: Setup requiered openvpn iptables rules
+  hosts: all
+  tasks:
+    - name: Add iptables rules for openvpn
+      iptables_raw:
+        name: openvpn_rules
+        weight: 20
+        rules: |
+          -A INPUT -p {{ openvpn_protocol | default('udp') }} -m state --state NEW -m {{ openvpn_protocol | default('udp') }} --dport {{ openvpn_port | default('1194') }} -j ACCEPT
+      tags: iptables
+  tags: openvpn
+
+- name: Prepare openvpn deployment
+  hosts: all
+  vars:
+    service_name: openvpn
+  tasks:
+    - name: Create openvpn data volume
+      docker_volume:
+        name: "{{ service_name }}"
+        state: present
+      register: openvpn_volume
+      ignore_errors: yes
+      notify: Create openvpn CA
+
+    # Temporary fix for a bug that will make docker_volume fail if the container doesn't exists yet.
+
+    - name: Create openvpn data volume MANUALLY
+      command: docker volume create openvpn
+      when: openvpn_volume.failed
+      notify: Create openvpn CA
+
+    - name: Configure openvpn container
+      command: "  docker run -v {{ service_name }}:/etc/openvpn --rm {{ openvpn_docker_image }} ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
+      when: openvpn_volume.failed
+      #  docker_container:
+      #    image: "{{ openvpn_docker_image }}"
+      #    name: openvpn-conf
+      #    cleanup: true
+      #    command: "ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
+  handlers:
+    - name: Create openvpn CA
+      expect:
+        command: "docker run -v {{ service_name }}:/etc/openvpn --rm -it {{ openvpn_docker_image}} ovpn_initpki"
+        timeout: 600
+        responses:
+          "pass phrase": "{{ openvpn_ca_pass }}"
+          "Common Name": "{{ openvpn_ca_CN }}"
+  tags: openvpn
+
+- name: Deploy openvpn in docker
+  hosts: all
+  vars:
+    create_volume: false
+    service_name: openvpn
+    docker_image: "{{ openvpn_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ service_name }}":/etc/openvpn \
+      --cap-add=NET_ADMIN \
+      -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: openvpn
