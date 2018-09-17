@@ -34,7 +34,7 @@ provisioner:
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
-      gitea_port: 66
+      gitea_ssh_port: 66
       gitea_db_user_pass: changeme
       transmission_user: transmission
       transmission_pass: transmission
