@@ -1,4 +1,5 @@
 import os
+import pytest
 
 import testinfra.utils.ansible_runner
 
@@ -12,3 +13,16 @@ def test_hosts_file(host):
     assert f.exists
     assert f.user == 'root'
     assert f.group == 'root'
+
+
+@pytest.mark.parametrize("service", [
+    ("gitea"),
+    ("transmission"),
+    ("wallabag"),
+    ("syncthing"),
+    ("openvpn"),
+])
+def test_iptables_is_installed(host, service):
+    service = host.service("docker." + service + ".service")
+    assert service.is_enabled
+    assert service.is_running
