@@ -300,6 +300,7 @@
         state: directory
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
+        mode: 0700
       with_dict: "{{ syncthing_directory }}"
   tags: syncthing
 
