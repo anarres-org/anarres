@@ -75,6 +75,7 @@
     - role: anarres-nginx
   vars:
     domain: "{{ base_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   tags: web-base
 
 ## Gitea
@@ -122,6 +123,7 @@
   hosts: all
   vars:
     domain: "{{ gitea_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
   tags: gitea
@@ -192,6 +194,7 @@
   hosts: all
   vars:
     domain: "{{ transmission_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
   tags: transmission
@@ -253,6 +256,7 @@
   hosts: all
   vars:
     domain: "{{ wallabag_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
   tags: wallabag
@@ -305,6 +309,7 @@
 #   hosts: all
 #   vars:
 #     domain: "{{ selfoss_domain }}"
+#     letsencrypt_renew_hook: /usr/sbin/service nginx restart
 #   roles:
 #     - role: letsencrypt-request
 #   tags: selfoss
@@ -369,6 +374,7 @@
   hosts: all
   vars:
     domain: "{{ syncthing_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
   tags: syncthing
@@ -514,6 +520,7 @@
   hosts: all
   vars:
     domain: "{{ radicale_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
   tags: radicale
