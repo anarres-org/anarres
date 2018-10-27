@@ -20,6 +20,17 @@ db_config_port: 3306
 
 ssh_port: 2222
 
+## Web and Let's Encrypt
+
+nginx_processes: auto
+web_ports_http: 80
+web_ports_https: 443
+
+web_path: /var/www
+
+web_path_letsencrypt: "{{ web_path }}/letsencrypt"
+web_path_default: "{{ web_path }}/default"
+
 ## Gitea
 
 gitea_domain: "git.{{ base_domain }}"

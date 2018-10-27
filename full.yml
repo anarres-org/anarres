@@ -38,14 +38,43 @@
       tags: iptables
   tags: web-iptables
 
+- name: "[Pretask] Prepare web deployment"
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Add group name ssl-cert for SSL certificates
+      group:
+        name: ssl-cert
+        state: present
+
+    - name: Install certbot package
+      package:
+        name: certbot
+        state: present
+
+    - name: Create live directory for Let's Encrypt
+      file:
+        state: directory
+        path: "/etc/letsencrypt/live"
+        group: ssl-cert
+        owner: root
+
+    - name: Create web directory
+      file:
+        path: "{{ web_path_letsencrypt }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: "u=rwx,g=r,o="
+
 - name: Deploy web related services
   hosts: all
   gather_facts: true
   roles:
-    - role: anarres-letsencrypt
+    - role: letsencrypt-request
     - role: anarres-nginx
   vars:
-    - domain: "{{ base_domain }}"
+    domain: "{{ base_domain }}"
   tags: web-base
 
 ## Gitea
