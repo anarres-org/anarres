@@ -3,6 +3,7 @@
 
 - name: Initial tasks
   hosts: all
+  become: true
   tasks:
     - name: Create data directory
       file:
@@ -15,18 +16,21 @@
 
 - name: Deploy common
   hosts: all
+  become: true
   roles:
     - role: anarres-common
   tags: common
 
 - name: Deploy sec
   hosts: all
+  become: true
   roles:
     - role: anarres-sec
   tags: sec
 
 - name: Setup requiered web iptables rules
   hosts: all
+  become: true
   tasks:
     - name: Add iptables rules for HTTP and HTTPS
       iptables_raw:
@@ -35,12 +39,18 @@
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
-      tags: iptables
-  tags: web-iptables
+  tags:
+    - iptables
+    - web-iptables
+    - web
 
 - name: "[Pretask] Prepare web deployment"
   hosts: all
+  become: true
   gather_facts: true
+  tags:
+    - web-prepare
+    - web
   tasks:
     - name: Add group name ssl-cert for SSL certificates
       group:
@@ -69,14 +79,18 @@
 
 - name: Deploy web related services
   hosts: all
+  become: true
   gather_facts: true
   roles:
     - role: letsencrypt-request
+      letsencrypt_renew_hook: /usr/sbin/service nginx restart
+      letsencrypt_method: standalone
     - role: anarres-nginx
   vars:
     domain: "{{ base_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
-  tags: web-base
+  tags:
+    - web-base
+    - web
 
 ## Gitea
 
@@ -100,6 +114,7 @@
 
 - name: Deploy gitea in docker
   hosts: all
+  become: true
   vars:
     service_name: gitea
     docker_image: "{{ gitea_docker_image }}"
@@ -121,6 +136,7 @@
 
 - name: Get gitea subdomain Let's Encrypt certificate
   hosts: all
+  become: true
   vars:
     domain: "{{ gitea_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -130,6 +146,7 @@
 
 - name: Configure ningx proxy for gitea
   hosts: all
+  become: true
   vars:
     domain: "{{ gitea_domain }}"
     binded_port: "{{ gitea_internal_web_port }}"
@@ -160,6 +177,7 @@
 
 - name: Setup requiered transmission iptables rules
   hosts: all
+  become: true
   tasks:
     - name: Add iptables rules for transmission
       iptables_raw:
@@ -172,6 +190,7 @@
 
 - name: Deploy transmission in docker
   hosts: all
+  become: true
   vars:
     enable_db: false
     service_name: transmission
@@ -192,6 +211,7 @@
 
 - name: Get transmission subdomain Let's Encrypt certificate
   hosts: all
+  become: true
   vars:
     domain: "{{ transmission_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -201,6 +221,7 @@
 
 - name: Configure ningx proxy for transmission
   hosts: all
+  become: true
   vars:
     domain: "{{ transmission_domain }}"
     binded_port: "{{ transmission_internal_web_port }}"
@@ -212,6 +233,7 @@
 
 - name: Prepare wallabag deployment
   hosts: all
+  become: true
   tasks:
     - name: Create wallabag images directory
       file:
@@ -224,6 +246,7 @@
 
 - name: Deploy wallabag in docker
   hosts: all
+  become: true
   vars:
     create_volume: false
     service_name: wallabag
@@ -254,6 +277,7 @@
 
 - name: Get wallabag subdomain Let's Encrypt certificate
   hosts: all
+  become: true
   vars:
     domain: "{{ wallabag_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -263,6 +287,7 @@
 
 - name: Configure ningx proxy for wallabag
   hosts: all
+  become: true
   vars:
     domain: "{{ wallabag_domain }}"
     binded_port: "{{ wallabag_internal_web_port }}"
@@ -340,6 +365,7 @@
 
 - name: Setup requiered syncthing iptables rules
   hosts: all
+  become: true
   tasks:
     - name: Add iptables rules for syncthing
       iptables_raw:
@@ -353,6 +379,7 @@
 
 - name: Deploy syncthing in docker
   hosts: all
+  become: true
   vars:
     create_volume: false
     service_name: syncthing
@@ -372,6 +399,7 @@
 
 - name: Get syncthing subdomain Let's Encrypt certificate
   hosts: all
+  become: true
   vars:
     domain: "{{ syncthing_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -381,6 +409,7 @@
 
 - name: Configure ningx proxy for syncthing
   hosts: all
+  become: true
   vars:
     domain: "{{ syncthing_domain }}"
     binded_port: "{{ syncthing_internal_web_port }}"
@@ -393,6 +422,7 @@
 #  TODO: is this really needed? since the docker has full net capabilities <19-08-18, m0u>
 - name: Setup requiered openvpn iptables rules
   hosts: all
+  become: true
   tasks:
     - name: Add iptables rules for openvpn
       iptables_raw:
@@ -405,6 +435,7 @@
 
 - name: Prepare openvpn deployment
   hosts: all
+  become: true
   vars:
     service_name: openvpn
   tasks:
@@ -443,6 +474,7 @@
 
 - name: Deploy openvpn in docker
   hosts: all
+  become: true
   vars:
     create_volume: false
     service_name: openvpn

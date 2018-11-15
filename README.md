@@ -26,6 +26,23 @@ group with `usermod -a -G sudo [user]`.
 
 First user to register will be the admin user.
 
+### OpenVPN
+
+Once installed, from the server's command line.
+
+#### Genereate new user keys
+
+`docker exec -it openvpn easyrsa build-client-full [USERNAME] nopass`
+
+#### Get the configuration file for an existing user
+
+`docker exec -it openvpn ovpn_getclient [USERNAME] > [USERNAME].ovpn`
+
+### Syncthing
+
+Make sure to set up a user and password for the web GUI. You can do that by
+accesing it ang going to settings.
+
 ### Tranmission
 
 It's recommended to enable port forwarding in your router as explained in
