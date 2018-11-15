@@ -494,6 +494,7 @@
 
 - name: Setup requiered radicale iptables rules
   hosts: all
+  become: true
   tasks:
     - name: Add iptables rules for radicale
       iptables_raw:
@@ -522,10 +523,19 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
+    - name: Add radicale login credentiasl
+      lineinfile:
+        path: "{{ radicale_directory.data }}/users"
+        line: "{{ radicale_user }}:{{ radicale_pass }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+        create: true
   tags: radicale
 
 - name: Deploy radicale in docker
   hosts: all
+  become: true
   vars:
     create_volume: false
     service_name: radicale
@@ -550,6 +560,7 @@
 
 - name: Get radicale subdomain Let's Encrypt certificate
   hosts: all
+  become: true
   vars:
     domain: "{{ radicale_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -559,6 +570,7 @@
 
 - name: Configure ningx proxy for radicale
   hosts: all
+  become: true
   vars:
     domain: "{{ radicale_domain }}"
     binded_port: "{{ radicale_internal_web_port }}"

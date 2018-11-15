@@ -6,7 +6,7 @@ These are the tested GNU/Linux distributions. Maybe it works on some other
 distributions too or just requieres a few changes.
 
 * [debian](https://www.debian.org/)
-	* stretch
+  * stretch
 
 ## Requirements
 
@@ -19,7 +19,7 @@ distributions too or just requieres a few changes.
 ## Usage
 
 1. Install `sudo` and `python`.
-2. Login as **root** and add your **user** to *sudoers* or to the **sudo**
+1. Login as **root** and add your **user** to *sudoers* or to the **sudo**
 group with `usermod -a -G sudo [user]`.
 
 ### Gitea
@@ -52,6 +52,17 @@ web configurations.
 If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
 **settings.json** as explained in
 [hub.docker.com](https://hub.docker.com/r/linuxserver/transmission/)
+
+### Radicale
+
+You must set `radicale_pass` with your bcrypted password. Yo can get the hash
+by running:
+
+```bash
+htpasswd -B /tmp/radicale [user]
+```
+
+Get it from */tmp/radicale*.
 
 ## License
 

@@ -64,16 +64,16 @@ hosts = 0.0.0.0:5232
 
 # Authentication method
 # Value: none | htpasswd | remote_user | http_x_remote_user
-#type = none
+type = htpasswd
 
 # Htpasswd filename
-#htpasswd_filename = /etc/radicale/users
+htpasswd_filename = /etc/radicale/users
 
 # Htpasswd encryption method
 # Value: plain | sha1 | ssha | crypt | bcrypt | md5
 # Only bcrypt can be considered secure.
 # bcrypt and md5 require the passlib library to be installed.
-#htpasswd_encryption = bcrypt
+htpasswd_encryption = bcrypt
 
 # Incorrect authentication delay (seconds)
 #delay = 1
