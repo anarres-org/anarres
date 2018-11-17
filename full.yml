@@ -85,7 +85,9 @@
     - role: letsencrypt-request
       letsencrypt_renew_hook: /usr/sbin/service nginx restart
       letsencrypt_method: standalone
+      tags: base_cert
     - role: anarres-nginx
+      tags: nginx
   vars:
     domain: "{{ base_domain }}"
   tags:
@@ -142,6 +144,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
+      tags: letsecrypt_request
   tags: gitea
 
 - name: Configure ningx proxy for gitea
@@ -152,6 +155,7 @@
     binded_port: "{{ gitea_internal_web_port }}"
   roles:
     - role: add_nginx_proxy_conf
+      tags: proxy
   tags: gitea
 
 ## Transmission
@@ -217,6 +221,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
+      tags: letsecrypt_request
   tags: transmission
 
 - name: Configure ningx proxy for transmission
@@ -227,6 +232,7 @@
     binded_port: "{{ transmission_internal_web_port }}"
   roles:
     - role: add_nginx_proxy_conf
+      tags: proxy
   tags: transmission
 
 ## Wallabag
@@ -283,6 +289,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
+      tags: letsecrypt_request
   tags: wallabag
 
 - name: Configure ningx proxy for wallabag
@@ -293,6 +300,7 @@
     binded_port: "{{ wallabag_internal_web_port }}"
   roles:
     - role: add_nginx_proxy_conf
+      tags: proxy
   tags: wallabag
 
 ## Selfoss
@@ -337,6 +345,7 @@
 #     letsencrypt_renew_hook: /usr/sbin/service nginx restart
 #   roles:
 #     - role: letsencrypt-request
+#      tags: letsecrypt_request
 #   tags: selfoss
 #
 # - name: Configure ningx proxy for selfoss
@@ -346,6 +355,7 @@
 #     binded_port: "{{ selfoss_internal_web_port }}"
 #   roles:
 #     - role: add_nginx_proxy_conf
+#      tags: proxy
 #   tags: selfoss
 
 ## Syncthing
@@ -405,6 +415,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
+      tags: letsecrypt_request
   tags: syncthing
 
 - name: Configure ningx proxy for syncthing
@@ -415,6 +426,7 @@
     binded_port: "{{ syncthing_internal_web_port }}"
   roles:
     - role: add_nginx_proxy_conf
+      tags: proxy
   tags: syncthing
 
 ## OpenVPN
@@ -566,6 +578,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
   roles:
     - role: letsencrypt-request
+      tags: letsecrypt_request
   tags: radicale
 
 - name: Configure ningx proxy for radicale
@@ -581,4 +594,5 @@
       proxy_pass_header Authorization;
   roles:
     - role: add_nginx_proxy_conf
+      tags: proxy
   tags: radicale
