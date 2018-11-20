@@ -107,6 +107,9 @@ syncthing_discovery_port: 21027
 openvpn_domain: "openvpn.{{ base_domain }}"
 openvpn_docker_image: kylemanna/openvpn:latest
 
+openvpn_directory:
+  conf: "{{ data_path }}/openvpn/conf"
+
 openvpn_port: 1194
 openvpn_protocol: udp
 

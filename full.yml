@@ -451,33 +451,28 @@
   vars:
     service_name: openvpn
   tasks:
-    - name: Create openvpn data volume
-      docker_volume:
-        name: "{{ service_name }}"
-        state: present
-      register: openvpn_volume
-      ignore_errors: yes
-      notify: Create openvpn CA
+    - name: Create openvpn directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ openvpn_directory }}"
+      notify: Configure openvpn container
 
-    # Temporary fix for a bug that will make docker_volume fail if the container doesn't exists yet.
-
-    - name: Create openvpn data volume MANUALLY
-      command: docker volume create openvpn
-      when: openvpn_volume.failed
-      notify: Create openvpn CA
-
+  handlers:
     - name: Configure openvpn container
-      command: "  docker run -v {{ service_name }}:/etc/openvpn --rm {{ openvpn_docker_image }} ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
-      when: openvpn_volume.failed
+      command: "  docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm {{ openvpn_docker_image }} ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
+      notify: Create openvpn CA
       #  docker_container:
       #    image: "{{ openvpn_docker_image }}"
       #    name: openvpn-conf
       #    cleanup: true
       #    command: "ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
-  handlers:
     - name: Create openvpn CA
       expect:
-        command: "docker run -v {{ service_name }}:/etc/openvpn --rm -it {{ openvpn_docker_image}} ovpn_initpki"
+        command: "docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm -it {{ openvpn_docker_image}} ovpn_initpki"
         timeout: 600
         responses:
           "pass phrase": "{{ openvpn_ca_pass }}"
@@ -494,7 +489,7 @@
     enable_db: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ service_name }}":/etc/openvpn \
+      -v "{{ openvpn_directory.conf }}":/etc/openvpn \
       --cap-add=NET_ADMIN \
       -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
       "{{ docker_image }}"
