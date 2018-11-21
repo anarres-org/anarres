@@ -21,7 +21,8 @@ def test_hosts_file(host):
     ("wallabag"),
     ("syncthing"),
     ("openvpn"),
-    ("radicale")
+    ("radicale"),
+    ("taskd")
 ])
 def test_iptables_is_installed(host, service):
     service = host.service("docker." + service + ".service")

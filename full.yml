@@ -100,6 +100,7 @@
   hosts: all
   tasks:
     - name: Add iptables rules for gitea
+      become: true
       iptables_raw:
         name: gitea_rules
         weight: 20
@@ -587,3 +588,47 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: radicale
+
+## taskd
+
+- name: Prepare taskd deployment
+  hosts: all
+  tasks:
+    - name: Create taskd directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ taskd_directory }}"
+  tags: taskd
+
+- name: Setup requiered taskd iptables rules
+  hosts: all
+  become: true
+  tasks:
+    - name: Add iptables rules for taskd
+      iptables_raw:
+        name: taskd_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
+      tags: iptables
+  tags: taskd
+
+- name: Deploy taskd in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: taskd
+    docker_image: "{{ taskd_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ taskd_directory.data }}":/var/taskd \
+      -p "{{ taskd_port }}:53589" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: taskd
