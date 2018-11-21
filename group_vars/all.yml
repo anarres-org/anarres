@@ -125,7 +125,8 @@ radicale_user:
 radicale_pass:
 
 radicale_directory:
-  conf: "{{ data_path }}/radicale/config"
   data: "{{ data_path }}/radicale/data"
+  etc: "{{ data_path }}/radicale/etc"
+  conf: "{{ data_path }}/radicale/config"
 
 radicale_internal_web_port: 5232

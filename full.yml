@@ -499,19 +499,6 @@
 
 ## Radicale
 
-- name: Setup requiered radicale iptables rules
-  hosts: all
-  become: true
-  tasks:
-    - name: Add iptables rules for radicale
-      iptables_raw:
-        name: radicale_rules
-        weight: 20
-        rules: |
-          -A INPUT -p {{ radicale_protocol | default('udp') }} -m state --state NEW -m {{ radicale_protocol | default('udp') }} --dport {{ radicale_port | default('1194') }} -j ACCEPT
-      tags: iptables
-  tags: radicale
-
 - name: Prepare radicale deployment
   hosts: all
   tasks:
@@ -532,7 +519,7 @@
         mode: 0700
     - name: Add radicale login credentiasl
       lineinfile:
-        path: "{{ radicale_directory.data }}/users"
+        path: "{{ radicale_directory.etc }}/users"
         line: "{{ radicale_user }}:{{ radicale_pass }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
@@ -558,7 +545,8 @@
       --health-cmd="curl --fail http://localhost:5232 || exit 1" \
       --health-interval=30s \
       --health-retries=3 \
-      -v "{{ radicale_directory.data }}":/etc/radicale \
+      -v "{{ radicale_directory.data }}":/data \
+      -v "{{ radicale_directory.etc }}":/etc/radicale \
       -v "{{ radicale_directory.conf }}":/config:ro \
       "{{ docker_image }}"
   roles:
