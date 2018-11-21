@@ -99,6 +99,14 @@
 - name: Prepare gitea deployment
   hosts: all
   tasks:
+    - name: Add iptables rules for gitea
+      iptables_raw:
+        name: gitea_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
+      tags: iptables
+
     - name: Create gitea configuration directory
       file:
         path: "{{ gitea_path_conf }}"
