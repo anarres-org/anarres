@@ -16,7 +16,7 @@ distributions too or just requieres a few changes.
 
 ## Dependencies
 
-## Usage
+## Setup
 
 1. Install `sudo` and `python`.
 1. Login as **root** and add your **user** to *sudoers* or to the **sudo**
@@ -78,6 +78,10 @@ And then from inside the container run the commands from the
 [taskwarrior docs](https://taskwarrior.org/docs/taskserver/user.html).
 
 **Note**: The *pki* directory is in */var/taskd/pki/*
+
+## Nextcloud
+
+First user to register will be the admin user.
 
 ## License
 

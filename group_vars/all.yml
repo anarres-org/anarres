@@ -10,6 +10,9 @@ data_path: /data
 user_uid_1000:
 group_gid_1000: "{{ user_uid_1000 }}"
 
+user_uid_33: www-data
+group_gid_33: "{{ user_uid_33 }}"
+
 docker_db_image: mariadb:10.3
 
 ## Following values will be used for the root account of every docker database
@@ -139,3 +142,19 @@ taskd_port: 53589
 
 taskd_directory:
   data: "{{ data_path }}/taskd/data"
+
+## Nextcloud
+
+nextcloud_domain: "cloud.{{ base_domain }}"
+nextcloud_docker_image: nextcloud:14-apache
+nextcloud_internal_web_port: 4001
+
+nextcloud_directory:
+  data: "{{ data_path }}/nextcloud/data"
+
+### DB
+
+nextcloud_db_service_name: nextcloud-db
+nextcloud_db_name: nextcloud
+nextcloud_db_user: nextcloud
+nextcloud_db_user_pass:

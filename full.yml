@@ -156,7 +156,7 @@
       tags: letsecrypt_request
   tags: gitea
 
-- name: Configure ningx proxy for gitea
+- name: Configure nginx proxy for gitea
   hosts: all
   become: true
   vars:
@@ -233,7 +233,7 @@
       tags: letsecrypt_request
   tags: transmission
 
-- name: Configure ningx proxy for transmission
+- name: Configure nginx proxy for transmission
   hosts: all
   become: true
   vars:
@@ -301,7 +301,7 @@
       tags: letsecrypt_request
   tags: wallabag
 
-- name: Configure ningx proxy for wallabag
+- name: Configure nginx proxy for wallabag
   hosts: all
   become: true
   vars:
@@ -357,7 +357,7 @@
 #      tags: letsecrypt_request
 #   tags: selfoss
 #
-# - name: Configure ningx proxy for selfoss
+# - name: Configure nginx proxy for selfoss
 #   hosts: all
 #   vars:
 #     domain: "{{ selfoss_domain }}"
@@ -427,7 +427,7 @@
       tags: letsecrypt_request
   tags: syncthing
 
-- name: Configure ningx proxy for syncthing
+- name: Configure nginx proxy for syncthing
   hosts: all
   become: true
   vars:
@@ -573,7 +573,7 @@
       tags: letsecrypt_request
   tags: radicale
 
-- name: Configure ningx proxy for radicale
+- name: Configure nginx proxy for radicale
   hosts: all
   become: true
   vars:
@@ -632,3 +632,65 @@
   roles:
     - role: generic_docker_systemd
   tags: taskd
+
+## Nextcloud
+
+- name: Prepare nextcloud deployment
+  hosts: all
+  tasks:
+    - name: Create nextcloud directories
+      become: true
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_33 }}"
+        group: "{{ group_gid_33 }}"
+        mode: 0770
+      with_dict: "{{ nextcloud_directory }}"
+  tags: nextcloud
+
+- name: Deploy nextcloud in docker
+  hosts: all
+  become: true
+  vars:
+    service_name: nextcloud
+    docker_image: "{{ nextcloud_docker_image }}"
+    service_db_name: "{{ nextcloud_db_service_name }}"
+    db_name: "{{ nextcloud_db_name }}"
+    db_user: "{{ nextcloud_db_user }}"
+    db_user_pass: "{{ nextcloud_db_user_pass }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ nextcloud_directory.data }}":/var/www/html \
+      -p "{{ nextcloud_internal_web_port }}:80" \
+      -e "MYSQL_HOST={{ service_db_name }}" \
+      -e "MYSQL_DATABASE={{ db_name }}" \
+      -e "MYSQL_USER={{ db_user }}" \
+      -e "MYSQL_PASSWORD={{ db_user_pass }}" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: nextcloud
+
+- name: Get nextcloud subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ nextcloud_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: nextcloud
+
+- name: Configure nginx proxy for nextcloud
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ nextcloud_domain }}"
+    binded_port: "{{ nextcloud_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: nextcloud
