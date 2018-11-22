@@ -83,7 +83,7 @@
   gather_facts: true
   roles:
     - role: letsencrypt-request
-      letsencrypt_renew_hook: /usr/sbin/service nginx restart
+      letsencrypt_renew_hook: /usr/sbin/service nginx reload
       letsencrypt_method: standalone
       tags: base_cert
     - role: anarres-nginx
@@ -150,7 +150,7 @@
   become: true
   vars:
     domain: "{{ gitea_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
@@ -227,7 +227,7 @@
   become: true
   vars:
     domain: "{{ transmission_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
@@ -295,7 +295,7 @@
   become: true
   vars:
     domain: "{{ wallabag_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
@@ -351,7 +351,7 @@
 #   hosts: all
 #   vars:
 #     domain: "{{ selfoss_domain }}"
-#     letsencrypt_renew_hook: /usr/sbin/service nginx restart
+#     letsencrypt_renew_hook: /usr/sbin/service nginx reload
 #   roles:
 #     - role: letsencrypt-request
 #      tags: letsecrypt_request
@@ -421,7 +421,7 @@
   become: true
   vars:
     domain: "{{ syncthing_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
@@ -567,7 +567,7 @@
   become: true
   vars:
     domain: "{{ radicale_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
