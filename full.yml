@@ -108,18 +108,20 @@
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
       tags: iptables
 
-    - name: Create gitea configuration directory
+    - name: Create gitea directories
+      become: true
       file:
-        path: "{{ gitea_path_conf }}"
+        path: "{{ item.value }}"
         state: directory
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
+      with_dict: "{{ gitea_directory }}"
 
     - name: Configure gitea
       template:
         src: gitea-app.ini.j2
-        dest: "{{ gitea_path_conf }}/app.ini"
+        dest: "{{ gitea_directory.data }}/gitea/conf/app.ini"
         force: "{{ override | default('no') }}"
   tags: gitea
 
@@ -131,8 +133,7 @@
     docker_image: "{{ gitea_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ service_name }}":/data \
-      -v "{{ gitea_path_conf }}/app.ini":/data/gitea/conf/app.ini \
+      -v "{{ gitea_directory.data }}":/data \
       -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       --network "{{ service_name }}" \

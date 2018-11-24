@@ -46,7 +46,9 @@ gitea_db_name: gitea
 gitea_db_user: gitea
 gitea_db_user_pass:
 
-gitea_path_conf: "{{ data_path }}/gitea/conf"
+gitea_directory:
+  data: "{{ data_path }}/gitea/data"
+  conf: "{{ data_path }}/gitea/data/gitea/conf"
 gitea_ssh_port: 22
 gitea_internal_web_port: 3000
 
