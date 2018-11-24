@@ -61,6 +61,7 @@
       package:
         name: certbot
         state: present
+      tags: letsencrypt
 
     - name: Create live directory for Let's Encrypt
       file:
@@ -68,6 +69,13 @@
         path: "/etc/letsencrypt/live"
         group: ssl-cert
         owner: root
+      tags: letsencrypt
+
+    - name: Create letsencrypt renew cronjob
+      cron:
+        name: letsencrypt auto renewal
+        job: /usr/bin/certbot renew --quiet
+        special_time: daily
 
     - name: Create web directory
       file:
@@ -85,7 +93,9 @@
     - role: letsencrypt-request
       letsencrypt_renew_hook: /usr/sbin/service nginx reload
       letsencrypt_method: standalone
-      tags: base_cert
+      tags:
+        - base_cert
+        - letsencrypt_request
     - role: anarres-nginx
       tags: nginx
   vars:
