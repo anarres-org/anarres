@@ -22,6 +22,18 @@ distributions too or just requieres a few changes.
 1. Login as **root** and add your **user** to *sudoers* or to the **sudo**
 group with `usermod -a -G sudo [user]`.
 
+### Letsencrypt
+
+The main domain cert needs to be obtained using the **standalone** method since
+we don't have a working webserver by this point (the server needs the cert). So
+the webroot path will be empty in */etc/letsencrypt/renewal/{{ base_domain
+}}.conf*. You should manually specify it adding:
+
+```
+authenticator = webroot
+webroot_path = /var/www/letsencrypt,
+```
+
 ### Gitea
 
 First user to register will be the admin user.
