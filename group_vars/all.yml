@@ -160,3 +160,17 @@ nextcloud_db_service_name: nextcloud-db
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
 nextcloud_db_user_pass:
+
+## NFS
+
+nfs_docker_image: erichough/nfs-server:latest
+
+nfs_directory:
+  export: "{{ data_path }}/nfs/export"
+  conf: "{{ data_path }}/nfs/conf"
+
+nfs_exports_conf: |
+  /export       192.168.1.0/24(rw,fsid=0,no_subtree_check)
+
+nfs_export_volumes: |
+  -v {{ nfs_directory.export }}:/export:ro \

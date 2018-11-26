@@ -1,6 +1,5 @@
 ---
 
-
 - name: Initial tasks
   hosts: all
   become: true
@@ -141,6 +140,7 @@
   vars:
     service_name: gitea
     docker_image: "{{ gitea_docker_image }}"
+    create_volume: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ gitea_directory.data }}":/data \
@@ -218,6 +218,7 @@
   vars:
     enable_db: false
     service_name: transmission
+    create_volume: false
     docker_image: "{{ transmission_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
@@ -632,6 +633,7 @@
   hosts: all
   become: true
   vars:
+    create_volume: false
     enable_db: false
     service_name: taskd
     docker_image: "{{ taskd_docker_image }}"
@@ -666,6 +668,7 @@
   vars:
     service_name: nextcloud
     docker_image: "{{ nextcloud_docker_image }}"
+    create_volume: false
     service_db_name: "{{ nextcloud_db_service_name }}"
     db_name: "{{ nextcloud_db_name }}"
     db_user: "{{ nextcloud_db_user }}"
@@ -705,3 +708,46 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: nextcloud
+
+## NFS
+
+- name: Prepare nfs deployment
+  hosts: all
+  tasks:
+    - name: Create nfs directories
+      become: true
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ nfs_directory }}"
+
+    - name: Add iptables rules for nfs
+      become: true
+      iptables_raw:
+        name: nfs_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ nfs_port | default('2049') }} -j ACCEPT
+      tags: iptables
+  tags: nfs
+
+- name: Deploy nfs in docker
+  hosts: all
+  become: true
+  vars:
+    service_name: nfs
+    docker_image: "{{ nfs_docker_image }}"
+    enable_db: false
+    create_network: false
+    create_volume: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
+      {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: nfs
