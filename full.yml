@@ -715,7 +715,6 @@
   hosts: all
   tasks:
     - name: Create nfs directories
-      become: true
       file:
         path: "{{ item.value }}"
         state: directory
@@ -725,7 +724,6 @@
       with_dict: "{{ nfs_directory }}"
 
     - name: Create nfs configuration file
-      become: true
       file:
         path: "{{ nfs_directory.conf }}/exports"
         state: touch
@@ -734,7 +732,6 @@
         mode: 0700
 
     - name: Configure nfs
-      become: true
       blockinfile:
         block: "{{ nfs_exports_conf }}"
         path: "{{ nfs_directory.conf }}/exports"
