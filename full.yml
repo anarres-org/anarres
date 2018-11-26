@@ -724,6 +724,40 @@
         mode: 0700
       with_dict: "{{ nfs_directory }}"
 
+    - name: Create nfs configuration file
+      become: true
+      file:
+        path: "{{ nfs_directory.conf }}/exports"
+        state: touch
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+
+    - name: Configure nfs
+      become: true
+      blockinfile:
+        block: "{{ nfs_exports_conf }}"
+        path: "{{ nfs_directory.conf }}/exports"
+
+    - name: Load kernel modules for nfs
+      become: true
+      modprobe:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nfs
+        - nfsd
+
+    - name: Load kernel modules for nfs at boot
+      become: true
+      lineinfile:
+        path: /etc/modules
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - nfs
+        - nfsd
+
     - name: Add iptables rules for nfs
       become: true
       iptables_raw:
@@ -745,6 +779,7 @@
     create_volume: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --cap-add SYS_ADMIN \
       -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
       {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
       "{{ docker_image }}"
