@@ -23,7 +23,8 @@ def test_hosts_file(host):
     ("openvpn"),
     ("radicale"),
     ("taskd"),
-    ("nextcloud")
+    ("nextcloud"),
+    ("nfs")
 ])
 def test_iptables_is_installed(host, service):
     service = host.service("docker." + service + ".service")

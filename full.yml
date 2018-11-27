@@ -118,7 +118,6 @@
       tags: iptables
 
     - name: Create gitea directories
-      become: true
       file:
         path: "{{ item.value }}"
         state: directory
@@ -132,6 +131,9 @@
         src: gitea-app.ini.j2
         dest: "{{ gitea_directory.data }}/gitea/conf/app.ini"
         force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
   tags: gitea
 
 - name: Deploy gitea in docker
@@ -140,7 +142,6 @@
   vars:
     service_name: gitea
     docker_image: "{{ gitea_docker_image }}"
-    create_volume: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ gitea_directory.data }}":/data \
@@ -722,6 +723,16 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
       with_dict: "{{ nfs_directory }}"
+
+    - name: Create nfs user mount directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ nfs_user_mounts }}"
+      when: nfs_user_mounts is defined
 
     - name: Create nfs configuration file
       file:

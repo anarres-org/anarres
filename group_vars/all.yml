@@ -49,6 +49,9 @@ gitea_db_user_pass:
 gitea_directory:
   data: "{{ data_path }}/gitea/data"
   conf: "{{ data_path }}/gitea/data/gitea/conf"
+  git_data: "{{ data_path }}/gitea/data/git"
+  ssh_data: "{{ data_path }}/gitea/data/ssh"
+
 gitea_ssh_port: 22
 gitea_internal_web_port: 3000
 
@@ -164,6 +167,8 @@ nextcloud_db_user_pass:
 ## NFS
 
 nfs_docker_image: erichough/nfs-server:latest
+
+# nfs_user_mounts:
 
 nfs_directory:
   export: "{{ data_path }}/nfs/export"
