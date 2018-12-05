@@ -754,6 +754,8 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
+        modification_time: "preserve"
+        access_time: "preserve"
 
     - name: Configure nfs
       blockinfile:
