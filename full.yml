@@ -117,14 +117,27 @@
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
       tags: iptables
 
-    - name: Create gitea directories
+    - name: Create gitea directories 755
       file:
-        path: "{{ item.value }}"
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0755
+      with_items:
+        - "{{ gitea_directory.data }}"
+        - "{{ gitea_directory.conf }}"
+        - "{{ gitea_directory.git_data }}"
+
+    - name: Create gitea directories 700
+      file:
+        path: "{{ item }}"
         state: directory
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
-      with_dict: "{{ gitea_directory }}"
+      with_items:
+        - "{{ gitea_directory.ssh_data }}"
 
     - name: Configure gitea
       template:
@@ -133,7 +146,7 @@
         force: "{{ override | default('no') }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
-        mode: 0700
+        mode: 0644
   tags: gitea
 
 - name: Deploy gitea in docker
