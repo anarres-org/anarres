@@ -671,7 +671,7 @@
         path: "{{ item.value }}"
         state: directory
         owner: "{{ user_uid_33 }}"
-        group: "{{ group_gid_33 }}"
+        group: 0
         mode: 0750
       with_dict: "{{ nextcloud_directory }}"
   tags: nextcloud
