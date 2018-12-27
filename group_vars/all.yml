@@ -37,7 +37,7 @@ web_path_default: "{{ web_path }}/default"
 ## Gitea
 
 gitea_domain: "git.{{ base_domain }}"
-gitea_docker_image: gitea/gitea:1.4
+gitea_docker_image: gitea/gitea:1.6
 
 ### DB
 
