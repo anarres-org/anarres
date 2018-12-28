@@ -16,6 +16,14 @@ distributions too or just requieres a few changes.
 
 ## Dependencies
 
+* [iptables_raw](https://github.com/Nordeus/ansible_iptables_raw)
+* [anarres-common]
+* [anarres-sec]
+* [letsencrypt-request]
+* [anarres-nginx]
+* [generic_docker_systemd]
+* [add_nginx_proxy_conf]
+
 ## Setup
 
 1. Install `sudo` and `python`.
