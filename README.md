@@ -69,7 +69,7 @@ add the following ports:
 * **80** for HTTP connections, used for the `letsencrypt` verification
 * **443** for HTTPs connections, used by the reverse proxy to serve access to
   the web services.
-* The SSH port you choose.
+* The SSH port you choose, or **2222** by default.
 * All the desired ports that some services have.
 
 ### Services
@@ -90,9 +90,13 @@ webroot_path = /var/www/letsencrypt,
 
 First user to register will be the admin user.
 
+*Ports*: **22/tcp** for SSH.
+
 #### OpenVPN
 
 Once installed, from the server's command line.
+
+*Ports*: **1194/udp**.
 
 ##### Genereate new user keys
 
@@ -107,6 +111,9 @@ Once installed, from the server's command line.
 Make sure to set up a user and password for the web GUI. You can do that by
 accesing it ang going to settings.
 
+*Ports*: **22000/tcp** as the listening address and **21027/udp** for local
+discovery.
+
 #### Tranmission
 
 It's recommended to enable port forwarding in your router as explained in
@@ -116,6 +123,8 @@ web configurations.
 If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
 **settings.json** as explained in
 [hub.docker.com](https://hub.docker.com/r/linuxserver/transmission/)
+
+*Ports*: **51413/udp** for p2p connections.
 
 #### Radicale
 
@@ -131,6 +140,8 @@ Get it from */tmp/radicale*.
 #### Taskd
 
 The taskwarrior server.
+
+*Ports*: **53589/tcp**.
 
 Open a shell in the container.
 
@@ -154,6 +165,8 @@ see how NFSv4 works. Make sure to mount the directories you want to export
 inside the */export* folder of the NFS container. Mount them with the `:ro`
 option if you want them to be read-only (and configure them in the **exports**
 conf accordingly).
+
+*Ports*: **2049/tcp**.
 
 ## License
 
