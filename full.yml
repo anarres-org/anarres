@@ -60,6 +60,10 @@
       package:
         name: certbot
         state: present
+      retries: 3
+      delay: 3
+      register: install_certbot
+      until: install_certbot is succeeded
       tags: letsencrypt
 
     - name: Create live directory for Let's Encrypt
