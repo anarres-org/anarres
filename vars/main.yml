@@ -1,7 +1,0 @@
----
-
-## OpenVPN
-
-openvpn_iptables_p2p_rule: "-A INPUT -p {{ openvpn_protocol }} -m state --state NEW -m {{ openvpn_protocol }} --dport {{ openvpn_port }} -j ACCEPT"
-openvpn_confiure_docker_command: "docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm {{ openvpn_docker_image }} ovpn_genconfig -u {{ openvpn_protocol }}://{{ openvpn_domain }}"
-openvpn_create_ca_command: "docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm -it {{ openvpn_docker_image }} ovpn_initpki"
