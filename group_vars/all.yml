@@ -58,7 +58,7 @@ gitea_internal_web_port: 3000
 ## Transmission
 
 transmission_domain: "torrent.{{ base_domain }}"
-transmission_docker_image: linuxserver/transmission:latest
+transmission_docker_image: linuxserver/transmission:157
 transmission_internal_web_port: 9091
 
 transmission_user:
@@ -74,7 +74,7 @@ transmission_timezone:  # Example: Europe/Berlin
 ## Wallabag
 
 wallabag_domain: "wallabag.{{ base_domain }}"
-wallabag_docker_image: wallabag/wallabag:latest
+wallabag_docker_image: wallabag/wallabag:2.3.5
 
 wallabag_path_images: "{{ data_path }}/wallabag/images"
 
@@ -90,7 +90,7 @@ wallabag_internal_web_port: 4000
 ## Selfoss
 
 selfoss_domain: "selfoss.{{ base_domain }}"
-selfoss_docker_image: hardware/selfoss:latest
+selfoss_docker_image: hardware/selfoss:2.1.8
 
 selfoss_path_data: "{{ data_path }}/selfoss/data"
 
@@ -100,7 +100,7 @@ selfoss_internal_web_port: 4001
 ## Syncthing
 
 syncthing_domain: "syncthing.{{ base_domain }}"
-syncthing_docker_image: syncthing/syncthing:v0.14.48
+syncthing_docker_image: syncthing/syncthing:v0.14.54
 
 syncthing_directory:
   conf: "{{ data_path }}/syncthing/config"
@@ -117,7 +117,7 @@ openvpn_confiure_docker_command: "docker run -v {{ openvpn_directory.conf }}:/et
 openvpn_create_ca_command: "docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm -it {{ openvpn_docker_image }} ovpn_initpki"
 
 openvpn_domain: "openvpn.{{ base_domain }}"
-openvpn_docker_image: kylemanna/openvpn:latest
+openvpn_docker_image: kylemanna/openvpn:2.3
 
 openvpn_directory:
   conf: "{{ data_path }}/openvpn/conf"
@@ -131,7 +131,7 @@ openvpn_ca_CN: "{{ openvpn_domain }}"
 ## Radicale
 
 radicale_domain: "radicale.{{ base_domain }}"
-radicale_docker_image: tomsquest/docker-radicale:amd64.2.1.10.2
+radicale_docker_image: tomsquest/docker-radicale:amd64.2.1.11.0
 
 radicale_user:
 radicale_pass:
@@ -146,7 +146,7 @@ radicale_internal_web_port: 5232
 ## taskd
 
 taskd_domain: "{{ base_domain }}"
-taskd_docker_image: andir/docker-taskd
+taskd_docker_image: andir/docker-taskd:latest
 taskd_port: 53589
 
 taskd_directory:
@@ -155,7 +155,7 @@ taskd_directory:
 ## Nextcloud
 
 nextcloud_domain: "cloud.{{ base_domain }}"
-nextcloud_docker_image: nextcloud:14-apache
+nextcloud_docker_image: nextcloud:15-apache
 nextcloud_internal_web_port: 4001
 
 nextcloud_directory:
@@ -170,7 +170,7 @@ nextcloud_db_user_pass:
 
 ## NFS
 
-nfs_docker_image: erichough/nfs-server:latest
+nfs_docker_image: erichough/nfs-server:1.2.0
 
 # nfs_user_mounts:
 
