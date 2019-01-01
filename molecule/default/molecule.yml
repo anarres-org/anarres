@@ -41,6 +41,7 @@ provisioner:
       transmission_timezone: Europe/Berlin
       wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
+      nextcloud_db_user_pass: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
     ANSIBLE_ROLES_PATH: ../../../../roles/
