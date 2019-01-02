@@ -830,6 +830,7 @@
       -v {{ openldap_directory.data }}:/var/lib/ldap \
       -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
       -p {{ openldap_port }}:389 \
+      -e "LDAP_TLS=false" \
       {{ docker_image }}
   pre_tasks:
     - name: Create openldap directories
@@ -856,6 +857,7 @@
           - LDAP_ORGANISATION: "anarres"
           - LDAP_DOMAIN: "anarres.local"
           - LDAP_ADMIN_PASSWORD: "changeme"
+          - LDAP_TLS: false
         cleanup: true
       notify: Delete the OpenLDAP configuration container
     - name: Delete the OpenLDAP configuration container
