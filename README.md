@@ -168,6 +168,12 @@ conf accordingly).
 
 *Ports*: **2049/tcp**.
 
+#### OpenLDAP
+
+An OpenLDAP server.
+
+*Ports*: **389/tcp**.
+
 ## License
 
 GPLv3
