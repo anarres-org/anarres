@@ -832,17 +832,14 @@
       -p {{ openldap_port }}:389 \
       {{ docker_image }}
   pre_tasks:
-    - name: Prepare openldap deployment
-      hosts: all
-      tasks:
-        - name: Create openldap directories
-          file:
-            path: "{{ item.value }}"
-            state: directory
-            owner: "{{ user_uid_1000 }}"
-            group: "{{ group_gid_1000 }}"
-            mode: 0700
-          with_dict: "{{ openldap_directory }}"
+    - name: Create openldap directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ openldap_directory }}"
   roles:
     - role: generic_docker_systemd
   tags: openldap
