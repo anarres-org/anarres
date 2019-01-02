@@ -813,3 +813,36 @@
   roles:
     - role: generic_docker_systemd
   tags: nfs
+
+## OpenLDAP
+
+
+- name: Deploy openldap in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    service_name: openldap
+    docker_image: "{{ openldap_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v {{ openldap_directory.data }}:/var/lib/ldap \
+      -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
+      -p {{ openldap_port }}:389 \
+      {{ docker_image }}
+  pre_tasks:
+    - name: Prepare openldap deployment
+      hosts: all
+      tasks:
+        - name: Create openldap directories
+          file:
+            path: "{{ item.value }}"
+            state: directory
+            owner: "{{ user_uid_1000 }}"
+            group: "{{ group_gid_1000 }}"
+            mode: 0700
+          with_dict: "{{ openldap_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: openldap
