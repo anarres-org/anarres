@@ -840,6 +840,26 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
       with_dict: "{{ openldap_directory }}"
+      notify: Configure the OpenLDAP container
   roles:
     - role: generic_docker_systemd
+  handlers:
+    - name: Configure the OpenLDAP container
+      docker_container:
+        name: openldap_config
+        image: "{{ docker_image }}"
+        state: present
+        volumes:
+          - "{{ openldap_directory.data }}:/var/lib/ldap"
+          - "{{ openldap_directory.conf }}:/etc/ldap/slapd.d"
+        env:
+          - LDAP_ORGANISATION: "anarres"
+          - LDAP_DOMAIN: "anarres.local"
+          - LDAP_ADMIN_PASSWORD: "changeme"
+        cleanup: true
+      notify: Delete the OpenLDAP configuration container
+    - name: Delete the OpenLDAP configuration container
+      docker_container:
+        name: openldap_config
+        state: absent
   tags: openldap
