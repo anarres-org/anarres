@@ -854,10 +854,10 @@
           - "{{ openldap_directory.data }}:/var/lib/ldap"
           - "{{ openldap_directory.conf }}:/etc/ldap/slapd.d"
         env:
-          - LDAP_ORGANISATION: "anarres"
-          - LDAP_DOMAIN: "anarres.local"
-          - LDAP_ADMIN_PASSWORD: "changeme"
-          - LDAP_TLS: false
+          LDAP_ORGANISATION: "anarres"
+          LDAP_DOMAIN: "anarres.local"
+          LDAP_ADMIN_PASSWORD: "changeme"
+          LDAP_TLS: false
         cleanup: true
       notify: Delete the OpenLDAP configuration container
     - name: Delete the OpenLDAP configuration container
