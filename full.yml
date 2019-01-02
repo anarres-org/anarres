@@ -837,8 +837,6 @@
       file:
         path: "{{ item.value }}"
         state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
         mode: 0700
       with_dict: "{{ openldap_directory }}"
       notify: Configure the OpenLDAP container
