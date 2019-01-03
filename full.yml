@@ -847,7 +847,7 @@
       docker_container:
         name: openldap_config
         image: "{{ docker_image }}"
-        state: present
+        state: started
         volumes:
           - "{{ openldap_directory.data }}:/var/lib/ldap"
           - "{{ openldap_directory.conf }}:/etc/ldap/slapd.d"
