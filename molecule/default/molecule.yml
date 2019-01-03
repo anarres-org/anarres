@@ -42,6 +42,9 @@ provisioner:
       wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
       nextcloud_db_user_pass: changeme
+      openldap_organization: anarres
+      openldap_domain: anarres.local
+      openldap_admin_password: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
     ANSIBLE_ROLES_PATH: ../../../../roles/

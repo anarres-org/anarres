@@ -852,20 +852,20 @@
           - "{{ openldap_directory.data }}:/var/lib/ldap"
           - "{{ openldap_directory.conf }}:/etc/ldap/slapd.d"
         env:
-          LDAP_ORGANISATION: "anarres"
-          LDAP_DOMAIN: "anarres.local"
-          LDAP_ADMIN_PASSWORD: "changeme"
+          LDAP_ORGANISATION: "{{ openldap_organization }}"
+          LDAP_DOMAIN: "{{ openldap_domain }}"
+          LDAP_ADMIN_PASSWORD: " openldap_admin_password }}"
           LDAP_TLS: false
         ports:
           - "{{ openldap_port }}:389"
         cleanup: true
       notify: Wait for OpenLDAP container to be ready
-      
+
     - name: Wait for OpenLDAP container to be ready
       wait_for:
         port: "{{ openldap_port }}"
       notify: Delete the OpenLDAP configuration container
-      
+
     - name: Delete the OpenLDAP configuration container
       docker_container:
         name: openldap_config

@@ -193,3 +193,6 @@ openldap_port: 389
 openldap_directory:
   data: "{{ data_path }}/openldap/data"
   conf: "{{ data_path }}/openldap/conf"
+
+openldap_organization:
+openldap_admin_password:
