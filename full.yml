@@ -854,7 +854,7 @@
         env:
           LDAP_ORGANISATION: "{{ openldap_organization }}"
           LDAP_DOMAIN: "{{ openldap_domain }}"
-          LDAP_ADMIN_PASSWORD: " openldap_admin_password }}"
+          LDAP_ADMIN_PASSWORD: "{{ openldap_admin_password }}"
           LDAP_TLS: false
         ports:
           - "{{ openldap_port }}:389"
