@@ -816,7 +816,6 @@
 
 ## OpenLDAP
 
-
 - name: Deploy openldap in docker
   hosts: all
   become: true

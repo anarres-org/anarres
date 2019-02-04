@@ -170,7 +170,7 @@ conf accordingly).
 
 #### OpenLDAP
 
-An OpenLDAP server.
+An OpenLDAP server for the internal services.
 
 *Ports*: **389/tcp**.
 
