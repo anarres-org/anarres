@@ -893,7 +893,7 @@
       -e PHPLDAPADMIN_HTTPS="false" \
       -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
       --network openldap \
-      {{ docker_image }} --copy-service
+      {{ docker_image }}
   roles:
     - role: generic_docker_systemd
   tags: phpldapadmin
