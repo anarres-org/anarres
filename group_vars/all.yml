@@ -197,3 +197,11 @@ openldap_directory:
 openldap_organization:  # Exapmle: anarres
 openldap_base_DN:  # Exapmle: dc=anarres,dc=local
 openldap_admin_password:
+
+## OpenLDAP
+
+phpldapadmin_domain: "ldap.{{ base_domain }}"
+phpldapadmin_docker_image: osixia/phpldapadmin:0.7.2
+phpldapadmin_internal_web_port: 4002
+
+phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
