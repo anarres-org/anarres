@@ -862,6 +862,15 @@
         state: directory
         mode: 0700
       with_dict: "{{ openldap_directory }}"
+  post_tasks:
+    - name: Add iptables rules for OpenLDAP
+      become: true
+      iptables_raw:
+        name: openldap_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: openldap
