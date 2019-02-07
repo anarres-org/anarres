@@ -172,7 +172,7 @@ conf accordingly).
 
 An OpenLDAP server for the internal services.
 
-*Ports*: **389/tcp**.
+*Ports*: **636/tcp**.
 
 ## License
 
