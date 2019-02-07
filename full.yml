@@ -816,21 +816,45 @@
 
 ## OpenLDAP
 
+- name: Get openldap subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ openldap_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: openldap
+
 - name: Deploy openldap in docker
   hosts: all
   become: true
   vars:
     create_volume: false
     enable_db: false
+    create_network: true
     service_name: openldap
     docker_image: "{{ openldap_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v {{ openldap_directory.data }}:/var/lib/ldap \
       -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
-      -p {{ openldap_port }}:389 \
-      -e "LDAP_TLS=false" \
-      {{ docker_image }}
+      -v /etc/letsencrypt/live/{{ openldap_domain }}:/container/service/slapd/assets/certs/live/{{ openldap_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ openldap_domain }}:/container/service/slapd/assets/certs/archive/{{ openldap_domain }}/:ro \
+      -p {{ openldap_port_secure }}:636 \
+      -e LDAP_ORGANISATION="{{ openldap_domain }}" \
+      -e LDAP_DOMAIN="{{ openldap_domain }}" \
+      -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
+      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
+      -e LDAP_TLS="true" \
+      -e LDAP_TLS_VERIFY_CLIENT="try" \
+      -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
+      -e LDAP_TLS_KEY_FILENAME="live/{{ openldap_domain }}/privkey.pem" \
+      -e LDAP_TLS_CA_CRT_FILENAME="live/{{ openldap_domain }}/fullchain.pem" \
+      -e LDAP_NOFILE=1024 \
+      --network {{ service_name }} \
+      {{ docker_image }} --copy-service
   pre_tasks:
     - name: Create openldap directories
       file:
@@ -838,35 +862,6 @@
         state: directory
         mode: 0700
       with_dict: "{{ openldap_directory }}"
-      notify: Configure the OpenLDAP container
   roles:
     - role: generic_docker_systemd
-  handlers:
-    - name: Configure the OpenLDAP container
-      docker_container:
-        name: openldap_config
-        image: "{{ docker_image }}"
-        state: started
-        volumes:
-          - "{{ openldap_directory.data }}:/var/lib/ldap"
-          - "{{ openldap_directory.conf }}:/etc/ldap/slapd.d"
-        env:
-          LDAP_ORGANISATION: "{{ openldap_organization }}"
-          LDAP_DOMAIN: "{{ openldap_domain }}"
-          LDAP_ADMIN_PASSWORD: "{{ openldap_admin_password }}"
-          LDAP_TLS: false
-        ports:
-          - "{{ openldap_port }}:389"
-        cleanup: true
-      notify: Wait for OpenLDAP container to be ready
-
-    - name: Wait for OpenLDAP container to be ready
-      wait_for:
-        port: "{{ openldap_port }}"
-      notify: Delete the OpenLDAP configuration container
-
-    - name: Delete the OpenLDAP configuration container
-      docker_container:
-        name: openldap_config
-        state: absent
   tags: openldap

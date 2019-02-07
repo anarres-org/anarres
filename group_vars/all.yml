@@ -187,12 +187,13 @@ nfs_export_volumes: |
 ## OpenLDAP
 
 openldap_domain: "{{ base_domain }}"
-openldap_docker_image: osixia/openldap:1.2.1
-openldap_port: 389
+openldap_docker_image: osixia/openldap:1.2.3
+openldap_port_secure: 636
 
 openldap_directory:
   data: "{{ data_path }}/openldap/data"
   conf: "{{ data_path }}/openldap/conf"
 
 openldap_organization:
+openldap_base_DN:
 openldap_admin_password:

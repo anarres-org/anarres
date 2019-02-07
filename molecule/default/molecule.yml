@@ -43,7 +43,7 @@ provisioner:
       openvpn_ca_pass: changeme
       nextcloud_db_user_pass: changeme
       openldap_organization: anarres
-      openldap_domain: anarres.local
+      openldap_base_DN: dc=anarres,dc=local
       openldap_admin_password: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
