@@ -1,5 +1,8 @@
 # Anarres Full Playbook
 
+An [ansible](https://github.com/ansible) playbook to set up a GNU/Linux server.
+Services in [docker](https://www.docker.com/). Security by default.
+
 ## Compatibility
 
 These are the tested GNU/Linux distributions. Maybe it works on some other
