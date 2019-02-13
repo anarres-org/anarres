@@ -511,6 +511,7 @@
           "Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
           "Re-Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
+          "Enter pass phrase for": "{{ openvpn_ca_pass }}"
   tags: openvpn
 
 - name: Deploy openvpn in docker
