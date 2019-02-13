@@ -74,12 +74,6 @@
         owner: root
       tags: letsencrypt
 
-    - name: Create letsencrypt renew cronjob
-      cron:
-        name: letsencrypt auto renewal
-        job: /usr/bin/certbot renew --quiet
-        special_time: daily
-
     - name: Create web directory
       file:
         path: "{{ web_path_letsencrypt }}"
