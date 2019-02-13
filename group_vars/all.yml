@@ -101,8 +101,7 @@ selfoss_internal_web_port: 4001
 ## Syncthing
 
 syncthing_domain: "syncthing.{{ base_domain }}"
-syncthing_docker_image: syncthing/syncthing:v0.14.54
-
+syncthing_docker_image: syncthing/syncthing:1.0.1
 syncthing_directory:
   conf: "{{ data_path }}/syncthing/config"
   data: "{{ data_path }}/syncthing"
