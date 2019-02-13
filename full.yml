@@ -508,7 +508,8 @@
         command: "{{ openvpn_create_ca_command }}"
         timeout: 600
         responses:
-          "pass phrase": "{{ openvpn_ca_pass }}"
+          "Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
+          "Re-Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
   tags: openvpn
 
