@@ -127,7 +127,7 @@ If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
 **settings.json** as explained in
 [hub.docker.com](https://hub.docker.com/r/linuxserver/transmission/)
 
-*Ports*: **51413/udp** for p2p connections.
+*Ports*: **51413 tcp and upd** for p2p connections.
 
 #### Radicale
 

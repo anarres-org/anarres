@@ -220,7 +220,8 @@
         name: transmission_rules
         weight: 20
         rules: |
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port | default('51413') }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
       tags: iptables
   tags: transmission
 
@@ -239,7 +240,8 @@
       -v "{{ transmission_directory.watch }}":/watch \
       -e "PGID=1000" -e "PUID=1000" \
       -e "TZ={{ transmission_timezone }}" \
-      -p "{{ transmission_internal_web_port }}:9091" -p 51413:51413 \
+      -p "{{ transmission_internal_web_port }}:9091" \
+      -p 51413:51413/tcp \
       -p 51413:51413/udp \
       "{{ docker_image }}"
   roles:

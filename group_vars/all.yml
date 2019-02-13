@@ -58,8 +58,9 @@ gitea_internal_web_port: 3000
 ## Transmission
 
 transmission_domain: "torrent.{{ base_domain }}"
-transmission_docker_image: linuxserver/transmission:157
+transmission_docker_image: linuxserver/transmission:163
 transmission_internal_web_port: 9091
+transmission_peer_port: 51413
 
 transmission_user:
 transmission_pass:
