@@ -158,7 +158,7 @@
       -v "{{ gitea_directory.data }}":/data \
       -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
-      --network "{{ service_name }}" \
+      --network "{{ gitea_network }}" \
       "{{ docker_image }}"
     service_db_name: "{{ gitea_db_service_name }}"
     db_name: "{{ gitea_db_name }}"
@@ -189,6 +189,67 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: gitea
+
+## Drone
+
+- name: Prepare drone deployment
+  hosts: all
+  tasks:
+    - name: Create drone directories 755
+      file:
+        path: "{{ drone_directory_data }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0755
+  tags: drone
+
+- name: Deploy drone in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: drone
+    docker_image: "{{ drone_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "{{ drone_directory_data }}":/data \
+      -p "{{ drone_internal_https_port }}:443" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "DRONE_GITEA_SERVER={{ gitea_domain }}" \
+      -e "DRONE_GIT_ALWAYS_AUTH=false" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_SERVER_HOST={{ drone_domain }}" \
+      -e "DRONE_SERVER_PROTO=https" \
+      -e "DRONE_TLS_AUTOCERT=false" \
+      --network "{{gitea_network}}" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: drone
+
+- name: Get drone subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: drone
+
+- name: Configure ningx proxy for drone
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_domain }}"
+    binded_port: "{{ drone_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: drone
 
 ## Transmission
 
