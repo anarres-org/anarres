@@ -4,10 +4,10 @@
 
 # Common
 
-base_domain:
+base_domain: radio.clubs.etsit.upm.es
 data_path: /data
 
-user_uid_1000:
+user_uid_1000: delta
 group_gid_1000: "{{ user_uid_1000 }}"
 
 user_uid_33: www-data
@@ -61,7 +61,6 @@ gitea_network: "gitea"
 drone_docker_image: drone/drone:1.0.0-rc.5
 drone_internal_https_port: 3030
 drone_domain: "drone.{{ base_domain }}"
-drone_internal_web_port: 3030
 
 drone_path_conf: "{{ data_path }}/drone/conf"
 drone_directory_data: "{{ data_path }}/drone/data"
