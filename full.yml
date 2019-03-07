@@ -190,6 +190,63 @@
       tags: proxy
   tags: gitea
 
+## Hackmd
+
+- name: Prepare hackmd deployment
+  hosts: all
+  tasks:
+    - name: Create hackmd directories 700
+      file:
+        path: "{{ hackmd_db }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+
+- name: Deploy hackmd in docker
+  hosts: all
+  become: true
+  vars:
+    service_name: hackmd
+    docker_image: "{{ hackmd_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ gitea_directory.data }}":/data \
+      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+    service_db_name: "{{ gitea_db_service_name }}"
+    docker_db_image: postgres:9.6-alpine
+    db_name: "{{ hackmd_db_name }}"
+    db_user: "{{ hackmd_db_user }}"
+    db_user_pass: "{{ hackmd_db_password }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: gitea
+
+- name: Get gitea subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ gitea_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: gitea
+
+- name: Configure nginx proxy for gitea
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ gitea_domain }}"
+    binded_port: "{{ gitea_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: gitea
+
 ## Transmission
 
 - name: Prepare transmission deployment
