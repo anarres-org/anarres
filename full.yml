@@ -208,7 +208,7 @@
   hosts: all
   become: true
   vars:
-    service_name: "{{ hackmd_service_name }}"
+    service_name: "{{ hackmd_db_service_name }}"
     docker_image: "{{ hackmd_db_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
@@ -220,6 +220,7 @@
       --network "{{ hackmd_network_name }}" \
       "{{ docker_image }}"
     enable_db: false
+    docker_network_name: "{{ hackmd_network_name }}"
     create_network: true
   roles:
     - role: generic_docker_systemd
@@ -235,11 +236,11 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ hackmd_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
-      -e "CMD_DB_URL=postgres://{{ hackmd_db_user }}:{{ hackmd_db_password }}@{{ hackmd_service_name }}:5432/{{ hackmd_db_name }}" \
+      -e "CMD_DB_URL=postgres://{{ hackmd_db_user }}:{{ hackmd_db_password }}@{{ hackmd_db_service_name }}:5432/{{ hackmd_db_name }}" \
       --network "{{ hackmd_network_name }}" \
       "{{ docker_image }}"
     enable_db: false
-    create_network: true
+    create_network: false
   roles:
     - role: generic_docker_systemd
   tags: hackmd

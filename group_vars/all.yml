@@ -46,7 +46,7 @@ hackmd_domain: "hackmd.{{ base_domain }}"
 hackmd_web_port: 3040
 hackmd_network_name: "hackmd"
 hackmd_db_image: postgres:9.6-alpine
-hackmd_service_name: hackmd-db
+hackmd_db_service_name: hackmd-db
 hackmd_db: "{{ data_path }}/hackmd/data"
 hackmd_db_user: "hackmd"
 hackmd_db_password:
