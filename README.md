@@ -177,6 +177,10 @@ An OpenLDAP server for the internal services.
 
 *Ports*: **636/tcp**.
 
+#### phpLDAPadmin
+
+A web interface for managing OpenLDAP.
+
 ## License
 
 GPLv3

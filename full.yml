@@ -834,12 +834,13 @@
     create_network: true
     service_name: openldap
     docker_image: "{{ openldap_docker_image }}"
+    container_certs_path: /container/service/slapd/assets/certs
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v {{ openldap_directory.data }}:/var/lib/ldap \
       -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
-      -v /etc/letsencrypt/live/{{ openldap_domain }}:/container/service/slapd/assets/certs/live/{{ openldap_domain }}/:ro \
-      -v /etc/letsencrypt/archive/{{ openldap_domain }}:/container/service/slapd/assets/certs/archive/{{ openldap_domain }}/:ro \
+      -v /etc/letsencrypt/live/{{ openldap_domain }}:{{ container_certs_path }}/live/{{ openldap_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ openldap_domain }}:{{ container_certs_path }}/archive/{{ openldap_domain }}/:ro \
       -p {{ openldap_port_secure }}:636 \
       -e LDAP_ORGANISATION="{{ openldap_domain }}" \
       -e LDAP_DOMAIN="{{ openldap_domain }}" \
@@ -872,3 +873,47 @@
   roles:
     - role: generic_docker_systemd
   tags: openldap
+
+## phpLDAPadmin
+
+- name: Deploy phpldapadmin in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    service_name: phpldapadmin
+    docker_image: "{{ phpldapadmin_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p {{ phpldapadmin_internal_web_port }}:80 \
+      -e  PHPLDAPADMIN_LDAP_HOSTS="{{ phpldapadmin_ldap_hosts }}" \
+      -e PHPLDAPADMIN_HTTPS="false" \
+      -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
+      --network openldap \
+      {{ docker_image }}
+  roles:
+    - role: generic_docker_systemd
+  tags: phpldapadmin
+
+- name: Get phpldapadmin subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: phpldapadmin
+
+- name: Configure nginx proxy for phpldapadmin
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    binded_port: "{{ phpldapadmin_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: phpldapadmin
