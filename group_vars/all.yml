@@ -44,8 +44,8 @@ openldap_directory:
   data: "{{ data_path }}/openldap/data"
   conf: "{{ data_path }}/openldap/conf"
 
-openldap_organization:  # Exapmle: anarres
-openldap_base_DN:  # Exapmle: dc=anarres,dc=local
+openldap_organization:  # Example: anarres
+openldap_base_DN:  # Example: dc=anarres,dc=local
 openldap_admin_password:
 openldap_readonly_password:
 
