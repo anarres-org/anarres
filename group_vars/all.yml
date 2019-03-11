@@ -34,6 +34,32 @@ web_path: /var/www
 web_path_letsencrypt: "{{ web_path }}/letsencrypt"
 web_path_default: "{{ web_path }}/default"
 
+## OpenLDAP
+
+openldap_domain: "{{ base_domain }}"
+openldap_docker_image: osixia/openldap:1.2.3
+openldap_port_secure: 636
+
+openldap_directory:
+  data: "{{ data_path }}/openldap/data"
+  conf: "{{ data_path }}/openldap/conf"
+
+openldap_organization:  # Exapmle: anarres
+openldap_base_DN:  # Exapmle: dc=anarres,dc=local
+openldap_admin_password:
+
+## OpenLDAP for services
+
+openldap_server_uri: "ldaps://{{ base_domain }}:636"
+
+## phpLDAPadmin
+
+phpldapadmin_domain: "ldap.{{ base_domain }}"
+phpldapadmin_docker_image: osixia/phpldapadmin:0.7.2
+phpldapadmin_internal_web_port: 4002
+
+phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
+
 ## Gitea
 
 gitea_domain: "git.{{ base_domain }}"
@@ -183,25 +209,3 @@ nfs_exports_conf: |
 
 nfs_export_volumes: |
   -v {{ nfs_directory.export }}:/export:ro \
-
-## OpenLDAP
-
-openldap_domain: "{{ base_domain }}"
-openldap_docker_image: osixia/openldap:1.2.3
-openldap_port_secure: 636
-
-openldap_directory:
-  data: "{{ data_path }}/openldap/data"
-  conf: "{{ data_path }}/openldap/conf"
-
-openldap_organization:  # Exapmle: anarres
-openldap_base_DN:  # Exapmle: dc=anarres,dc=local
-openldap_admin_password:
-
-## OpenLDAP
-
-phpldapadmin_domain: "ldap.{{ base_domain }}"
-phpldapadmin_docker_image: osixia/phpldapadmin:0.7.2
-phpldapadmin_internal_web_port: 4002
-
-phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"

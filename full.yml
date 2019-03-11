@@ -101,6 +101,145 @@
     - web-base
     - web
 
+## OpenLDAP
+
+- name: Get openldap subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ openldap_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: openldap
+
+- name: Deploy openldap in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: openldap
+    docker_image: "{{ openldap_docker_image }}"
+    container_certs_path: /container/service/slapd/assets/certs
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v {{ openldap_directory.data }}:/var/lib/ldap \
+      -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
+      -v /etc/letsencrypt/live/{{ openldap_domain }}:{{ container_certs_path }}/live/{{ openldap_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ openldap_domain }}:{{ container_certs_path }}/archive/{{ openldap_domain }}/:ro \
+      -p {{ openldap_port_secure }}:636 \
+      -e LDAP_ORGANISATION="{{ openldap_domain }}" \
+      -e LDAP_DOMAIN="{{ openldap_domain }}" \
+      -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
+      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
+      -e LDAP_TLS="true" \
+      -e LDAP_TLS_VERIFY_CLIENT="try" \
+      -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
+      -e LDAP_TLS_KEY_FILENAME="live/{{ openldap_domain }}/privkey.pem" \
+      -e LDAP_TLS_CA_CRT_FILENAME="live/{{ openldap_domain }}/fullchain.pem" \
+      -e LDAP_NOFILE=1024 \
+      --network {{ service_name }} \
+      {{ docker_image }} --copy-service
+  pre_tasks:
+    - name: Create openldap directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+      with_dict: "{{ openldap_directory }}"
+  post_tasks:
+    - name: Add iptables rules for OpenLDAP
+      become: true
+      iptables_raw:
+        name: openldap_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
+      tags: iptables
+
+    - name: Install requiered python LDAP module
+      package:
+        name: python-ldap
+        state: present
+      tags: dependencies
+    - name: Wait for configuration database container to start
+      wait_for:
+        port: "{{ openldap_port_secure }}"
+
+    - name: Add groups organizational unit
+      ldap_entry:
+        dn: "ou=groups,{{ openldap_base_DN }}"
+        objectClass: organizationalUnit
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
+
+    - name: Add users organizational unit
+      ldap_entry:
+        dn: "ou=users,{{ openldap_base_DN }}"
+        objectClass: organizationalUnit
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
+  roles:
+    - role: generic_docker_systemd
+  tags: openldap
+
+## phpLDAPadmin
+
+- name: Deploy phpldapadmin in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    service_name: phpldapadmin
+    docker_image: "{{ phpldapadmin_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p {{ phpldapadmin_internal_web_port }}:80 \
+      -e  PHPLDAPADMIN_LDAP_HOSTS="{{ phpldapadmin_ldap_hosts }}" \
+      -e PHPLDAPADMIN_HTTPS="false" \
+      -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
+      --network openldap \
+      {{ docker_image }}
+  roles:
+    - role: generic_docker_systemd
+  tags: phpldapadmin
+
+- name: Get phpldapadmin subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: phpldapadmin
+
+- name: Configure nginx proxy for phpldapadmin
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    binded_port: "{{ phpldapadmin_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: phpldapadmin
+
 ## Gitea
 
 - name: Prepare gitea deployment
@@ -811,109 +950,3 @@
   roles:
     - role: generic_docker_systemd
   tags: nfs
-
-## OpenLDAP
-
-- name: Get openldap subdomain Let's Encrypt certificate
-  hosts: all
-  become: true
-  vars:
-    domain: "{{ openldap_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-  tags: openldap
-
-- name: Deploy openldap in docker
-  hosts: all
-  become: true
-  vars:
-    create_volume: false
-    enable_db: false
-    create_network: true
-    service_name: openldap
-    docker_image: "{{ openldap_docker_image }}"
-    container_certs_path: /container/service/slapd/assets/certs
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v {{ openldap_directory.data }}:/var/lib/ldap \
-      -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
-      -v /etc/letsencrypt/live/{{ openldap_domain }}:{{ container_certs_path }}/live/{{ openldap_domain }}/:ro \
-      -v /etc/letsencrypt/archive/{{ openldap_domain }}:{{ container_certs_path }}/archive/{{ openldap_domain }}/:ro \
-      -p {{ openldap_port_secure }}:636 \
-      -e LDAP_ORGANISATION="{{ openldap_domain }}" \
-      -e LDAP_DOMAIN="{{ openldap_domain }}" \
-      -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
-      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
-      -e LDAP_TLS="true" \
-      -e LDAP_TLS_VERIFY_CLIENT="try" \
-      -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
-      -e LDAP_TLS_KEY_FILENAME="live/{{ openldap_domain }}/privkey.pem" \
-      -e LDAP_TLS_CA_CRT_FILENAME="live/{{ openldap_domain }}/fullchain.pem" \
-      -e LDAP_NOFILE=1024 \
-      --network {{ service_name }} \
-      {{ docker_image }} --copy-service
-  pre_tasks:
-    - name: Create openldap directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        mode: 0700
-      with_dict: "{{ openldap_directory }}"
-  post_tasks:
-    - name: Add iptables rules for OpenLDAP
-      become: true
-      iptables_raw:
-        name: openldap_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
-      tags: iptables
-  roles:
-    - role: generic_docker_systemd
-  tags: openldap
-
-## phpLDAPadmin
-
-- name: Deploy phpldapadmin in docker
-  hosts: all
-  become: true
-  vars:
-    create_volume: false
-    enable_db: false
-    service_name: phpldapadmin
-    docker_image: "{{ phpldapadmin_docker_image }}"
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -p {{ phpldapadmin_internal_web_port }}:80 \
-      -e  PHPLDAPADMIN_LDAP_HOSTS="{{ phpldapadmin_ldap_hosts }}" \
-      -e PHPLDAPADMIN_HTTPS="false" \
-      -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
-      --network openldap \
-      {{ docker_image }}
-  roles:
-    - role: generic_docker_systemd
-  tags: phpldapadmin
-
-- name: Get phpldapadmin subdomain Let's Encrypt certificate
-  hosts: all
-  become: true
-  vars:
-    domain: "{{ phpldapadmin_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx reload
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-  tags: phpldapadmin
-
-- name: Configure nginx proxy for phpldapadmin
-  hosts: all
-  become: true
-  vars:
-    domain: "{{ phpldapadmin_domain }}"
-    binded_port: "{{ phpldapadmin_internal_web_port }}"
-  roles:
-    - role: add_nginx_proxy_conf
-      tags: proxy
-  tags: phpldapadmin
