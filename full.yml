@@ -196,6 +196,20 @@
         bind_pw: "{{ openldap_admin_password }}"
       tags:
         - ldap-setup
+
+    - name: Add users group
+      ldap_entry:
+        dn: "cn=users,ou=groups,{{ openldap_base_DN }}"
+        objectClass: posixGroup
+        attributes:
+          gidNumber: 2000
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
   roles:
     - role: generic_docker_systemd
   tags: openldap
