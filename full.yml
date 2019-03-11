@@ -135,6 +135,9 @@
       -e LDAP_DOMAIN="{{ openldap_domain }}" \
       -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
       -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
+      -e LDAP_READONLY_USER=true \
+      -e LDAP_READONLY_USER_USERNAME=readonly \
+      -e LDAP_READONLY_USER_PASSWORD="{{ openldap_readonly_password }}" \
       -e LDAP_TLS="true" \
       -e LDAP_TLS_VERIFY_CLIENT="try" \
       -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
@@ -165,6 +168,7 @@
         name: python-ldap
         state: present
       tags: dependencies
+
     - name: Wait for configuration database container to start
       wait_for:
         port: "{{ openldap_port_secure }}"

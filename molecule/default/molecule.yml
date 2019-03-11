@@ -34,6 +34,10 @@ provisioner:
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
+      openldap_organization: anarres
+      openldap_base_DN: dc=anarres,dc=local
+      openldap_admin_password: changeme
+      openldap_readonly_password: changeme
       gitea_ssh_port: 66
       gitea_db_user_pass: changeme
       transmission_user: transmission
@@ -42,9 +46,6 @@ provisioner:
       wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
       nextcloud_db_user_pass: changeme
-      openldap_organization: anarres
-      openldap_base_DN: dc=anarres,dc=local
-      openldap_admin_password: changeme
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
     ANSIBLE_ROLES_PATH: ../../../../roles/

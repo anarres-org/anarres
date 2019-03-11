@@ -47,6 +47,7 @@ openldap_directory:
 openldap_organization:  # Exapmle: anarres
 openldap_base_DN:  # Exapmle: dc=anarres,dc=local
 openldap_admin_password:
+openldap_readonly_password:
 
 ## OpenLDAP for services
 
