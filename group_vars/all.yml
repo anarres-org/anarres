@@ -4,10 +4,10 @@
 
 # Common
 
-base_domain: radio.clubs.etsit.upm.es
+base_domain:
 data_path: /data
 
-user_uid_1000: delta
+user_uid_1000:
 group_gid_1000: "{{ user_uid_1000 }}"
 
 user_uid_33: www-data
