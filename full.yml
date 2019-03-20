@@ -179,7 +179,7 @@
         objectClass: organizationalUnit
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
-        validate_certs: "{{ testing is undefined }}"
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
         bind_dn: "cn=admin,{{ openldap_base_DN }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:
@@ -191,7 +191,7 @@
         objectClass: organizationalUnit
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
-        validate_certs: "{{ testing is undefined }}"
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
         bind_dn: "cn=admin,{{ openldap_base_DN }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:
@@ -205,7 +205,7 @@
           gidNumber: 2000
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
-        validate_certs: "{{ testing is undefined }}"
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
         bind_dn: "cn=admin,{{ openldap_base_DN }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:

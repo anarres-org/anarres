@@ -52,6 +52,7 @@ openldap_readonly_password:
 ## OpenLDAP for services
 
 openldap_server_uri: "ldaps://{{ base_domain }}:636"
+openldap_validate_certs: true
 
 ## phpLDAPadmin
 
