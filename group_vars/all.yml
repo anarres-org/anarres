@@ -211,3 +211,11 @@ nfs_exports_conf: |
 
 nfs_export_volumes: |
   -v {{ nfs_directory.export }}:/export:ro \
+
+## BIND DNS Server
+
+bind_dns_server_docker_image: sameersbn/bind:9.11.3-20190315
+bind_dns_server_port: 53
+
+bind_dns_server_directory:
+  data: "{{ data_path }}/bind_dns_server/data"

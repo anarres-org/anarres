@@ -968,3 +968,44 @@
   roles:
     - role: generic_docker_systemd
   tags: nfs
+
+## BIND DNS Server
+
+- name: Deploy bind_dns_server in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: bind_dns_server
+    docker_image: "{{ bind_dns_server_docker_image }}"
+    container_certs_path: /container/service/slapd/assets/certs
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v {{ bind_dns_server_directory.data }}:/data \
+      -p {{ bind_dns_server_port }}:53/tcp \
+      -p {{ bind_dns_server_port }}:53/udp \
+      -e WEBMIN_ENABLED=false \
+      --network {{ service_name }} \
+      {{ docker_image }}
+  pre_tasks:
+    - name: Create bind_dns_server directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0777
+      with_dict: "{{ bind_dns_server_directory }}"
+  post_tasks:
+    - name: Add iptables rules for BIND DNS server
+      become: true
+      iptables_raw:
+        name: bind_dns_server_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ bind_dns_server_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ bind_dns_server_port }} -j ACCEPT
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: bind_dns_server
