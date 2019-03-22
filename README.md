@@ -77,6 +77,9 @@ add the following ports:
 
 ### Services
 
+Their data and configuration files will be stored in your hosts `data_path`
+directory, by default */data*.
+
 #### Letsencrypt
 
 The main domain cert needs to be obtained using the **standalone** method since
@@ -180,6 +183,18 @@ An OpenLDAP server for the internal services.
 #### phpLDAPadmin
 
 A web interface for managing OpenLDAP.
+
+#### BIND DNS server
+
+Refer to [ubuntu-help](https://help.ubuntu.com/community/BIND9ServerHowto) to
+see how to configure it.
+
+*Ports*: **53/tcp** and **53/udp**.
+
+## Backup
+
+Make sure to backup your `data_path` (by default */data*) and the docker
+volumes (used by the databases) from */var/lib/docker/volumes*.
 
 ## License
 
