@@ -214,6 +214,8 @@ nfs_export_volumes: |
 
 ## BIND DNS Server
 
+user_uid_101: systemd-network
+
 bind_dns_server_docker_image: sameersbn/bind:9.11.3-20190315
 bind_dns_server_port: 53
 

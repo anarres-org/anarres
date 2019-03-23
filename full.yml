@@ -993,8 +993,9 @@
     - name: Create bind_dns_server directories
       file:
         path: "{{ item.value }}"
+        owner: "{{ user_uid_101 }}"
         state: directory
-        mode: 0777
+        mode: 0700
       with_dict: "{{ bind_dns_server_directory }}"
   post_tasks:
     - name: Add iptables rules for BIND DNS server
