@@ -192,18 +192,6 @@
 
 ## Drone
 
-- name: Prepare drone deployment
-  hosts: all
-  tasks:
-    - name: Create drone directories 755
-      file:
-        path: "{{ drone_directory_data }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0755
-  tags: drone
-
 - name: Deploy drone in docker
   hosts: all
   become: true
@@ -215,7 +203,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v "{{ drone_directory.data}}":/data \
-      -p "{{ drone_internal_https_port }}:80" \
+      -p "{{ drone_internal_web_port }}:80" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "DRONE_GITEA_SERVER=https://{{ gitea_domain }}" \
       -e "DRONE_GIT_ALWAYS_AUTH=false" \
@@ -225,6 +213,14 @@
       -e "DRONE_TLS_AUTOCERT=false" \
       --network "{{gitea_network}}" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create drone directories
+      file:
+        path: "{{ drone_directory.data }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
   roles:
     - role: generic_docker_systemd
   tags: drone
