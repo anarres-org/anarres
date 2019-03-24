@@ -58,12 +58,12 @@ gitea_network: "gitea"
 
 ## Drone
 
-drone_docker_image: drone/drone:1.0.0-rc.5
-drone_internal_https_port: 3030
+drone_docker_image: drone/drone:1
+drone_internal_web_port: 3030
 drone_domain: "drone.{{ base_domain }}"
 
-drone_path_conf: "{{ data_path }}/drone/conf"
-drone_directory_data: "{{ data_path }}/drone/data"
+drone_directory:
+  data: "{{ data_path }}/drone/data"
 
 ## Transmission
 
