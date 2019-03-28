@@ -110,6 +110,27 @@ transmission_directory:
 
 transmission_timezone:  # Example: Europe/Berlin
 
+## Transmission-OpenVPN
+
+transmission_openvpn_domain: "tvpn.{{ base_domain }}"
+transmission_openvpn_docker_image: haugene/transmission-openvpn:2.7-alpine
+transmission_openvpn_internal_web_port: 9091
+transmission_openvpn_peer_port: 51413
+transmission_openvpn_local_network: 192.168.1.0/24
+
+transmission_openvpn_vpn:
+  provider:
+  conf:
+  user:
+  pass:
+
+transmission_openvpn_rpc:
+  user:
+  pass:
+
+transmission_openvpn_directory:
+  data: "{{ data_path }}/transmission_openvpn/data"
+
 ## Wallabag
 
 wallabag_domain: "wallabag.{{ base_domain }}"

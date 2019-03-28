@@ -484,6 +484,77 @@
       tags: proxy
   tags: transmission
 
+## Transmission-OpenVPN
+
+- name: Deploy transmission_openvpn in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: transmission_openvpn
+    create_volume: false
+    docker_image: "{{ transmission_openvpn_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ transmission_openvpn_directory.data }}":/data \
+      -v /etc/localtime:/etc/localtime:ro \
+      -e "PGID=1000" -e "PUID=1000" \
+      -e CREATE_TUN_DEVICE=true \
+      -e OPENVPN_PROVIDER={{ transmission_openvpn_vpn.provider }}\
+      -e OPENVPN_CONFIG={{ transmission_openvpn_vpn.conf }} \
+      -e OPENVPN_USERNAME={{ transmission_openvpn_vpn.user }} \
+      -e OPENVPN_PASSWORD={{ transmission_openvpn_vpn.pass }}\
+      -e TRANSMISSION_RPC_USERNAME={{ transmission_openvpn_rpc.user }} \
+      -e TRANSMISSION_RPC_PASSWORD={{ transmission_openvpn_rpc.pass }} \
+      -e WEBPROXY_ENABLED=false \
+      -p {{ transmission_openvpn_internal_web_port }}:9091 \
+      -p 51413:51413/tcp \
+      -p 51413:51413/udp \
+      {{ docker_image }}
+  pre_tasks:
+    - name: Create transmission_openvpn directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ transmission_openvpn_directory }}"
+  post_tasks:
+    - name: Add iptables rules for transmission_openvpn
+      iptables_raw:
+        name: transmission_openvpn_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_openvpn_peer_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_openvpn_peer_port }} -j ACCEPT
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: transmission_openvpn
+
+- name: Get transmission_openvpn subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ transmission_openvpn_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: transmission_openvpn
+
+- name: Configure nginx proxy for transmission_openvpn
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ transmission_openvpn_domain }}"
+    binded_port: "{{ transmission_openvpn_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: transmission_openvpn
+
 ## Wallabag
 
 - name: Prepare wallabag deployment
