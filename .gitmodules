@@ -1,0 +1,18 @@
+[submodule "roles/anarres-common"]
+	path = roles/anarres-common
+	url = https://github.com/anarres-org/anarres-common
+[submodule "roles/anarres-sec"]
+	path = roles/anarres-sec
+	url = https://github.com/anarres-org/anarres-sec
+[submodule "roles/letsencrypt-request"]
+	path = roles/letsencrypt-request
+	url = https://github.com/anarres-org/letsencrypt-request
+[submodule "roles/anarres-nginx"]
+	path = roles/anarres-nginx
+	url = https://github.com/anarres-org/anarres-nginx
+[submodule "roles/add_nginx_proxy_conf"]
+	path = roles/add_nginx_proxy_conf
+	url = https://github.com/anarres-org/add_nginx_proxy_conf
+[submodule "roles/generic_docker_systemd"]
+	path = roles/generic_docker_systemd
+	url = https://github.com/anarres-org/generic_docker_systemd

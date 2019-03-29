@@ -19,19 +19,21 @@ distributions too or just requieres a few changes.
 
 ## Dependencies
 
+Included as submodules in *roles/*.
+
 * [iptables_raw](https://github.com/Nordeus/ansible_iptables_raw)
-* [anarres-common]
-* [anarres-sec]
-* [letsencrypt-request]
-* [anarres-nginx]
-* [generic_docker_systemd]
-* [add_nginx_proxy_conf]
+* [anarres-common](https://github.com/anarres-org/anarres-common)
+* [anarres-sec](https://github.com/anarres-org/anarres-sec)
+* [letsencrypt-request](https://github.com/anarres-org/letsencrypt-request)
+* [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
+* [generic_docker_systemd](https://github.com/anarres-org/generic_docker_systemd)
+* [add_nginx_proxy_conf](https://github.com/anarres-org/add_nginx_proxy_conf)
 
 ## Setup
 
 1. Install `sudo` and `python`.
 1. Login as **root** and add your **user** to *sudoers* or to the **sudo**
-group with `usermod -a -G sudo [user]`.
+   group with `usermod -a -G sudo [user]`.
 
 The idea is that you run the playbooks with the tags of the services that you
 want to setup. But, there are some steps that "must" be run first, before
@@ -48,9 +50,11 @@ An example approach would be:
 ### Tips
 
 * You can check the available tags with:
+
    ```bash
    ansible-playbook --list-tags full.yml
    ```
+
 * You can create a *custom/* folder in the playbook root directory. There you
   can save your inventory files with your chosen variables for each host. This
   folder will be ignored thanks to the *.gitignore* configuration.
@@ -60,8 +64,10 @@ An example approach would be:
   *group_vars/all.yml*. Copy and change the required ones to your custom
   inventory file.
 * Deploy only a few tags with:
+
    ```bash
-   ansible-playbook -i custom/[project]/hosts.yml full.yml --extra-vars ansible_become_pass="[sudo_password]" --ask-vault-pass -t gitea
+   ansible-playbook -i custom/[project]/hosts.yml full.yml --extra-vars
+   ansible_become_pass="[sudo_password]" --ask-vault-pass -t gitea
    ```
 
 ### Firewall
@@ -123,7 +129,8 @@ discovery.
 #### Tranmission
 
 It's recommended to enable port forwarding in your router as explained in
-[superuser](https://superuser.com/questions/1053414/how-does-port-forwarding-help-in-torrents). The default port is **51413** but you can change this from the
+[superuser](https://superuser.com/questions/1053414/how-does-port-forwarding-help-in-torrents).
+The default port is **51413** but you can change this from the
 web configurations.
 
 If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
