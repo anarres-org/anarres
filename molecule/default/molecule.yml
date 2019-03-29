@@ -18,7 +18,7 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-    memory: 1024
+    memory: 2048
     groups:
       - anarres
 provisioner:
