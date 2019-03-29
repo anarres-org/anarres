@@ -500,10 +500,10 @@
       -v /etc/localtime:/etc/localtime:ro \
       -e "PGID=1000" -e "PUID=1000" \
       -e CREATE_TUN_DEVICE=true \
-      -e OPENVPN_PROVIDER={{ transmission_openvpn_vpn.provider }}\
+      -e OPENVPN_PROVIDER={{ transmission_openvpn_vpn.provider }} \
       -e OPENVPN_CONFIG={{ transmission_openvpn_vpn.conf }} \
       -e OPENVPN_USERNAME={{ transmission_openvpn_vpn.user }} \
-      -e OPENVPN_PASSWORD={{ transmission_openvpn_vpn.pass }}\
+      -e OPENVPN_PASSWORD={{ transmission_openvpn_vpn.pass }} \
       -e TRANSMISSION_RPC_USERNAME={{ transmission_openvpn_rpc.user }} \
       -e TRANSMISSION_RPC_PASSWORD={{ transmission_openvpn_rpc.pass }} \
       -e WEBPROXY_ENABLED=false \
