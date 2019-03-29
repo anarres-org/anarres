@@ -18,6 +18,7 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
+    memory: 2048
     groups:
       - anarres
 provisioner:
@@ -52,6 +53,9 @@ provisioner:
     ANSIBLE_ROLES_PATH: ../../../../roles/
   lint:
     name: ansible-lint
+    options:
+      exclude:
+        - roles/
   config_options:
     defaults:
       callback_whitelist: profile_tasks
