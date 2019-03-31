@@ -104,10 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Nextcloud
-
-First user to register will be the admin user.
-
 ### NFS
 
 Please refer to [ubunut-help](https://help.ubuntu.com/community/NFSv4Howto) to
