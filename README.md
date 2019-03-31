@@ -104,6 +104,13 @@ First user to register will be the admin user.
 
 *Ports*: **22/tcp** for SSH.
 
+#### Drone for GitHub
+
+You need to set up some things in your GitHub account first. You need your
+GitHub's **client id** and **client secret**. Visit the
+[drone docs](https://docs.drone.io/installation/github/single-machine/) and
+follow the instructions.
+
 #### OpenVPN
 
 Once installed, from the server's command line.

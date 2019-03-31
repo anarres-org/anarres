@@ -404,6 +404,64 @@
       tags: proxy
   tags: drone
 
+## Drone for GitHub
+
+- name: Deploy drone for github in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: drone_github
+    docker_image: "{{ drone_github_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "{{ drone_github_directory.data }}":/data \
+      -p "{{ drone_github_internal_web_port }}:80" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "DRONE_GITHUB_SERVER=https://github.com" \
+      -e "DRONE_GITHUB_CLIENT_ID={{ drone_github_client_id }}" \
+      -e "DRONE_GITHUB_CLIENT_SECRET={{ drone_github_client_secret }}" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_SERVER_HOST={{ drone_github_domain }}" \
+      -e "DRONE_SERVER_PROTO=https" \
+      -e "DRONE_TLS_AUTOCERT=false" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create drone_github directories
+      file:
+        path: "{{ drone_github_directory.data }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+  roles:
+    - role: generic_docker_systemd
+  tags: drone_github
+
+- name: Get drone_github subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_github_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: drone_github
+
+- name: Configure ningx proxy for drone_github
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_github_domain }}"
+    binded_port: "{{ drone_github_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: drone_github
+
 ## Transmission
 
 - name: Prepare transmission deployment

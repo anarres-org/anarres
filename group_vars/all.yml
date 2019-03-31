@@ -93,6 +93,15 @@ drone_domain: "drone.{{ base_domain }}"
 drone_directory:
   data: "{{ data_path }}/drone/data"
 
+## Drone for GitHub
+
+drone_github_docker_image: drone/drone:1
+drone_github_internal_web_port: 3031
+drone_github_domain: "drone-github.{{ base_domain }}"
+
+drone_github_directory:
+  data: "{{ data_path }}/drone_github/data"
+
 ## Transmission
 
 transmission_domain: "torrent.{{ base_domain }}"

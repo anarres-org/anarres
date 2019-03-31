@@ -41,6 +41,8 @@ provisioner:
       openldap_readonly_password: changeme
       gitea_ssh_port: 66
       gitea_db_user_pass: changeme
+      drone_github_client_id: placeholder
+      drone_github_client_secret: placeholder
       transmission_user: transmission
       transmission_pass: transmission
       transmission_timezone: Europe/Berlin
