@@ -104,14 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-##### Genereate new user keys
-
-`docker exec -it openvpn easyrsa build-client-full [USERNAME] nopass`
-
-##### Get the configuration file for an existing user
-
-`docker exec -it openvpn ovpn_getclient [USERNAME] > [USERNAME].ovpn`
-
 #### Syncthing
 
 Make sure to set up a user and password for the web GUI. You can do that by
