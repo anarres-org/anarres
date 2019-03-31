@@ -104,10 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Drone
-
-Needs Gitea to be deployed. Authentication against the Gitea itself.
-
 #### Drone for GitHub
 
 You need to set up some things in your GitHub account first. You need your
