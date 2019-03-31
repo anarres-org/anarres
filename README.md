@@ -104,6 +104,10 @@ First user to register will be the admin user.
 
 *Ports*: **22/tcp** for SSH.
 
+#### Drone
+
+Needs Gitea to be deployed. Authentication against the Gitea itself.
+
 #### Drone for GitHub
 
 You need to set up some things in your GitHub account first. You need your
