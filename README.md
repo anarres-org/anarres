@@ -104,10 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### phpLDAPadmin
-
-A web interface for managing OpenLDAP.
-
 #### BIND DNS server
 
 You need to specify the user with the `uid` **101** if it isn't
