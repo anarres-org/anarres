@@ -104,19 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Tranmission
-
-It's recommended to enable port forwarding in your router as explained in
-[superuser](https://superuser.com/questions/1053414/how-does-port-forwarding-help-in-torrents).
-The default port is **51413** but you can change this from the
-web configurations.
-
-If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
-**settings.json** as explained in
-[hub.docker.com](https://hub.docker.com/r/linuxserver/transmission/)
-
-*Ports*: **51413 tcp and upd** for p2p connections.
-
 #### Radicale
 
 You must set `radicale_pass` with your bcrypted password. Yo can get the hash
