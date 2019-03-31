@@ -104,17 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Radicale
-
-You must set `radicale_pass` with your bcrypted password. Yo can get the hash
-by running:
-
-```bash
-htpasswd -B /tmp/radicale [user]
-```
-
-Get it from */tmp/radicale*.
-
 #### Taskd
 
 The taskwarrior server.
