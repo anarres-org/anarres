@@ -86,6 +86,11 @@ add the following ports:
 Their data and configuration files will be stored in your hosts `data_path`
 directory, by default */data*.
 
+* [Gitea](https://docs.gitea.io/): based on
+  [gitea/gitea](https://github.com/go-gitea/gitea).
+
+For more info about each service and how to set it up, go to <docs/services>.
+
 #### Letsencrypt
 
 The main domain cert needs to be obtained using the **standalone** method since
@@ -97,12 +102,6 @@ the webroot path will be empty in */etc/letsencrypt/renewal/{{ base_domain
 authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
-
-#### Gitea
-
-First user to register will be the admin user.
-
-*Ports*: **22/tcp** for SSH.
 
 #### Drone
 
