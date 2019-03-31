@@ -10,6 +10,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 @pytest.mark.parametrize("service", [
     ("gitea"),
     ("drone"),
+    ("drone_github"),
     ("transmission"),
     ("wallabag"),
     ("syncthing"),
