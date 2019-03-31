@@ -104,14 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Syncthing
-
-Make sure to set up a user and password for the web GUI. You can do that by
-accesing it ang going to settings.
-
-*Ports*: **22000/tcp** as the listening address and **21027/udp** for local
-discovery.
-
 #### Tranmission
 
 It's recommended to enable port forwarding in your router as explained in
