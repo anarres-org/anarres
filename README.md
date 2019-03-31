@@ -104,12 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### OpenLDAP
-
-An OpenLDAP server for the internal services.
-
-*Ports*: **636/tcp**.
-
 #### phpLDAPadmin
 
 A web interface for managing OpenLDAP.
