@@ -17,6 +17,8 @@ distributions too or just requieres a few changes.
 
 ## Playbook Variables
 
+TBD.
+
 ## Dependencies
 
 Included as submodules in *roles/*.
@@ -28,6 +30,41 @@ Included as submodules in *roles/*.
 * [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
 * [generic_docker_systemd](https://github.com/anarres-org/generic_docker_systemd)
 * [add_nginx_proxy_conf](https://github.com/anarres-org/add_nginx_proxy_conf)
+
+## Services
+
+Their data and configuration files will be stored in your hosts `data_path`
+directory, by default */data*.
+
+* [OpenLDAP](http://www.openldap.org/): using
+   [osixia/openldap](https://github.com/osixia/docker-openldap).
+* [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
+   using
+   [osixia/phpldapadmin](https://github.com/osixia/docker-phpLDAPadmin).
+* [Gitea](https://docs.gitea.io/): using
+  [gitea/gitea](https://github.com/go-gitea/gitea).
+* [Drone](https://drone.io/): using
+  [drone/drone](https://github.com/drone/drone). For the self hosted gitea and
+  for GitHub.
+* [Transmission](https://transmissionbt.com/): using
+  [linuxserver/transmission](https://github.com/linuxserver/docker-transmission).
+* [Wallabag](https://wallabag.org/): using
+  [wallabag/wallabag](https://github.com/wallabag/docker).
+* [Syncthing](https://syncthing.net/): using
+  [syncthing/syncthing](https://github.com/syncthing/syncthing).
+* [OpenVPN](https://openvpn.net/): using
+  [kylemanna/openvpn](https://github.com/kylemanna/docker-openvpn).
+* [Radicale](https://radicale.org/): using
+  [tomsquest/docker-radicale](https://github.com/tomsquest/docker-radicale).
+* [Taskwarrior Server](https://taskwarrior.org/): using
+  [andir/docker-taskd](https://github.com/andir/docker-taskd).
+* [Nextcloud](https://nextcloud.com/): using
+  [nextcloud](https://github.com/nextcloud/docker).
+* [NFS Server](https://sourceforge.net/projects/nfs/): using
+  [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
+
+For more info about each service and how to set it up, go to
+[docs/services](docs/services).
 
 ## Setup
 
@@ -81,18 +118,7 @@ add the following ports:
 * The SSH port you choose, or **2222** by default.
 * All the desired ports that some services have.
 
-### Services
-
-Their data and configuration files will be stored in your hosts `data_path`
-directory, by default */data*.
-
-* [Gitea](https://docs.gitea.io/): based on
-  [gitea/gitea](https://github.com/go-gitea/gitea).
-
-For more info about each service and how to set it up, go to
-[docs/services](docs/services).
-
-#### Letsencrypt
+### Letsencrypt
 
 The main domain cert needs to be obtained using the **standalone** method since
 we don't have a working webserver by this point (the server needs the cert). So
