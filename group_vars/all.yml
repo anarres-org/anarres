@@ -102,6 +102,9 @@ drone_github_domain: "drone-github.{{ base_domain }}"
 drone_github_directory:
   data: "{{ data_path }}/drone_github/data"
 
+drone_github_client_id:
+drone_github_client_secret:
+
 ## Transmission
 
 transmission_domain: "torrent.{{ base_domain }}"
