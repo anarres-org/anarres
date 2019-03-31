@@ -63,6 +63,5 @@ scenario:
   name: default
 verifier:
   name: testinfra
-  directory: ../../
   lint:
     name: flake8
