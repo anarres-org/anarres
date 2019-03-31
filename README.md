@@ -104,12 +104,6 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### OpenVPN
-
-Once installed, from the server's command line.
-
-*Ports*: **1194/udp**.
-
 ##### Genereate new user keys
 
 `docker exec -it openvpn easyrsa build-client-full [USERNAME] nopass`
