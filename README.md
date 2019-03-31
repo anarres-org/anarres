@@ -89,7 +89,8 @@ directory, by default */data*.
 * [Gitea](https://docs.gitea.io/): based on
   [gitea/gitea](https://github.com/go-gitea/gitea).
 
-For more info about each service and how to set it up, go to </docs/services>.
+For more info about each service and how to set it up, go to
+[docs/services](docs/services).
 
 #### Letsencrypt
 
