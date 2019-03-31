@@ -393,7 +393,7 @@
       tags: letsecrypt_request
   tags: drone
 
-- name: Configure ningx proxy for drone
+- name: Configure nginx proxy for drone
   hosts: all
   become: true
   vars:
@@ -451,7 +451,7 @@
       tags: letsecrypt_request
   tags: drone_github
 
-- name: Configure ningx proxy for drone_github
+- name: Configure nginx proxy for drone_github
   hosts: all
   become: true
   vars:
