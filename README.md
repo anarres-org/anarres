@@ -3,10 +3,28 @@
 An [ansible](https://github.com/ansible) playbook to set up a GNU/Linux server.
 Services in [docker](https://www.docker.com/). Security by default.
 
+The goal is to have a server for a community or personal use that's easy to
+maintain, secure and easy (and fast) to rebuild from scratch in case of data
+loss or a migration.
+
+The idea came from a great FLOSS project,
+[sovereign](https://github.com/sovereign/sovereign), specially from [sovereign
+2 issue](https://github.com/sovereign/sovereign/issues/667).
+
+What you'll get with this repo is a recipe based in variables that will setup a
+working server for your specific needs. You'll have the data stored only in one
+or two directories depending on your choices, see [backup](#backup). The
+docker containers will upgrade themselves automatically every time their
+service restarts (you can do this periodically or it'll happen anyways when you
+reboot).
+
+Apart from this, it's easy to extend and doesn't prevent you from using other
+playbooks apart from this one or installing things manually.
+
 ## Compatibility
 
 These are the tested GNU/Linux distributions. Maybe it works on some other
-distributions too or just requieres a few changes.
+distributions too or just requires a few changes.
 
 * [debian](https://www.debian.org/)
   * stretch
