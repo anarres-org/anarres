@@ -18,6 +18,7 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
+    memory: 2048
     groups:
       - anarres
 provisioner:
@@ -34,22 +35,29 @@ provisioner:
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
+      openldap_organization: anarres
+      openldap_base_DN: dc=anarres,dc=local
+      openldap_admin_password: changeme
+      openldap_readonly_password: changeme
       gitea_ssh_port: 66
       gitea_db_user_pass: changeme
+      drone_github_client_id: placeholder
+      drone_github_client_secret: placeholder
       transmission_user: transmission
       transmission_pass: transmission
       transmission_timezone: Europe/Berlin
       wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
       nextcloud_db_user_pass: changeme
-      openldap_organization: anarres
-      openldap_base_DN: dc=anarres,dc=local
-      openldap_admin_password: changeme
+      user_uid_101: systemd-network
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library
     ANSIBLE_ROLES_PATH: ../../../../roles/
   lint:
     name: ansible-lint
+    options:
+      exclude:
+        - roles/
   config_options:
     defaults:
       callback_whitelist: profile_tasks
@@ -57,6 +65,5 @@ scenario:
   name: default
 verifier:
   name: testinfra
-  directory: ../../
   lint:
     name: flake8

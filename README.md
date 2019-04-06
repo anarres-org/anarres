@@ -3,10 +3,28 @@
 An [ansible](https://github.com/ansible) playbook to set up a GNU/Linux server.
 Services in [docker](https://www.docker.com/). Security by default.
 
+The goal is to have a server for a community or personal use that's easy to
+maintain, secure and easy (and fast) to rebuild from scratch in case of data
+loss or a migration.
+
+The idea came from a great FLOSS project,
+[sovereign](https://github.com/sovereign/sovereign), specially from [sovereign
+2 issue](https://github.com/sovereign/sovereign/issues/667).
+
+What you'll get with this repo is a recipe based in variables that will setup a
+working server for your specific needs. You'll have the data stored only in one
+or two directories depending on your choices, see [backup](#backup). The
+docker containers will upgrade themselves automatically every time their
+service restarts (you can do this periodically or it'll happen anyways when you
+reboot).
+
+Apart from this, it's easy to extend and doesn't prevent you from using other
+playbooks apart from this one or installing things manually.
+
 ## Compatibility
 
 These are the tested GNU/Linux distributions. Maybe it works on some other
-distributions too or just requieres a few changes.
+distributions too or just requires a few changes.
 
 * [debian](https://www.debian.org/)
   * stretch
@@ -17,21 +35,60 @@ distributions too or just requieres a few changes.
 
 ## Playbook Variables
 
+TBD.
+
 ## Dependencies
 
+Included as submodules in *roles/*.
+
 * [iptables_raw](https://github.com/Nordeus/ansible_iptables_raw)
-* [anarres-common]
-* [anarres-sec]
-* [letsencrypt-request]
-* [anarres-nginx]
-* [generic_docker_systemd]
-* [add_nginx_proxy_conf]
+* [anarres-common](https://github.com/anarres-org/anarres-common)
+* [anarres-sec](https://github.com/anarres-org/anarres-sec)
+* [letsencrypt-request](https://github.com/anarres-org/letsencrypt-request)
+* [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
+* [generic_docker_systemd](https://github.com/anarres-org/generic_docker_systemd)
+* [add_nginx_proxy_conf](https://github.com/anarres-org/add_nginx_proxy_conf)
+
+## Services
+
+Their data and configuration files will be stored in your hosts `data_path`
+directory, by default */data*.
+
+* [OpenLDAP](http://www.openldap.org/): using
+   [osixia/openldap](https://github.com/osixia/docker-openldap).
+* [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
+   using
+   [osixia/phpldapadmin](https://github.com/osixia/docker-phpLDAPadmin).
+* [Gitea](https://docs.gitea.io/): using
+  [gitea/gitea](https://github.com/go-gitea/gitea).
+* [Drone](https://drone.io/): using
+  [drone/drone](https://github.com/drone/drone). For the self hosted gitea and
+  for GitHub.
+* [Transmission](https://transmissionbt.com/): using
+  [linuxserver/transmission](https://github.com/linuxserver/docker-transmission).
+* [Wallabag](https://wallabag.org/): using
+  [wallabag/wallabag](https://github.com/wallabag/docker).
+* [Syncthing](https://syncthing.net/): using
+  [syncthing/syncthing](https://github.com/syncthing/syncthing).
+* [OpenVPN](https://openvpn.net/): using
+  [kylemanna/openvpn](https://github.com/kylemanna/docker-openvpn).
+* [Radicale](https://radicale.org/): using
+  [tomsquest/docker-radicale](https://github.com/tomsquest/docker-radicale).
+* [Taskwarrior Server](https://taskwarrior.org/): using
+  [andir/docker-taskd](https://github.com/andir/docker-taskd).
+* [Nextcloud](https://nextcloud.com/): using
+  [nextcloud](https://github.com/nextcloud/docker).
+* [NFS Server](https://sourceforge.net/projects/nfs/): using
+  [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
+
+For more info about each service and how to set it up, go to
+[docs/services](docs/services).
 
 ## Setup
 
 1. Install `sudo` and `python`.
 1. Login as **root** and add your **user** to *sudoers* or to the **sudo**
-group with `usermod -a -G sudo [user]`.
+   group with `usermod -a -G sudo [user]`.
 
 The idea is that you run the playbooks with the tags of the services that you
 want to setup. But, there are some steps that "must" be run first, before
@@ -48,9 +105,11 @@ An example approach would be:
 ### Tips
 
 * You can check the available tags with:
+
    ```bash
    ansible-playbook --list-tags full.yml
    ```
+
 * You can create a *custom/* folder in the playbook root directory. There you
   can save your inventory files with your chosen variables for each host. This
   folder will be ignored thanks to the *.gitignore* configuration.
@@ -60,8 +119,10 @@ An example approach would be:
   *group_vars/all.yml*. Copy and change the required ones to your custom
   inventory file.
 * Deploy only a few tags with:
+
    ```bash
-   ansible-playbook -i custom/[project]/hosts.yml full.yml --extra-vars ansible_become_pass="[sudo_password]" --ask-vault-pass -t gitea
+   ansible-playbook -i custom/[project]/hosts.yml full.yml --extra-vars
+   ansible_become_pass="[sudo_password]" --ask-vault-pass -t gitea
    ```
 
 ### Firewall
@@ -75,9 +136,7 @@ add the following ports:
 * The SSH port you choose, or **2222** by default.
 * All the desired ports that some services have.
 
-### Services
-
-#### Letsencrypt
+### Letsencrypt
 
 The main domain cert needs to be obtained using the **standalone** method since
 we don't have a working webserver by this point (the server needs the cert). So
@@ -89,93 +148,10 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
-#### Gitea
+## Backup
 
-First user to register will be the admin user.
-
-*Ports*: **22/tcp** for SSH.
-
-#### OpenVPN
-
-Once installed, from the server's command line.
-
-*Ports*: **1194/udp**.
-
-##### Genereate new user keys
-
-`docker exec -it openvpn easyrsa build-client-full [USERNAME] nopass`
-
-##### Get the configuration file for an existing user
-
-`docker exec -it openvpn ovpn_getclient [USERNAME] > [USERNAME].ovpn`
-
-#### Syncthing
-
-Make sure to set up a user and password for the web GUI. You can do that by
-accesing it ang going to settings.
-
-*Ports*: **22000/tcp** as the listening address and **21027/udp** for local
-discovery.
-
-#### Tranmission
-
-It's recommended to enable port forwarding in your router as explained in
-[superuser](https://superuser.com/questions/1053414/how-does-port-forwarding-help-in-torrents). The default port is **51413** but you can change this from the
-web configurations.
-
-If you don't set `tranmission_user` and `transmission_pass` you'll need to edit
-**settings.json** as explained in
-[hub.docker.com](https://hub.docker.com/r/linuxserver/transmission/)
-
-*Ports*: **51413 tcp and upd** for p2p connections.
-
-#### Radicale
-
-You must set `radicale_pass` with your bcrypted password. Yo can get the hash
-by running:
-
-```bash
-htpasswd -B /tmp/radicale [user]
-```
-
-Get it from */tmp/radicale*.
-
-#### Taskd
-
-The taskwarrior server.
-
-*Ports*: **53589/tcp**.
-
-Open a shell in the container.
-
-```bash
-docker exec -it taskd /bin/sh
-```
-
-And then from inside the container run the commands from the
-[taskwarrior docs](https://taskwarrior.org/docs/taskserver/user.html).
-
-**Note**: The *pki* directory is in */var/taskd/pki/*
-
-#### Nextcloud
-
-First user to register will be the admin user.
-
-### NFS
-
-Please refer to [ubunut-help](https://help.ubuntu.com/community/NFSv4Howto) to
-see how NFSv4 works. Make sure to mount the directories you want to export
-inside the */export* folder of the NFS container. Mount them with the `:ro`
-option if you want them to be read-only (and configure them in the **exports**
-conf accordingly).
-
-*Ports*: **2049/tcp**.
-
-#### OpenLDAP
-
-An OpenLDAP server for the internal services.
-
-*Ports*: **636/tcp**.
+Make sure to backup your `data_path` (by default */data*) and the docker
+volumes (used by the databases) from */var/lib/docker/volumes*.
 
 ## License
 

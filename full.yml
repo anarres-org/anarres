@@ -101,6 +101,163 @@
     - web-base
     - web
 
+## OpenLDAP
+
+- name: Get openldap subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ openldap_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: openldap
+
+- name: Deploy openldap in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: openldap
+    docker_image: "{{ openldap_docker_image }}"
+    container_certs_path: /container/service/slapd/assets/certs
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v {{ openldap_directory.data }}:/var/lib/ldap \
+      -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
+      -v /etc/letsencrypt/live/{{ openldap_domain }}:{{ container_certs_path }}/live/{{ openldap_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ openldap_domain }}:{{ container_certs_path }}/archive/{{ openldap_domain }}/:ro \
+      -p {{ openldap_port_secure }}:636 \
+      -e LDAP_ORGANISATION="{{ openldap_domain }}" \
+      -e LDAP_DOMAIN="{{ openldap_domain }}" \
+      -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
+      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
+      -e LDAP_READONLY_USER=true \
+      -e LDAP_READONLY_USER_USERNAME=readonly \
+      -e LDAP_READONLY_USER_PASSWORD="{{ openldap_readonly_password }}" \
+      -e LDAP_TLS="true" \
+      -e LDAP_TLS_VERIFY_CLIENT="try" \
+      -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
+      -e LDAP_TLS_KEY_FILENAME="live/{{ openldap_domain }}/privkey.pem" \
+      -e LDAP_TLS_CA_CRT_FILENAME="live/{{ openldap_domain }}/fullchain.pem" \
+      -e LDAP_NOFILE=1024 \
+      --network {{ service_name }} \
+      {{ docker_image }} --copy-service
+  pre_tasks:
+    - name: Create openldap directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+      with_dict: "{{ openldap_directory }}"
+  post_tasks:
+    - name: Add iptables rules for OpenLDAP
+      become: true
+      iptables_raw:
+        name: openldap_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
+      tags: iptables
+
+    - name: Install requiered python LDAP module
+      package:
+        name: python-ldap
+        state: present
+      tags: dependencies
+
+    - name: Wait for configuration database container to start
+      wait_for:
+        port: "{{ openldap_port_secure }}"
+
+    - name: Add groups organizational unit
+      ldap_entry:
+        dn: "ou=groups,{{ openldap_base_DN }}"
+        objectClass: organizationalUnit
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
+
+    - name: Add users organizational unit
+      ldap_entry:
+        dn: "ou=users,{{ openldap_base_DN }}"
+        objectClass: organizationalUnit
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
+
+    - name: Add users group
+      ldap_entry:
+        dn: "cn=users,ou=groups,{{ openldap_base_DN }}"
+        objectClass: posixGroup
+        attributes:
+          gidNumber: 2000
+        server_uri: "{{ openldap_server_uri }}"
+        start_tls: false
+        validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
+        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_pw: "{{ openldap_admin_password }}"
+      tags:
+        - ldap-setup
+  roles:
+    - role: generic_docker_systemd
+  tags: openldap
+
+## phpLDAPadmin
+
+- name: Deploy phpldapadmin in docker
+  hosts: all
+  become: true
+  vars:
+    create_volume: false
+    enable_db: false
+    service_name: phpldapadmin
+    docker_image: "{{ phpldapadmin_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p {{ phpldapadmin_internal_web_port }}:80 \
+      -e  PHPLDAPADMIN_LDAP_HOSTS="{{ phpldapadmin_ldap_hosts }}" \
+      -e PHPLDAPADMIN_HTTPS="false" \
+      -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
+      --network openldap \
+      {{ docker_image }}
+  roles:
+    - role: generic_docker_systemd
+  tags: phpldapadmin
+
+- name: Get phpldapadmin subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: phpldapadmin
+
+- name: Configure nginx proxy for phpldapadmin
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ phpldapadmin_domain }}"
+    binded_port: "{{ phpldapadmin_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: phpldapadmin
+
 ## Gitea
 
 - name: Prepare gitea deployment
@@ -158,7 +315,7 @@
       -v "{{ gitea_directory.data }}":/data \
       -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
-      --network "{{ service_name }}" \
+      --network "{{ gitea_network }}" \
       "{{ docker_image }}"
     service_db_name: "{{ gitea_db_service_name }}"
     db_name: "{{ gitea_db_name }}"
@@ -266,6 +423,121 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: hackmd
+=======
+## Drone
+
+- name: Deploy drone in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: drone
+    docker_image: "{{ drone_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "{{ drone_directory.data }}":/data \
+      -p "{{ drone_internal_web_port }}:80" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "DRONE_GITEA_SERVER=https://{{ gitea_domain }}" \
+      -e "DRONE_GIT_ALWAYS_AUTH=false" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_SERVER_HOST={{ drone_domain }}" \
+      -e "DRONE_SERVER_PROTO=https" \
+      -e "DRONE_TLS_AUTOCERT=false" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create drone directories
+      file:
+        path: "{{ drone_directory.data }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+  roles:
+    - role: generic_docker_systemd
+  tags: drone
+
+- name: Get drone subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: drone
+
+- name: Configure nginx proxy for drone
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_domain }}"
+    binded_port: "{{ drone_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: drone
+
+## Drone for GitHub
+
+- name: Deploy drone for github in docker
+  hosts: all
+  become: true
+  vars:
+    enable_db: false
+    service_name: drone_github
+    docker_image: "{{ drone_github_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "{{ drone_github_directory.data }}":/data \
+      -p "{{ drone_github_internal_web_port }}:80" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "DRONE_GITHUB_SERVER=https://github.com" \
+      -e "DRONE_GITHUB_CLIENT_ID={{ drone_github_client_id }}" \
+      -e "DRONE_GITHUB_CLIENT_SECRET={{ drone_github_client_secret }}" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_SERVER_HOST={{ drone_github_domain }}" \
+      -e "DRONE_SERVER_PROTO=https" \
+      -e "DRONE_TLS_AUTOCERT=false" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create drone_github directories
+      file:
+        path: "{{ drone_github_directory.data }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+  roles:
+    - role: generic_docker_systemd
+  tags: drone_github
+
+- name: Get drone_github subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_github_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: drone_github
+
+- name: Configure nginx proxy for drone_github
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ drone_github_domain }}"
+    binded_port: "{{ drone_github_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: drone_github
 
 ## Transmission
 
@@ -889,63 +1161,44 @@
     - role: generic_docker_systemd
   tags: nfs
 
-## OpenLDAP
+## BIND DNS Server
 
-- name: Get openldap subdomain Let's Encrypt certificate
-  hosts: all
-  become: true
-  vars:
-    domain: "{{ openldap_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-  tags: openldap
-
-- name: Deploy openldap in docker
+- name: Deploy bind_dns_server in docker
   hosts: all
   become: true
   vars:
     create_volume: false
     enable_db: false
     create_network: true
-    service_name: openldap
-    docker_image: "{{ openldap_docker_image }}"
+    service_name: bind_dns_server
+    docker_image: "{{ bind_dns_server_docker_image }}"
+    container_certs_path: /container/service/slapd/assets/certs
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v {{ openldap_directory.data }}:/var/lib/ldap \
-      -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
-      -v /etc/letsencrypt/live/{{ openldap_domain }}:/container/service/slapd/assets/certs/live/{{ openldap_domain }}/:ro \
-      -v /etc/letsencrypt/archive/{{ openldap_domain }}:/container/service/slapd/assets/certs/archive/{{ openldap_domain }}/:ro \
-      -p {{ openldap_port_secure }}:636 \
-      -e LDAP_ORGANISATION="{{ openldap_domain }}" \
-      -e LDAP_DOMAIN="{{ openldap_domain }}" \
-      -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
-      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
-      -e LDAP_TLS="true" \
-      -e LDAP_TLS_VERIFY_CLIENT="try" \
-      -e LDAP_TLS_CRT_FILENAME="live/{{ openldap_domain }}/cert.pem" \
-      -e LDAP_TLS_KEY_FILENAME="live/{{ openldap_domain }}/privkey.pem" \
-      -e LDAP_TLS_CA_CRT_FILENAME="live/{{ openldap_domain }}/fullchain.pem" \
-      -e LDAP_NOFILE=1024 \
+      -v {{ bind_dns_server_directory.data }}:/data \
+      -p {{ bind_dns_server_port }}:53/tcp \
+      -p {{ bind_dns_server_port }}:53/udp \
+      -e WEBMIN_ENABLED=false \
       --network {{ service_name }} \
-      {{ docker_image }} --copy-service
+      {{ docker_image }}
   pre_tasks:
-    - name: Create openldap directories
+    - name: Create bind_dns_server directories
       file:
         path: "{{ item.value }}"
+        owner: "{{ user_uid_101 }}"
         state: directory
         mode: 0700
-      with_dict: "{{ openldap_directory }}"
+      with_dict: "{{ bind_dns_server_directory }}"
   post_tasks:
-    - name: Add iptables rules for OpenLDAP
+    - name: Add iptables rules for BIND DNS server
       become: true
       iptables_raw:
-        name: openldap_rules
+        name: bind_dns_server_rules
         weight: 20
         rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ bind_dns_server_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ bind_dns_server_port }} -j ACCEPT
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: openldap
+  tags: bind_dns_server
