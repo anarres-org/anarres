@@ -11,6 +11,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("gitea"),
     ("drone"),
     ("drone_github"),
+    ("codimd"),
     ("transmission"),
     ("wallabag"),
     ("syncthing"),

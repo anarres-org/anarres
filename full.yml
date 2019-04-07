@@ -347,83 +347,65 @@
       tags: proxy
   tags: gitea
 
-## Hackmd
+## CodiMD
 
-- name: Prepare hackmd deployment
+- name: Deploy codimd in docker
   hosts: all
-  tasks:
-    - name: Create hackmd directories 755
+  become: true
+  vars:
+    service_name: codimd
+    docker_image: "{{ codimd_docker_image }}"
+    docker_db_image: "{{ codimd_db_image }}"
+    create_network: true
+    db_type: postgres
+    docker_service_directory_db: "{{ codimd_directory.db }}"
+    db_user_pass: "{{ codimd_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ codimd_db_name }}"
+    db_user: "{{ codimd_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ codimd_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "CMD_DOMAIN={{ codimd_domain }}" \
+      -e "CMD_DB_URL=postgres://{{ codimd_db_user }}:{{ codimd_db_user_pass }}@{{ codimd_db_service_name }}:5432/{{ codimd_db_name }}" \
+      --network "{{ codimd_network_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create codimd directories
       file:
-        path: "{{ hackmd_db }}"
+        path: "{{ item.value }}"
         state: directory
+        mode: 0700
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
-        mode: 0755
-  tags: hackmd
-
-- name: Deploy hackmd-db in docker
-  hosts: all
-  become: true
-  vars:
-    service_name: "{{ hackmd_db_service_name }}"
-    docker_image: "{{ hackmd_db_image }}"
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ hackmd_db }}":/var/lib/postgresql/data \
-      -e "USER_UID=1000" -e "USER_GID=1000" \
-      -e "POSTGRES_USER={{ hackmd_db_user }}" \
-      -e "POSTGRES_PASSWORD={{ hackmd_db_password }}" \
-      -e "POSTGRES_DB={{ hackmd_db_name }}" \
-      --network "{{ hackmd_network_name }}" \
-      "{{ docker_image }}"
-    enable_db: false
-    docker_network_name: "{{ hackmd_network_name }}"
-    create_network: true
+      with_dict: "{{ codimd_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: hackmd
+  tags: codimd
 
-- name: Deploy hackmd in docker
+- name: Get codimd subdomain Let's Encrypt certificate
   hosts: all
   become: true
   vars:
-    service_name: hackmd
-    docker_image: "{{ hackmd_docker_image }}"
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -p "{{ hackmd_web_port }}:3000" \
-      -e "USER_UID=1000" -e "USER_GID=1000" \
-      -e "CMD_DB_URL=postgres://{{ hackmd_db_user }}:{{ hackmd_db_password }}@{{ hackmd_db_service_name }}:5432/{{ hackmd_db_name }}" \
-      --network "{{ hackmd_network_name }}" \
-      "{{ docker_image }}"
-    enable_db: false
-    create_network: false
-  roles:
-    - role: generic_docker_systemd
-  tags: hackmd
-
-- name: Get hackmd subdomain Let's Encrypt certificate
-  hosts: all
-  become: true
-  vars:
-    domain: "{{ hackmd_domain }}"
+    domain: "{{ codimd_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: hackmd
+  tags: codimd
 
-- name: Configure nginx proxy for hackmd
+- name: Configure nginx proxy for codimd
   hosts: all
   become: true
   vars:
-    domain: "{{ hackmd_domain }}"
-    binded_port: "{{ hackmd_web_port }}"
+    domain: "{{ codimd_domain }}"
+    binded_port: "{{ codimd_web_port }}"
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: hackmd
-=======
+  tags: codimd
+
 ## Drone
 
 - name: Deploy drone in docker
