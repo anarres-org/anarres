@@ -13,6 +13,8 @@ group_gid_1000: "{{ user_uid_1000 }}"
 user_uid_33: www-data
 group_gid_33: "{{ user_uid_33 }}"
 
+ca_certs_path: /etc/ssl/certs/ca-certificates.crt
+
 docker_db_image: mariadb:10.3
 docker_db_postgres_image: postgres:11
 
@@ -54,6 +56,9 @@ openldap_readonly_password:
 
 openldap_server_uri: "ldaps://{{ base_domain }}:636"
 openldap_validate_certs: true
+openldap_binddn: "cn=readonly,{{ openldap_base_DN }}"
+openldap_bindcredentials: "{{ openldap_readonly_password }}"
+openldap_searchbase: "ou=users,{{ openldap_base_DN }}"
 
 ## phpLDAPadmin
 
@@ -122,6 +127,15 @@ codimd_db_user: "codimd"
 codimd_db_user_pass:
 codimd_db_name: "codimd"
 
+codimd_enable_ldap: true
+codimd_ldap_url: "{{ openldap_server_uri }}"
+codimd_ldap_binddn: "{{ openldap_binddn }}"
+codimd_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
+codimd_ldap_searchbase: "{{ openldap_searchbase }}"
+codimd_ldap_searchfilter: "{{ '(uid={{username}})' }}"
+codimd_ldap_searchattributes: 'uid, mail'
+codimd_ldap_userfield: 'uid'
+codimd_ldap_usernamefield: 'uid'
 
 ## Transmission
 

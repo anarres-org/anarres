@@ -369,6 +369,19 @@
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "CMD_DOMAIN={{ codimd_domain }}" \
       -e "CMD_DB_URL=postgres://{{ codimd_db_user }}:{{ codimd_db_user_pass }}@{{ codimd_db_service_name }}:5432/{{ codimd_db_name }}" \
+      {% if codimd_enable_ldap %}
+      -e "CMD_LDAP_URL={{ codimd_ldap_url }}" \
+      -e "CMD_URL_ADDPORT=false" \
+      -e "CMD_LDAP_BINDDN={{ codimd_ldap_binddn }}" \
+      -e "CMD_LDAP_BINDCREDENTIALS={{ codimd_ldap_bindcredentials }}" \
+      -e "CMD_LDAP_SEARCHBASE={{ codimd_ldap_searchbase }}" \
+      -e "CMD_LDAP_SEARCHFILTER={{ codimd_ldap_searchfilter }}" \
+      -e "CMD_LDAP_SEARCHATTRIBUTES={{ codimd_ldap_searchattributes }}" \
+      -e "CMD_LDAP_USERIDFIELD={{ codimd_ldap_userfield }}" \
+      -e "CMD_LDAP_USERNAMEFIELD={{ codimd_ldap_usernamefield }}" \
+      -e "CMD_LDAP_TLS_CA=/etc/ssl/certs/ca-certificates.crt" \
+      -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
+      {% endif %}
       --network "{{ codimd_network_name }}" \
       "{{ docker_image }}"
   pre_tasks:
