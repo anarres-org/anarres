@@ -120,6 +120,7 @@ codimd_network_name: "codimd"
 
 codimd_directory:
   db: "{{ data_path }}/codimd/db"
+  uploads: "{{ data_path }}/codimd/uploads"
 
 codimd_db_image: "{{ docker_db_postgres_image }}"
 codimd_db_service_name: codimd-db

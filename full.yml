@@ -379,8 +379,10 @@
       -e "CMD_LDAP_SEARCHATTRIBUTES={{ codimd_ldap_searchattributes }}" \
       -e "CMD_LDAP_USERIDFIELD={{ codimd_ldap_userfield }}" \
       -e "CMD_LDAP_USERNAMEFIELD={{ codimd_ldap_usernamefield }}" \
+      -e 'CMD_IMAGE_UPLOAD_TYPE=filesystem' \
       -e "CMD_LDAP_TLS_CA=/etc/ssl/certs/ca-certificates.crt" \
       -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
+      -v "{{ codimd_directory.uploads }}:/codimd/public/uploads/" \
       {% endif %}
       --network "{{ codimd_network_name }}" \
       "{{ docker_image }}"
