@@ -54,31 +54,34 @@ Included as submodules in *roles/*.
 Their data and configuration files will be stored in your hosts `data_path`
 directory, by default */data*.
 
-* [OpenLDAP](http://www.openldap.org/): using
+* [OpenLDAP](http://www.openldap.org/): Using
    [osixia/openldap](https://github.com/osixia/docker-openldap).
 * [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
-   using
+   Using
    [osixia/phpldapadmin](https://github.com/osixia/docker-phpLDAPadmin).
-* [Gitea](https://docs.gitea.io/): using
+* [Gitea](https://docs.gitea.io/): Using
   [gitea/gitea](https://github.com/go-gitea/gitea).
-* [Drone](https://drone.io/): using
+* [Drone](https://drone.io/): Using
   [drone/drone](https://github.com/drone/drone). For the self hosted gitea and
   for GitHub.
-* [Transmission](https://transmissionbt.com/): using
+* [CodiMD](https://github.com/hackmdio/codimd): [HackMD](https://hackmd.io/)
+  like realtime collaborative markdown notes service. Using
+  [docker-hackmd](https://github.com/hackmdio/docker-hackmd).
+* [Transmission](https://transmissionbt.com/): Using
   [linuxserver/transmission](https://github.com/linuxserver/docker-transmission).
-* [Wallabag](https://wallabag.org/): using
+* [Wallabag](https://wallabag.org/): Using
   [wallabag/wallabag](https://github.com/wallabag/docker).
-* [Syncthing](https://syncthing.net/): using
+* [Syncthing](https://syncthing.net/): Using
   [syncthing/syncthing](https://github.com/syncthing/syncthing).
-* [OpenVPN](https://openvpn.net/): using
+* [OpenVPN](https://openvpn.net/): Using
   [kylemanna/openvpn](https://github.com/kylemanna/docker-openvpn).
-* [Radicale](https://radicale.org/): using
+* [Radicale](https://radicale.org/): Using
   [tomsquest/docker-radicale](https://github.com/tomsquest/docker-radicale).
-* [Taskwarrior Server](https://taskwarrior.org/): using
+* [Taskwarrior Server](https://taskwarrior.org/): Using
   [andir/docker-taskd](https://github.com/andir/docker-taskd).
-* [Nextcloud](https://nextcloud.com/): using
+* [Nextcloud](https://nextcloud.com/): Using
   [nextcloud](https://github.com/nextcloud/docker).
-* [NFS Server](https://sourceforge.net/projects/nfs/): using
+* [NFS Server](https://sourceforge.net/projects/nfs/): Using
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
 
 For more info about each service and how to set it up, go to
