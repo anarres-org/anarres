@@ -54,7 +54,10 @@ openldap_readonly_password:
 
 ## OpenLDAP for services
 
-openldap_server_uri: "ldaps://{{ base_domain }}:636"
+openldap_server_protocol: 'ldaps://'
+openldap_server_domain: "{{ base_domain }}"
+openldap_server_port: 636
+openldap_server_uri: "{{ openldap_server_protocol }}{{ openldap_server_domain }}:{{ openldap_server_port }}"
 openldap_validate_certs: true
 openldap_binddn: "cn=readonly,{{ openldap_base_DN }}"
 openldap_bindcredentials: "{{ openldap_readonly_password }}"
@@ -122,11 +125,15 @@ codimd_directory:
   db: "{{ data_path }}/codimd/db"
   uploads: "{{ data_path }}/codimd/uploads"
 
+### DB
+
 codimd_db_image: "{{ docker_db_postgres_image }}"
 codimd_db_service_name: codimd-db
 codimd_db_user: "codimd"
 codimd_db_user_pass:
 codimd_db_name: "codimd"
+
+### LDAP
 
 codimd_enable_ldap: true
 codimd_ldap_url: "{{ openldap_server_uri }}"
@@ -250,6 +257,37 @@ nextcloud_db_service_name: nextcloud-db
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
 nextcloud_db_user_pass:
+
+## Taiga
+
+taiga_domain: "taiga.{{ base_domain }}"
+taiga_docker_image: local/taiga
+taiga_internal_web_port: 3050
+taiga_secret_key:
+
+taiga_directory:
+  media: "{{ data_path }}/taiga/media"
+  db: "{{ data_path }}/taiga/db"
+
+### DB
+
+taiga_db_image: "{{ docker_db_postgres_image }}"
+taiga_db_service_name: taiga-db
+taiga_db_name: taiga
+taiga_db_user: taiga
+taiga_db_user_pass:
+
+### LDAP
+
+taiga_enable_ldap: true
+taiga_ldap_server: "{{ openldap_server_protocol }}{{ openldap_server_domain }}"
+taiga_ldap_port: "{{ openldap_server_port }}"
+taiga_ldap_binddn: "{{ openldap_binddn }}"
+taiga_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
+taiga_ldap_searchbase: "{{ openldap_searchbase }}"
+taiga_ldap_search_property: 'uid'
+taiga_ldap_email_attribute: 'mail'
+taiga_ldap_full_name_attribute: 'cn'
 
 ## NFS
 

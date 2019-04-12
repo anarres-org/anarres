@@ -1071,6 +1071,82 @@
       tags: proxy
   tags: nextcloud
 
+## Taiga
+
+- name: Deploy taiga in docker
+  hosts: all
+  become: true
+  vars:
+    service_name: taiga
+    docker_image: "{{ taiga_docker_image }}"
+    docker_db_image: "{{ taiga_db_image }}"
+    create_network: true
+    create_volume: false
+    db_type: postgres
+    docker_service_directory_db: "{{ taiga_directory.db }}"
+    db_user_pass: "{{ taiga_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ taiga_db_name }}"
+    db_user: "{{ taiga_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ taiga_internal_web_port }}:80" \
+      -e "TAIGA_HOSTNAME={{ taiga_domain }}" \
+      -e 'TAIGA_SSL=true' \
+      -e "TAIGA_SECRET_KEY={{ taiga_secret_key }}" \
+      -e 'TAIGA_DB_HOST=taiga-db' \
+      -e "TAIGA_DB_NAME={{ db_name }}" \
+      -e "TAIGA_DB_USER={{ db_user }}" \
+      -e "TAIGA_DB_PASSWORD={{ db_user_pass }}" \
+      {% if taiga_enable_ldap %}
+      -e 'LDAP_ENABLE=true' \
+      -e "LDAP_SERVER={{ taiga_ldap_server }}" \
+      -e "LDAP_PORT={{ taiga_ldap_port }}" \
+      -e "LDAP_BIND_DN={{ taiga_ldap_binddn }}" \
+      -e "LDAP_BIND_PASSWORD={{ taiga_ldap_bindcredentials }}" \
+      -e "LDAP_SEARCH_BASE={{ taiga_ldap_searchbase }}" \
+      -e "LDAP_SEARCH_PROPERTY={{ taiga_ldap_search_property }}" \
+      -e "LDAP_EMAIL_PROPERTY={{ taiga_ldap_email_attribute }}" \
+      -e "LDAP_FULL_NAME_PROPERTY={{ taiga_ldap_full_name_attribute }}" \
+      -v "{{ taiga_directory.media }}:/taiga.io/taiga-back/media" \
+      {% endif %}
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create taiga directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ taiga_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: taiga
+
+- name: Get taiga subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ taiga_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: taiga
+
+- name: Configure nginx proxy for taiga
+  hosts: all
+  become: true
+  vars:
+    domain: "{{ taiga_domain }}"
+    binded_port: "{{ taiga_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: taiga
+
 ## NFS
 
 - name: Prepare nfs deployment
