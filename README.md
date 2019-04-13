@@ -81,6 +81,9 @@ directory, by default */data*.
   [andir/docker-taskd](https://github.com/andir/docker-taskd).
 * [Nextcloud](https://nextcloud.com/): Using
   [nextcloud](https://github.com/nextcloud/docker).
+* [Taiga](https://taiga.io/): Project management platform for agile developers
+   & designers and project managers. Using
+  [docker-taiga](https://github.com/fanningert/docker-taiga).
 * [NFS Server](https://sourceforge.net/projects/nfs/): Using
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
 
