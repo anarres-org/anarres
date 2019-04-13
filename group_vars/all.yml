@@ -17,6 +17,7 @@ ca_certs_path: /etc/ssl/certs/ca-certificates.crt
 
 docker_db_image: mariadb:10.3
 docker_db_postgres_image: postgres:11
+dockerfiles_path: /root/dockerfiles
 
 ## Following values will be used for the root account of every docker database
 db_pass:
@@ -261,10 +262,13 @@ nextcloud_db_user_pass:
 ## Taiga
 
 taiga_domain: "taiga.{{ base_domain }}"
+taiga_docker_repo: https://github.com/fanningert/docker-taiga
+taiga_docker_repo_tag: master
 taiga_docker_image: local/taiga
 taiga_internal_web_port: 3050
 taiga_secret_key:
 
+taiga_path_dockerfile: "{{ dockerfiles_path }}/docker-taiga"
 taiga_directory:
   media: "{{ data_path }}/taiga/media"
   db: "{{ data_path }}/taiga/db"

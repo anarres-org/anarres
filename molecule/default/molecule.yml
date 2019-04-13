@@ -50,6 +50,8 @@ provisioner:
       wallabag_db_user_pass: changeme
       openvpn_ca_pass: changeme
       nextcloud_db_user_pass: changeme
+      taiga_secret_key: changeme
+      taiga_db_user_pass: changeme
       user_uid_101: systemd-network
   env:
     ANSIBLE_LIBRARY: /etc/ansible/library

@@ -19,6 +19,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("radicale"),
     ("taskd"),
     ("nextcloud"),
+    ("taiga"),
     ("nfs"),
     ("openldap"),
     ("phpldapadmin"),
