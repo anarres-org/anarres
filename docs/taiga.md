@@ -1,5 +1,8 @@
 # Taiga
 
+[Taiga](https://taiga.io/): Project management platform for agile developers
+& designers and project managers.
+
 ## Variables
 
 * `taiga_domain`: Domain/subdomain for the service.
