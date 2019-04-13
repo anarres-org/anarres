@@ -3,6 +3,7 @@
 - name: Initial tasks
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Create data directory
       file:
@@ -16,6 +17,7 @@
 - name: Deploy common
   hosts: all
   become: true
+  gather_facts: false
   roles:
     - role: anarres-common
   tags: common
@@ -23,6 +25,7 @@
 - name: Deploy sec
   hosts: all
   become: true
+  gather_facts: false
   roles:
     - role: anarres-sec
   tags: sec
@@ -30,6 +33,7 @@
 - name: Setup requiered web iptables rules
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Add iptables rules for HTTP and HTTPS
       iptables_raw:
@@ -46,7 +50,7 @@
 - name: "[Pretask] Prepare web deployment"
   hosts: all
   become: true
-  gather_facts: true
+  gather_facts: false
   tags:
     - web-prepare
     - web
@@ -85,7 +89,7 @@
 - name: Deploy web related services
   hosts: all
   become: true
-  gather_facts: true
+  gather_facts: false
   roles:
     - role: letsencrypt-request
       letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -97,6 +101,10 @@
       tags: nginx
   vars:
     domain: "{{ base_domain }}"
+  pre_tasks:
+    - name: Gather tasks
+      setup:
+        filter: ansible_*
   tags:
     - web-base
     - web
@@ -106,6 +114,7 @@
 - name: Get openldap subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ openldap_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
@@ -117,6 +126,7 @@
 - name: Deploy openldap in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -219,6 +229,7 @@
 - name: Deploy phpldapadmin in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -239,6 +250,7 @@
 - name: Get phpldapadmin subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ phpldapadmin_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -250,6 +262,7 @@
 - name: Configure nginx proxy for phpldapadmin
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ phpldapadmin_domain }}"
     binded_port: "{{ phpldapadmin_internal_web_port }}"
@@ -262,6 +275,7 @@
 
 - name: Prepare gitea deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Add iptables rules for gitea
       become: true
@@ -307,6 +321,7 @@
 - name: Deploy gitea in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: gitea
     docker_image: "{{ gitea_docker_image }}"
@@ -328,6 +343,7 @@
 - name: Get gitea subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ gitea_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -339,6 +355,7 @@
 - name: Configure nginx proxy for gitea
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ gitea_domain }}"
     binded_port: "{{ gitea_internal_web_port }}"
@@ -352,6 +369,7 @@
 - name: Deploy codimd in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: codimd
     docker_image: "{{ codimd_docker_image }}"
@@ -402,6 +420,7 @@
 - name: Get codimd subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ codimd_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -413,6 +432,7 @@
 - name: Configure nginx proxy for codimd
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ codimd_domain }}"
     binded_port: "{{ codimd_web_port }}"
@@ -426,6 +446,7 @@
 - name: Deploy drone in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: drone
@@ -459,6 +480,7 @@
 - name: Get drone subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -470,6 +492,7 @@
 - name: Configure nginx proxy for drone
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_domain }}"
     binded_port: "{{ drone_internal_web_port }}"
@@ -483,6 +506,7 @@
 - name: Deploy drone for github in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: drone_github
@@ -517,6 +541,7 @@
 - name: Get drone_github subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_github_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx restart
@@ -528,6 +553,7 @@
 - name: Configure nginx proxy for drone_github
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_github_domain }}"
     binded_port: "{{ drone_github_internal_web_port }}"
@@ -540,6 +566,7 @@
 
 - name: Prepare transmission deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create transmission directories
       file:
@@ -560,6 +587,7 @@
 - name: Setup requiered transmission iptables rules
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Add iptables rules for transmission
       iptables_raw:
@@ -574,6 +602,7 @@
 - name: Deploy transmission in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: transmission
@@ -597,6 +626,7 @@
 - name: Get transmission subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -608,6 +638,7 @@
 - name: Configure nginx proxy for transmission
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_domain }}"
     binded_port: "{{ transmission_internal_web_port }}"
@@ -621,6 +652,7 @@
 - name: Prepare wallabag deployment
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Create wallabag images directory
       file:
@@ -634,6 +666,7 @@
 - name: Deploy wallabag in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: wallabag
@@ -665,6 +698,7 @@
 - name: Get wallabag subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ wallabag_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -676,6 +710,7 @@
 - name: Configure nginx proxy for wallabag
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ wallabag_domain }}"
     binded_port: "{{ wallabag_internal_web_port }}"
@@ -743,6 +778,7 @@
 
 - name: Prepare syncthing deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create syncthing directories
       file:
@@ -757,6 +793,7 @@
 - name: Setup requiered syncthing iptables rules
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Add iptables rules for syncthing
       iptables_raw:
@@ -771,6 +808,7 @@
 - name: Deploy syncthing in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: syncthing
@@ -791,6 +829,7 @@
 - name: Get syncthing subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ syncthing_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -802,6 +841,7 @@
 - name: Configure nginx proxy for syncthing
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ syncthing_domain }}"
     binded_port: "{{ syncthing_internal_web_port }}"
@@ -816,6 +856,7 @@
 - name: Setup requiered openvpn iptables rules
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Add iptables rules for openvpn
       iptables_raw:
@@ -829,6 +870,7 @@
 - name: Prepare openvpn deployment
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: openvpn
   tasks:
@@ -865,6 +907,7 @@
 - name: Deploy openvpn in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: openvpn
@@ -884,6 +927,7 @@
 
 - name: Prepare radicale deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create radicale directories
       file:
@@ -913,6 +957,7 @@
 - name: Deploy radicale in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: radicale
@@ -939,6 +984,7 @@
 - name: Get radicale subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ radicale_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -950,6 +996,7 @@
 - name: Configure nginx proxy for radicale
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ radicale_domain }}"
     binded_port: "{{ radicale_internal_web_port }}"
@@ -967,6 +1014,7 @@
 
 - name: Prepare taskd deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create taskd directories
       file:
@@ -981,6 +1029,7 @@
 - name: Setup requiered taskd iptables rules
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Add iptables rules for taskd
       iptables_raw:
@@ -994,6 +1043,7 @@
 - name: Deploy taskd in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -1012,6 +1062,7 @@
 
 - name: Prepare nextcloud deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create nextcloud directories
       become: true
@@ -1027,6 +1078,7 @@
 - name: Deploy nextcloud in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: nextcloud
     docker_image: "{{ nextcloud_docker_image }}"
@@ -1052,6 +1104,7 @@
 - name: Get nextcloud subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ nextcloud_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -1063,6 +1116,7 @@
 - name: Configure nginx proxy for nextcloud
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ nextcloud_domain }}"
     binded_port: "{{ nextcloud_internal_web_port }}"
@@ -1076,6 +1130,7 @@
 - name: Deploy taiga in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: taiga
     method: build
@@ -1135,6 +1190,7 @@
 - name: Get taiga subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ taiga_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -1146,6 +1202,7 @@
 - name: Configure nginx proxy for taiga
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ taiga_domain }}"
     binded_port: "{{ taiga_internal_web_port }}"
@@ -1158,6 +1215,7 @@
 
 - name: Prepare nfs deployment
   hosts: all
+  gather_facts: false
   tasks:
     - name: Create nfs directories
       file:
@@ -1225,6 +1283,7 @@
 - name: Deploy nfs in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: nfs
     docker_image: "{{ nfs_docker_image }}"
@@ -1246,6 +1305,7 @@
 - name: Deploy bind_dns_server in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
