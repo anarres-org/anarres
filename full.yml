@@ -30,31 +30,19 @@
     - role: anarres-sec
   tags: sec
 
-- name: Setup requiered web iptables rules
+- name: Deploy web related services
   hosts: all
   become: true
   gather_facts: false
-  tasks:
-    - name: Add iptables rules for HTTP and HTTPS
-      iptables_raw:
-        name: web_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
-  tags:
-    - iptables
-    - web-iptables
-    - web
+  vars:
+    domain: "{{ base_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+    letsencrypt_method: standalone
+  pre_tasks:
+    - name: Gather tasks
+      setup:
+        filter: ansible_*
 
-- name: "[Pretask] Prepare web deployment"
-  hosts: all
-  become: true
-  gather_facts: false
-  tags:
-    - web-prepare
-    - web
-  tasks:
     - name: Add group name ssl-cert for SSL certificates
       group:
         name: ssl-cert
@@ -85,26 +73,23 @@
         owner: www-data
         group: www-data
         mode: "u=rwx,g=r,o="
-
-- name: Deploy web related services
-  hosts: all
-  become: true
-  gather_facts: false
+  post_tasks:
+    - name: Add iptables rules for HTTP and HTTPS
+      iptables_raw:
+        name: web_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: letsencrypt-request
-      letsencrypt_renew_hook: /usr/sbin/service nginx reload
-      letsencrypt_method: standalone
       tags:
         - base_cert
         - letsencrypt_request
+        - letsencrypt
     - role: anarres-nginx
       tags: nginx
-  vars:
-    domain: "{{ base_domain }}"
-  pre_tasks:
-    - name: Gather tasks
-      setup:
-        filter: ansible_*
   tags:
     - web-base
     - web
@@ -273,19 +258,25 @@
 
 ## Gitea
 
-- name: Prepare gitea deployment
+- name: Deploy gitea in docker
   hosts: all
+  become: true
   gather_facts: false
-  tasks:
-    - name: Add iptables rules for gitea
-      become: true
-      iptables_raw:
-        name: gitea_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
-      tags: iptables
-
+  vars:
+    service_name: gitea
+    docker_image: "{{ gitea_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ gitea_directory.data }}":/data \
+      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+    service_db_name: "{{ gitea_db_service_name }}"
+    db_name: "{{ gitea_db_name }}"
+    db_user: "{{ gitea_db_user }}"
+    db_user_pass: "{{ gitea_db_user_pass }}"
+  pre_tasks:
     - name: Create gitea directories 755
       file:
         path: "{{ item }}"
@@ -316,26 +307,15 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0644
-  tags: gitea
-
-- name: Deploy gitea in docker
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    service_name: gitea
-    docker_image: "{{ gitea_docker_image }}"
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ gitea_directory.data }}":/data \
-      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
-      -e "USER_UID=1000" -e "USER_GID=1000" \
-      --network "{{ gitea_network }}" \
-      "{{ docker_image }}"
-    service_db_name: "{{ gitea_db_service_name }}"
-    db_name: "{{ gitea_db_name }}"
-    db_user: "{{ gitea_db_user }}"
-    db_user_pass: "{{ gitea_db_user_pass }}"
+  post_tasks:
+    - name: Add iptables rules for gitea
+      become: true
+      iptables_raw:
+        name: gitea_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: gitea
@@ -564,41 +544,6 @@
 
 ## Transmission
 
-- name: Prepare transmission deployment
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Create transmission directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ transmission_directory }}"
-
-    - name: Configure transmission
-      template:
-        src: transmission-settings.json.j2
-        dest: "{{ transmission_directory.conf }}/settings.json"
-        force: "{{ override | default('no') }}"
-  tags: transmission
-
-- name: Setup requiered transmission iptables rules
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Add iptables rules for transmission
-      iptables_raw:
-        name: transmission_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
-      tags: iptables
-  tags: transmission
-
 - name: Deploy transmission in docker
   hosts: all
   become: true
@@ -619,6 +564,30 @@
       -p 51413:51413/tcp \
       -p 51413:51413/udp \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create transmission directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ transmission_directory }}"
+
+    - name: Configure transmission
+      template:
+        src: transmission-settings.json.j2
+        dest: "{{ transmission_directory.conf }}/settings.json"
+        force: "{{ override | default('no') }}"
+  post_tasks:
+    - name: Add iptables rules for transmission
+      iptables_raw:
+        name: transmission_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: transmission
@@ -649,20 +618,6 @@
 
 ## Wallabag
 
-- name: Prepare wallabag deployment
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Create wallabag images directory
-      file:
-        path: "{{ wallabag_path_images }}"
-        state: directory
-        owner: nobody
-        group: nogroup
-        mode: 0700
-  tags: wallabag
-
 - name: Deploy wallabag in docker
   hosts: all
   become: true
@@ -691,6 +646,14 @@
     db_name: "{{ wallabag_db_name }}"
     db_user: "{{ wallabag_db_user }}"
     db_user_pass: "{{ wallabag_db_user_pass }}"
+  pre_tasks:
+    - name: Create wallabag images directory
+      file:
+        path: "{{ wallabag_path_images }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: 0700
   roles:
     - role: generic_docker_systemd
   tags: wallabag
@@ -721,8 +684,8 @@
 
 ## Selfoss
 
-#  TODO: configuration template <06-07-18, m0u>
-#  TODO: external db <06-07-18, m0u>
+#  TODO: configuration template <06-07-18, m0wer>
+#  TODO: external db <06-07-18, m0wer>
 
 #
 # - name: Prepare selfoss deployment
@@ -776,35 +739,6 @@
 
 ## Syncthing
 
-- name: Prepare syncthing deployment
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Create syncthing directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ syncthing_directory }}"
-  tags: syncthing
-
-- name: Setup requiered syncthing iptables rules
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Add iptables rules for syncthing
-      iptables_raw:
-        name: syncthing_rules
-        weight: 20
-        rules: |
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
-      tags: iptables
-  tags: syncthing
-
 - name: Deploy syncthing in docker
   hosts: all
   become: true
@@ -822,6 +756,24 @@
       -p "{{ syncthing_listening_port }}:22000" \
       -p "{{ syncthing_discovery_port }}:21027/udp" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create syncthing directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ syncthing_directory }}"
+  post_tasks:
+    - name: Add iptables rules for syncthing
+      iptables_raw:
+        name: syncthing_rules
+        weight: 20
+        rules: |
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: syncthing
@@ -852,28 +804,22 @@
 
 ## OpenVPN
 
-#  TODO: is this really needed? since the docker has full net capabilities <19-08-18, m0u>
-- name: Setup requiered openvpn iptables rules
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Add iptables rules for openvpn
-      iptables_raw:
-        name: openvpn_rules
-        weight: 20
-        rules: |
-          {{ openvpn_iptables_p2p_rule }}
-      tags: iptables
-  tags: openvpn
-
-- name: Prepare openvpn deployment
+- name: Deploy openvpn in docker
   hosts: all
   become: true
   gather_facts: false
   vars:
+    create_volume: false
     service_name: openvpn
-  tasks:
+    docker_image: "{{ openvpn_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ openvpn_directory.conf }}":/etc/openvpn \
+      --cap-add=NET_ADMIN \
+      -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
+      "{{ docker_image }}"
+  pre_tasks:
     - name: Create openvpn directories
       file:
         path: "{{ item.value }}"
@@ -883,7 +829,14 @@
         mode: 0700
       with_dict: "{{ openvpn_directory }}"
       notify: Configure openvpn container
-
+  post_tasks:
+    - name: Add iptables rules for openvpn
+      iptables_raw:
+        name: openvpn_rules
+        weight: 20
+        rules: |
+          {{ openvpn_iptables_p2p_rule }}
+      tags: iptables
   handlers:
     - name: Configure openvpn container
       command: "{{ openvpn_confiure_docker_command }}"
@@ -902,57 +855,11 @@
           "Re-Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
-  tags: openvpn
-
-- name: Deploy openvpn in docker
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    create_volume: false
-    service_name: openvpn
-    docker_image: "{{ openvpn_docker_image }}"
-    enable_db: false
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ openvpn_directory.conf }}":/etc/openvpn \
-      --cap-add=NET_ADMIN \
-      -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
-      "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
   tags: openvpn
 
 ## Radicale
-
-- name: Prepare radicale deployment
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Create radicale directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ radicale_directory }}"
-    - name: Copy radicale configuration template
-      template:
-        src: radicale-config.j2
-        dest: "{{ radicale_directory.conf }}/config"
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-    - name: Add radicale login credentiasl
-      lineinfile:
-        path: "{{ radicale_directory.etc }}/users"
-        line: "{{ radicale_user }}:{{ radicale_pass }}"
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-        create: true
-  tags: radicale
 
 - name: Deploy radicale in docker
   hosts: all
@@ -977,6 +884,32 @@
       -v "{{ radicale_directory.etc }}":/etc/radicale \
       -v "{{ radicale_directory.conf }}":/config:ro \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create radicale directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ radicale_directory }}"
+
+    - name: Copy radicale configuration template
+      template:
+        src: radicale-config.j2
+        dest: "{{ radicale_directory.conf }}/config"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+
+    - name: Add radicale login credentiasl
+      lineinfile:
+        path: "{{ radicale_directory.etc }}/users"
+        line: "{{ radicale_user }}:{{ radicale_pass }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+        create: true
   roles:
     - role: generic_docker_systemd
   tags: radicale
@@ -1012,34 +945,6 @@
 
 ## taskd
 
-- name: Prepare taskd deployment
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Create taskd directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ taskd_directory }}"
-  tags: taskd
-
-- name: Setup requiered taskd iptables rules
-  hosts: all
-  become: true
-  gather_facts: false
-  tasks:
-    - name: Add iptables rules for taskd
-      iptables_raw:
-        name: taskd_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
-      tags: iptables
-  tags: taskd
-
 - name: Deploy taskd in docker
   hosts: all
   become: true
@@ -1054,26 +959,28 @@
       -v "{{ taskd_directory.data }}":/var/taskd \
       -p "{{ taskd_port }}:53589" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create taskd directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ taskd_directory }}"
+  post_tasks:
+    - name: Add iptables rules for taskd
+      iptables_raw:
+        name: taskd_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: taskd
 
 ## Nextcloud
-
-- name: Prepare nextcloud deployment
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Create nextcloud directories
-      become: true
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_33 }}"
-        group: 0
-        mode: 0750
-      with_dict: "{{ nextcloud_directory }}"
-  tags: nextcloud
 
 - name: Deploy nextcloud in docker
   hosts: all
@@ -1097,6 +1004,16 @@
       -e "MYSQL_PASSWORD={{ db_user_pass }}" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create nextcloud directories
+      become: true
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_33 }}"
+        group: 0
+        mode: 0750
+      with_dict: "{{ nextcloud_directory }}"
   roles:
     - role: generic_docker_systemd
   tags: nextcloud
@@ -1213,10 +1130,23 @@
 
 ## NFS
 
-- name: Prepare nfs deployment
+- name: Deploy nfs in docker
   hosts: all
+  become: true
   gather_facts: false
-  tasks:
+  vars:
+    service_name: nfs
+    docker_image: "{{ nfs_docker_image }}"
+    enable_db: false
+    create_network: false
+    create_volume: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --cap-add SYS_ADMIN \
+      -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
+      {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
+      "{{ docker_image }}"
+  pre_tasks:
     - name: Create nfs directories
       file:
         path: "{{ item.value }}"
@@ -1269,7 +1199,7 @@
       with_items:
         - nfs
         - nfsd
-
+  post_tasks:
     - name: Add iptables rules for nfs
       become: true
       iptables_raw:
@@ -1278,24 +1208,6 @@
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ nfs_port | default('2049') }} -j ACCEPT
       tags: iptables
-  tags: nfs
-
-- name: Deploy nfs in docker
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    service_name: nfs
-    docker_image: "{{ nfs_docker_image }}"
-    enable_db: false
-    create_network: false
-    create_volume: false
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      --cap-add SYS_ADMIN \
-      -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
-      {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
-      "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
   tags: nfs
