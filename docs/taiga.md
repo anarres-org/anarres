@@ -6,7 +6,7 @@
 ## Variables
 
 * `taiga_domain`: Domain/subdomain for the service.
-* `taiga_docker_repo`: (Default: `https://github.com/fanningert/docker-taiga`)
+* `taiga_docker_repo`: (Default: `https://github.com/m0wer/docker-taiga`)
   Git repo containing the *Dockerfile*.
 * `taiga_docker_image`: (Default: `local/taiga`) Name for the local service
   docker image.

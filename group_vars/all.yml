@@ -262,11 +262,12 @@ nextcloud_db_user_pass:
 ## Taiga
 
 taiga_domain: "taiga.{{ base_domain }}"
-taiga_docker_repo: https://github.com/fanningert/docker-taiga
+taiga_docker_repo: https://github.com/m0wer/docker-taiga
 taiga_docker_repo_tag: master
 taiga_docker_image: local/taiga
 taiga_internal_web_port: 3050
 taiga_secret_key:
+taiga_backend_webhooks_enabled: false
 
 taiga_path_dockerfile: "{{ dockerfiles_path }}/docker-taiga"
 taiga_directory:

@@ -83,7 +83,7 @@ directory, by default */data*.
   [nextcloud](https://github.com/nextcloud/docker).
 * [Taiga](https://taiga.io/): Project management platform for agile developers
    & designers and project managers. Using
-  [docker-taiga](https://github.com/fanningert/docker-taiga).
+  [docker-taiga](https://github.com/m0wer/docker-taiga).
 * [NFS Server](https://sourceforge.net/projects/nfs/): Using
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
 

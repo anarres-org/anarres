@@ -1082,6 +1082,7 @@
       -e "LDAP_SEARCH_PROPERTY={{ taiga_ldap_search_property }}" \
       -e "LDAP_EMAIL_PROPERTY={{ taiga_ldap_email_attribute }}" \
       -e "LDAP_FULL_NAME_PROPERTY={{ taiga_ldap_full_name_attribute }}" \
+      -e "TAIGA_BACKEND_WEBHOOKS_ENABLED={{ taiga_backend_webhooks_enabled }}" \
       -v "{{ taiga_directory.media }}:/taiga.io/taiga-back/media" \
       {% endif %}
       --network "{{ service_name }}" \
