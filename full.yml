@@ -1254,3 +1254,62 @@
   roles:
     - role: generic_docker_systemd
   tags: bind_dns_server
+
+## Murmur
+
+- name: Get murmur subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ murmur_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.murmur.service restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: murmur
+
+- name: Deploy murmur in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: murmur
+    docker_image: "{{ murmur_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -e 'PUID=1000' -e 'PGID=1000' \
+      -e 'RUN_CHOWN=false' \
+      -e "CERTDIR=/etc/letsencrypt/live/{{ murmur_domain }}" \
+      -v "{{ murmur_directory.conf }}":/opt/murmur/config \
+      -v "{{ murmur_directory.data }}":/opt/murmur/data \
+      -v "{{ murmur_directory.log }}":/opt/murmur/log \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -v /etc/letsencrypt/live/{{ murmur_domain }}:/etc/letsencrypt/live/{{ murmur_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ murmur_domain }}:/etc/letsencrypt/archive/{{ murmur_domain }}/:ro \
+      -p "{{ murmur_port }}:64738/tcp" \
+      -p "{{ murmur_port }}:64738/udp" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create murmur directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ murmur_directory }}"
+  post_tasks:
+    - name: Add iptables rules for murmur
+      iptables_raw:
+        name: murmur_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ murmur_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ murmur_port }} -j ACCEPT
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: murmur

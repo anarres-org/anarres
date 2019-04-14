@@ -318,3 +318,14 @@ bind_dns_server_port: 53
 
 bind_dns_server_directory:
   data: "{{ data_path }}/bind_dns_server/data"
+
+## Murmur
+
+murmur_domain: "mumble.{{ base_domain }}"
+murmur_docker_image: goofball222/murmur:latest
+murmur_port: 64738
+
+murmur_directory:
+  conf: "{{ data_path }}/murmur/conf"
+  data: "{{ data_path }}/murmur/data"
+  log: "{{ data_path }}/murmur/log"
