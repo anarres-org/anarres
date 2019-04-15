@@ -1050,8 +1050,6 @@
   gather_facts: false
   vars:
     service_name: taiga
-    method: build
-    service_pre_command: "/usr/bin/docker build --no-cache -t {{ docker_image }} {{ taiga_path_dockerfile }}"
     docker_image: "{{ taiga_docker_image }}"
     docker_db_image: "{{ taiga_db_image }}"
     create_network: true
@@ -1096,11 +1094,6 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
       with_dict: "{{ taiga_directory }}"
-    - name: Clone taiga docker repo
-      git:
-        repo: "{{ taiga_docker_repo }}"
-        dest: "{{ taiga_path_dockerfile }}"
-        version: "{{ taiga_docker_repo_tag }}"
   roles:
     - role: generic_docker_systemd
   tags: taiga
