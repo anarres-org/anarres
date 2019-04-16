@@ -53,17 +53,11 @@ provisioner:
       taiga_secret_key: changeme
       taiga_db_user_pass: changeme
       user_uid_101: systemd-network
-  env:
-    ANSIBLE_LIBRARY: /etc/ansible/library
-    ANSIBLE_ROLES_PATH: ../../../../roles/
   lint:
     name: ansible-lint
     options:
       exclude:
         - roles/
-  config_options:
-    defaults:
-      callback_whitelist: profile_tasks
 scenario:
   name: default
 verifier:
