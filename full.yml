@@ -1335,7 +1335,7 @@
     - name: Configure prometheus
       template:
         src: prometheus.yml
-        dest: "{{ prometheus_directory.conf }}/prometheus.yml"
+        dest: "{{ prometheus_directory.conf }}"
         force: "{{ override | default('no') }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
@@ -1413,3 +1413,24 @@
   roles:
     - role: generic_docker_systemd
   tags: nginx-prometheus-exporter
+
+#### Prometheus docker metrics
+
+- name: Configure Docker for export prometheus metrics
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Configure docker daemon
+      template:
+        src: docker.json
+        dest: "/etc/docker/daemon.json"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0644
+    - name: Reload docker
+      systemd:
+        name: docker
+        state: restarted
+  tags: docker-prometheus

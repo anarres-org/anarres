@@ -19,6 +19,7 @@ docker_db_image: mariadb:10.3
 docker_db_postgres_image: postgres:11
 dockerfiles_path: /root/dockerfiles
 
+
 ## Following values will be used for the root account of every docker database
 db_pass:
 db_config_port: 3306
@@ -75,7 +76,7 @@ phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]
 ## Gitea
 
 gitea_domain: "git.{{ base_domain }}"
-gitea_docker_image: gitea/gitea:1.6
+gitea_docker_image: gitea/gitea:1.7
 
 ### DB
 
@@ -338,3 +339,4 @@ prometheus_domain: "prom.{{ base_domain }}"
 
 prometheus_nginx_docker_image: "nginx/nginx-prometheus-exporter:0.3.0"
 prometheus_nginx_internal_web_port: 9113
+gitea_token: "9aijdllSBNJPYko7HqN9dXo7LyZvTJKf"
