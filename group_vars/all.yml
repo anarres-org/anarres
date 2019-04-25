@@ -327,3 +327,14 @@ murmur_directory:
   conf: "{{ data_path }}/murmur/conf"
   data: "{{ data_path }}/murmur/data"
   log: "{{ data_path }}/murmur/log"
+
+## Prometheus
+
+prometheus_docker_image: "prom/prometheus"
+prometheus_directory:
+  conf: "{{ data_path }}/prometheus/conf"
+prometheus_internal_web_port: 9090
+prometheus_domain: "prom.{{ base_domain }}"
+
+prometheus_nginx_docker_image: "nginx/nginx-prometheus-exporter:0.3.0"
+prometheus_nginx_internal_web_port: 9113

@@ -1307,3 +1307,109 @@
   roles:
     - role: generic_docker_systemd
   tags: murmur
+
+### Prometheus
+
+- name: Deploy prometheus in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: prometheus
+    docker_image: "{{ prometheus_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ prometheus_directory.conf }}/prometheus.yml":/etc/prometheus/prometheus.yml \
+      -p "{{ prometheus_internal_web_port }}:9090" \
+      --network="host" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create prometheus directories
+      file:
+        path: "{{ prometheus_directory.conf }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+    - name: Configure prometheus
+      template:
+        src: prometheus.yml
+        dest: "{{ prometheus_directory.conf }}/prometheus.yml"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0644
+  roles:
+    - role: generic_docker_systemd
+  tags: prometheus
+
+- name: Get prometheus subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prometheus_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: prometheus
+
+- name: Configure nginx proxy for prometheus
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prometheus_domain }}"
+    binded_port: "{{ prometheus_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: prometheus
+
+#### Prometheus NGINX exporter
+
+- name: Configure NGINX metrics
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Copy nginx config
+      template:
+        src: nginx_status.conf
+        dest: "/etc/nginx/sites-available/nginx_status.conf"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0644
+    - name: Enable vhost
+      file:
+        src: "/etc/nginx/sites-available/nginx_status.conf"
+        dest: "/etc/nginx/sites-enabled/nginx_status.conf"
+        owner: www-data
+        group: www-data
+        state: link
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+  tags: nginx-prometheus-exporter
+
+- name: Deploy NGINX prometheus exporter in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: nginx-prometheus-exporter
+    docker_image: "{{ prometheus_nginx_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ prometheus_nginx_internal_web_port }}:9113" \
+      --network="host" \
+      "{{ docker_image }}" \
+      -nginx.scrape-uri http://localhost:8080/stub_status
+  roles:
+    - role: generic_docker_systemd
+  tags: nginx-prometheus-exporter
