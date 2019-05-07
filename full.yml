@@ -463,7 +463,7 @@
   gather_facts: false
   vars:
     domain: "{{ drone_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
@@ -524,7 +524,7 @@
   gather_facts: false
   vars:
     domain: "{{ drone_github_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
