@@ -53,6 +53,7 @@ provisioner:
       taiga_secret_key: changeme
       taiga_db_user_pass: changeme
       user_uid_101: systemd-network
+      wikijs_db_user_pass: changeme
       wikijs_admin_email: admin@anarres.local
       wikijs_title: Anarres Wiki
       wikijs_public: true
