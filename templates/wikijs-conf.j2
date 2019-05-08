@@ -88,7 +88,7 @@ auth:
     bindDn: cn='root'
     bindCredentials: BIND_PASSWORD
     searchBase: o=users,o=example.com
-    searchFilter: (uid={{username}})
+    searchFilter: (uid={{ '{{username}}' }})
     tlsEnabled: false
     tlsCertPath: C:\example\root_ca_cert.crt
   azure:
