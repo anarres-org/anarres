@@ -62,26 +62,6 @@ provisioner:
       wikijs_repo_user: test
       wikijs_repo_pass: test
       wikijs_repo_commit_email: "{{ wikijs_admin_email }}"
-
-### DB
-
-wikijs_db_image: "{{ docker_db_mongo_image }}"
-wikijs_db_service_name: wikijs-db
-wikijs_db_user: "wikijs"
-wikijs_db_user_pass:
-wikijs_db_name: "wikijs"
-
-### LDAP
-
-wikijs_enable_ldap: false
-wikijs_ldap_url: "{{ openldap_server_uri }}"
-wikijs_ldap_binddn: "{{ openldap_binddn }}"
-wikijs_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
-wikijs_ldap_searchbase: "{{ openldap_searchbase }}"
-wikijs_ldap_searchfilter: "{{ '(uid={{username}})' }}"
-wikijs_ldap_searchattributes: 'uid, mail'
-wikijs_ldap_userfield: 'uid'
-wikijs_ldap_usernamefield: 'uid'
   lint:
     name: ansible-lint
     options:
