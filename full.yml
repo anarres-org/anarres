@@ -1344,7 +1344,7 @@
     - name: Configure wikijs
       template:
         src: wikijs-conf.j2
-        dest: "{{ wikijs_directory.conf }}/config.yml"
+        dest: "{{ wikijs_path_config }}/config.yml"
         force: "{{ override | default('no') }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
