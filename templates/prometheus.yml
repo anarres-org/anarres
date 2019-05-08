@@ -37,6 +37,11 @@ scrape_configs:
       - targets: ['localhost:3000']
 
   - job_name: 'docker'
-  
+
     static_configs:
       - targets: ['localhost:9323']
+
+  - job_name: 'cAdvisor'
+
+    static_configs:
+      - targets: ['localhost:8067']

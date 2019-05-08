@@ -329,6 +329,12 @@ murmur_directory:
   data: "{{ data_path }}/murmur/data"
   log: "{{ data_path }}/murmur/log"
 
+## cAdvisor
+
+cadvisor_docker_image: "google/cadvisor:v0.33.0"
+cadvisor_internal_web_port: 8067
+cadvisor_domain: "cadvisor.{{ base_domain }}"
+
 ## Prometheus
 
 prometheus_docker_image: "prom/prometheus"

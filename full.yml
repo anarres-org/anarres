@@ -1308,6 +1308,51 @@
     - role: generic_docker_systemd
   tags: murmur
 
+### cAdvisor
+
+- name: Deploy cAdvisor in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: cadvisor
+    docker_image: "{{ cadvisor_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "/:/rootfs:ro" -v "/var/run:/var/run:ro" \
+      -v "/sys:/sys:ro" -v "/var/lib/docker/:/var/lib/docker:ro" \
+      -v "/dev/disk/:/dev/disk:ro" \
+      -p "{{ cadvisor_internal_web_port }}:8080" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: cadvisor
+
+- name: Get cadvisor subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ cadvisor_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: cadvisor
+
+- name: Configure nginx proxy for cadvisor
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ cadvisor_domain }}"
+    binded_port: "{{ cadvisor_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: cadvisor
+
 ### Prometheus
 
 - name: Deploy prometheus in docker
