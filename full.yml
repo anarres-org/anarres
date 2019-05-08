@@ -1329,7 +1329,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ wikijs_web_port }}:3000" \
       -e "WIKI_ADMIN_EMAIL={{ wikijs_admin_email }}" \
-      -v "{{ wikijs_path_config }}/config.yml:/var/wiki/config.yml:ro" \
+      -v "{{ wikijs_directory.conf }}/config.yml:/var/wiki/config.yml:ro" \
       --network "{{ wikijs_network_name }}" \
       "{{ docker_image }}"
   pre_tasks:
@@ -1344,7 +1344,7 @@
     - name: Configure wikijs
       template:
         src: wikijs-conf.j2
-        dest: "{{ wikijs_path_config }}/config.yml"
+        dest: "{{ wikijs_directory.conf }}/config.yml"
         force: "{{ override | default('no') }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
