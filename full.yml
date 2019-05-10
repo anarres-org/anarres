@@ -1349,6 +1349,11 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
+    - name: Install pymongo dependency
+      pip:
+        name: pymongo
+        state: present
+      tags: dependencies
   roles:
     - role: generic_docker_systemd
   tags: wikijs
