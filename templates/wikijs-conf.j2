@@ -85,8 +85,8 @@ auth:
   ldap:
     enabled: {{ wikijs_enable_ldap }}
     url: {{ wikijs_ldap_url }}
-    bindDn: {{ wikijs_ldap_binddn }}
-    bindCredentials: {{ wikijs_ldap_bindcredentials }}
+    bindDn: {{ wikijs_ldap_bind_dn }}
+    bindCredentials: {{ wikijs_ldap_bind_credentials }}
     searchBase: {{ wikijs_ldap_search_base }}
     searchFilter: (uid={{ '{{username}}' }})
     tlsEnabled: true
