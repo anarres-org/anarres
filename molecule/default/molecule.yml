@@ -53,6 +53,16 @@ provisioner:
       taiga_secret_key: changeme
       taiga_db_user_pass: changeme
       user_uid_101: systemd-network
+      wikijs_db_user_pass: changeme
+      wikijs_admin_email: admin@anarres.local
+      wikijs_title: Anarres Wiki
+      wikijs_public: true
+      wikijs_session_secret: changeme
+      wikijs_repo_url: https://github.com/anarres-org/anarres
+      wikijs_repo_branch: master
+      wikijs_repo_user: test
+      wikijs_repo_pass: test
+      wikijs_repo_commit_email: "{{ wikijs_admin_email }}"
   lint:
     name: ansible-lint
     options:
