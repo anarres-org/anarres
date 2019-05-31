@@ -29,9 +29,9 @@
 * `taiga_ldap_server`: LDAP server address. Include `ldaps://` at the
   begining. (Example: `ldaps://anarres.local`)
 * `taiga_ldap_port`: LDAP port.
-* `taiga_ldap_binddn`: Bind DN to use to login to the LDAP server.
-* `taiga_ldap_bindcredentials`: Password for that account.
-* `taiga_ldap_searchbase`: Where to find the users for this service of the
+* `taiga_ldap_bind_dn`: Bind DN to use to login to the LDAP server.
+* `taiga_ldap_bindc_redentials`: Password for that account.
+* `taiga_ldap_search_base`: Where to find the users for this service of the
    LDAP organization. (Example: `ou=users,dc=anarres,dc=local`)
 * `taiga_ldap_search_property`: (Default: `uid`) The LDAP field which is used
    uniquely identify a user on Taiga.

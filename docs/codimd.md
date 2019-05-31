@@ -27,15 +27,15 @@ Realtime collaborative markdown notes on all platforms. Like
   the LDAP logging ability.
 * `codimd_ldap_url`: LDAP server address. Include `ldaps://` at the
   begining and `:[port]` at the end. (Example: `ldaps://anarres.local:636`)
-* `codimd_ldap_binddn`: Bind DN to use to login to the LDAP server.
-* `codimd_ldap_bindcredentials`: Password for that account.
-* `codimd_ldap_searchbase`: Where to find the users for this service of the
+* `codimd_ldap_bind_dn`: Bind DN to use to login to the LDAP server.
+* `codimd_ldap_bind_credentials`: Password for that account.
+* `codimd_ldap_search_base`: Where to find the users for this service of the
    LDAP organization. (Example: `ou=users,dc=anarres,dc=local`)
-* `codimd_ldap_searchfilter`: (Default:`(uid={{username}})`) LDAP filter to
+* `codimd_ldap_search_filter`: (Default:`(uid={{username}})`) LDAP filter to
   verify the users's identification.
-* `codimd_ldap_searchattributes`: (Default: `uid, mail`) Attributes to
+* `codimd_ldap_search_attributes`: (Default: `uid, mail`) Attributes to
   search with the LDAP query.
-* `codimd_ldap_userfield`: (Default: `uid`) The LDAP field which is used
+* `codimd_ldap_user_field`: (Default: `uid`) The LDAP field which is used
    uniquely identify a user on CodiMD.
-* `codimd_ldap_usernamefield`: (Default: `uid`) The LDAP field which is
+* `codimd_ldap_user_name_field`: (Default: `uid`) The LDAP field which is
    used as the username on CodiMD.

@@ -86,6 +86,8 @@ directory, by default */data*.
   [docker-taiga](https://github.com/m0wer/docker-taiga).
 * [NFS Server](https://sourceforge.net/projects/nfs/): Using
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
+* [Wiki.js](https://wiki.js.org/): Using
+  [requarks/wiki](https://github.com/Requarks/wiki).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).

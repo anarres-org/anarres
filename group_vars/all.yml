@@ -60,9 +60,9 @@ openldap_server_domain: "{{ base_domain }}"
 openldap_server_port: 636
 openldap_server_uri: "{{ openldap_server_protocol }}{{ openldap_server_domain }}:{{ openldap_server_port }}"
 openldap_validate_certs: true
-openldap_binddn: "cn=readonly,{{ openldap_base_DN }}"
-openldap_bindcredentials: "{{ openldap_readonly_password }}"
-openldap_searchbase: "ou=users,{{ openldap_base_DN }}"
+openldap_bind_dn: "cn=readonly,{{ openldap_base_DN }}"
+openldap_bind_credentials: "{{ openldap_readonly_password }}"
+openldap_search_base: "ou=users,{{ openldap_base_DN }}"
 
 ## phpLDAPadmin
 
@@ -138,13 +138,13 @@ codimd_db_name: "codimd"
 
 codimd_enable_ldap: true
 codimd_ldap_url: "{{ openldap_server_uri }}"
-codimd_ldap_binddn: "{{ openldap_binddn }}"
-codimd_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
-codimd_ldap_searchbase: "{{ openldap_searchbase }}"
-codimd_ldap_searchfilter: "{{ '(uid={{username}})' }}"
-codimd_ldap_searchattributes: 'uid, mail'
-codimd_ldap_userfield: 'uid'
-codimd_ldap_usernamefield: 'uid'
+codimd_ldap_bind_dn: "{{ openldap_bind_dn }}"
+codimd_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+codimd_ldap_search_base: "{{ openldap_search_base }}"
+codimd_ldap_search_filter: "{{ '(uid={{username}})' }}"
+codimd_ldap_search_attributes: 'uid, mail'
+codimd_ldap_user_field: 'uid'
+codimd_ldap_user_name_field: 'uid'
 
 ## Transmission
 
@@ -284,9 +284,9 @@ taiga_db_user_pass:
 taiga_enable_ldap: true
 taiga_ldap_server: "{{ openldap_server_protocol }}{{ openldap_server_domain }}"
 taiga_ldap_port: "{{ openldap_server_port }}"
-taiga_ldap_binddn: "{{ openldap_binddn }}"
-taiga_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
-taiga_ldap_searchbase: "{{ openldap_searchbase }}"
+taiga_ldap_bind_dn: "{{ openldap_bind_dn }}"
+taiga_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+taiga_ldap_search_base: "{{ openldap_search_base }}"
 taiga_ldap_search_property: 'uid'
 taiga_ldap_email_attribute: 'mail'
 taiga_ldap_full_name_attribute: 'cn'
@@ -327,3 +327,40 @@ murmur_directory:
   conf: "{{ data_path }}/murmur/conf"
   data: "{{ data_path }}/murmur/data"
   log: "{{ data_path }}/murmur/log"
+
+## Wiki.js
+
+wikijs_docker_image: requarks/wiki:latest
+wikijs_domain: "wiki.{{ base_domain }}"
+wikijs_web_port: 3060
+wikijs_network_name: "wikijs"
+
+wikijs_directory:
+  conf: "{{ data_path }}/wikijs/conf"
+  db: "{{ data_path }}/wikijs/db"
+
+wikijs_admin_email:
+wikijs_title:
+wikijs_public:
+wikijs_session_secret:
+wikijs_repo_url:
+wikijs_repo_branch:
+wikijs_repo_user:
+wikijs_repo_pass:
+wikijs_repo_commit_email:
+
+### DB
+
+wikijs_db_image: "{{ docker_db_mongo_image }}"
+wikijs_db_service_name: wikijs-db
+wikijs_db_user: wikijs
+wikijs_db_user_pass:
+wikijs_db_name: wikijs
+
+### LDAP
+
+wikijs_enable_ldap: false
+wikijs_ldap_url: "{{ openldap_server_uri }}"
+wikijs_ldap_bind_dn: "{{ openldap_bind_dn }}"
+wikijs_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+wikijs_ldap_search_base: "{{ openldap_search_base }}"
