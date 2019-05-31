@@ -370,13 +370,13 @@
       -e "CMD_URL_ADDPORT=false" \
       {% if codimd_enable_ldap %}
       -e "CMD_LDAP_URL={{ codimd_ldap_url }}" \
-      -e "CMD_LDAP_BINDDN={{ codimd_ldap_binddn }}" \
-      -e "CMD_LDAP_BINDCREDENTIALS={{ codimd_ldap_bindcredentials }}" \
-      -e "CMD_LDAP_SEARCHBASE={{ codimd_ldap_searchbase }}" \
-      -e "CMD_LDAP_SEARCHFILTER={{ codimd_ldap_searchfilter }}" \
-      -e "CMD_LDAP_SEARCHATTRIBUTES={{ codimd_ldap_searchattributes }}" \
-      -e "CMD_LDAP_USERIDFIELD={{ codimd_ldap_userfield }}" \
-      -e "CMD_LDAP_USERNAMEFIELD={{ codimd_ldap_usernamefield }}" \
+      -e "CMD_LDAP_BINDDN={{ codimd_ldap_bind_dn }}" \
+      -e "CMD_LDAP_BINDCREDENTIALS={{ codimd_ldap_bind_credentials }}" \
+      -e "CMD_LDAP_SEARCHBASE={{ codimd_ldap_search_base }}" \
+      -e "CMD_LDAP_SEARCHFILTER={{ codimd_ldap_search_filter }}" \
+      -e "CMD_LDAP_SEARCHATTRIBUTES={{ codimd_ldap_search_attributes }}" \
+      -e "CMD_LDAP_USERIDFIELD={{ codimd_ldap_user_field }}" \
+      -e "CMD_LDAP_USERNAMEFIELD={{ codimd_ldap_user_name_field }}" \
       -e 'CMD_IMAGE_UPLOAD_TYPE=filesystem' \
       -e "CMD_LDAP_TLS_CA=/etc/ssl/certs/ca-certificates.crt" \
       -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
@@ -1074,9 +1074,9 @@
       -e 'LDAP_ENABLE=true' \
       -e "LDAP_SERVER={{ taiga_ldap_server }}" \
       -e "LDAP_PORT={{ taiga_ldap_port }}" \
-      -e "LDAP_BIND_DN={{ taiga_ldap_binddn }}" \
-      -e "LDAP_BIND_PASSWORD={{ taiga_ldap_bindcredentials }}" \
-      -e "LDAP_SEARCH_BASE={{ taiga_ldap_searchbase }}" \
+      -e "LDAP_BIND_DN={{ taiga_ldap_bind_dn }}" \
+      -e "LDAP_BIND_PASSWORD={{ taiga_ldap_bind_credentials }}" \
+      -e "LDAP_SEARCH_BASE={{ taiga_ldap_search_base }}" \
       -e "LDAP_SEARCH_PROPERTY={{ taiga_ldap_search_property }}" \
       -e "LDAP_EMAIL_PROPERTY={{ taiga_ldap_email_attribute }}" \
       -e "LDAP_FULL_NAME_PROPERTY={{ taiga_ldap_full_name_attribute }}" \
