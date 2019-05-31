@@ -39,7 +39,7 @@
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
     letsencrypt_method: standalone
   pre_tasks:
-    - name: Gather tasks
+    - name: Gather facts
       setup:
         filter: ansible_*
 
@@ -73,7 +73,6 @@
         owner: www-data
         group: www-data
         mode: "u=rwx,g=r,o="
-  post_tasks:
     - name: Add iptables rules for HTTP and HTTPS
       iptables_raw:
         name: web_rules
