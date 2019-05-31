@@ -83,14 +83,14 @@ auth:
     clientId: 'SLACK_CLIENT_ID'
     clientSecret: 'SLACK_CLIENT_SECRET'
   ldap:
-    enabled: false
-    url: ldap://serverhost:389
-    bindDn: cn='root'
-    bindCredentials: BIND_PASSWORD
-    searchBase: o=users,o=example.com
+    enabled: {{ wikijs_enable_ldap }}
+    url: {{ wikijs_ldap_url }}
+    bindDn: {{ wikijs_ldap_binddn }}
+    bindCredentials: {{ wikijs_ldap_bindcredentials }}
+    searchBase: {{ wikijs_ldap_search_base }}
     searchFilter: (uid={{ '{{username}}' }})
-    tlsEnabled: false
-    tlsCertPath: C:\example\root_ca_cert.crt
+    tlsEnabled: true
+    tlsCertPath: /etc/ssl/certs/ca-certificates.crt
   azure:
     enabled: false
     clientId: APP_ID

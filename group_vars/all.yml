@@ -364,8 +364,5 @@ wikijs_enable_ldap: false
 wikijs_ldap_url: "{{ openldap_server_uri }}"
 wikijs_ldap_binddn: "{{ openldap_binddn }}"
 wikijs_ldap_bindcredentials: "{{ openldap_bindcredentials }}"
-wikijs_ldap_searchbase: "{{ openldap_searchbase }}"
-wikijs_ldap_searchfilter: "{{ '(uid={{username}})' }}"
-wikijs_ldap_searchattributes: 'uid, mail'
-wikijs_ldap_userfield: 'uid'
-wikijs_ldap_usernamefield: 'uid'
+wikijs_ldap_search_base: "{{ openldap_searchbase }}"
+wikijs_ldap_search_filter: "{{ '(uid={{username}})' }}"
