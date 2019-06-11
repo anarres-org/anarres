@@ -67,7 +67,7 @@ openldap_search_base: "ou=users,{{ openldap_base_DN }}"
 ## phpLDAPadmin
 
 phpldapadmin_domain: "ldap.{{ base_domain }}"
-phpldapadmin_docker_image: osixia/phpldapadmin:0.7.2
+phpldapadmin_docker_image: osixia/phpldapadmin:0.8.0
 phpldapadmin_internal_web_port: 4002
 
 phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
