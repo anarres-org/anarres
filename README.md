@@ -159,7 +159,7 @@ webroot_path = /var/www/letsencrypt,
 ## Backup
 
 Make sure to backup your `data_path` (by default */data*) and the docker
-volumes (used by the databases) from */var/lib/docker/volumes*.
+volumes (used by the databases) from */var/lib/docker/volumes* if used.
 
 ## License
 
