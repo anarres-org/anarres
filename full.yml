@@ -271,6 +271,7 @@
       -e "USER_UID=1000" -e "USER_GID=1000" \
       --network "{{ gitea_network }}" \
       "{{ docker_image }}"
+    docker_service_directory_db: "{{ gitea_directory.db }}"
     service_db_name: "{{ gitea_db_service_name }}"
     db_name: "{{ gitea_db_name }}"
     db_user: "{{ gitea_db_user }}"
@@ -296,6 +297,7 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
       with_items:
+        - "{{ gitea_directory.db }}"
         - "{{ gitea_directory.ssh_data }}"
 
     - name: Configure gitea
@@ -629,7 +631,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ wallabag_internal_web_port }}:80" \
-      -v "{{ wallabag_path_images }}":/var/www/wallabag/web/assets/images \
+      -v "{{ wallabag_directory.images }}":/var/www/wallabag/web/assets/images \
       --network "{{ service_name }}" \
       -e "MYSQL_ROOT_PASSWORD={{ db_pass }}" \
       -e "SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain }}" \
@@ -641,17 +643,25 @@
       -e "SYMFONY__ENV__DATABASE_USER={{ wallabag_db_user }}" \
       -e "SYMFONY__ENV__DATABASE_PASSWORD={{ wallabag_db_user_pass }}" \
       "{{ docker_image }}"
+    docker_service_directory_db: "{{ wallabag_directory.db }}"
     service_db_name: "{{ wallabag_db_service_name }}"
     db_name: "{{ wallabag_db_name }}"
     db_user: "{{ wallabag_db_user }}"
     db_user_pass: "{{ wallabag_db_user_pass }}"
   pre_tasks:
-    - name: Create wallabag images directory
+    - name: "Create wallabag directories nobody:nogroup"
       file:
-        path: "{{ wallabag_path_images }}"
+        path: "{{ wallabag_directory.images }}"
         state: directory
         owner: nobody
         group: nogroup
+        mode: 0700
+    - name: Create wallabag directories 700
+      file:
+        path: "{{ wallabag_directory.db }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
         mode: 0700
   roles:
     - role: generic_docker_systemd
@@ -989,6 +999,7 @@
     service_name: nextcloud
     docker_image: "{{ nextcloud_docker_image }}"
     create_volume: false
+    docker_service_directory_db: "{{ nextcloud_directory.db }}"
     service_db_name: "{{ nextcloud_db_service_name }}"
     db_name: "{{ nextcloud_db_name }}"
     db_user: "{{ nextcloud_db_user }}"
@@ -1004,15 +1015,26 @@
       --network "{{ service_name }}" \
       "{{ docker_image }}"
   pre_tasks:
-    - name: Create nextcloud directories
+    - name: Create nextcloud directories 750 uid 33
       become: true
       file:
-        path: "{{ item.value }}"
+        path: "{{ item }}"
         state: directory
         owner: "{{ user_uid_33 }}"
         group: 0
         mode: 0750
-      with_dict: "{{ nextcloud_directory }}"
+      with_items:
+        - "{{ nextcloud_directory.data }}"
+    - name: Create nextcloud directories 700
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ nextcloud_directory.db }}"
   roles:
     - role: generic_docker_systemd
   tags: nextcloud

@@ -86,6 +86,7 @@ gitea_db_user_pass:
 
 gitea_directory:
   data: "{{ data_path }}/gitea/data"
+  db: "{{ data_path }}/gitea/db"
   conf: "{{ data_path }}/gitea/data/gitea/conf"
   git_data: "{{ data_path }}/gitea/data/git"
   ssh_data: "{{ data_path }}/gitea/data/ssh"
@@ -168,7 +169,9 @@ transmission_timezone:  # Example: Europe/Berlin
 wallabag_domain: "wallabag.{{ base_domain }}"
 wallabag_docker_image: wallabag/wallabag:2.3.5
 
-wallabag_path_images: "{{ data_path }}/wallabag/images"
+wallabag_directory:
+  db: "{{ data_path }}/wallabag/db"
+  images: "{{ data_path }}/wallabag/images"
 
 ### DB
 
@@ -251,6 +254,7 @@ nextcloud_internal_web_port: 4001
 
 nextcloud_directory:
   data: "{{ data_path }}/nextcloud/data"
+  db: "{{ data_path }}/nextcloud/db"
 
 ### DB
 
