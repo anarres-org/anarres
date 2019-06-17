@@ -68,7 +68,8 @@ directory, by default */data*.
   like realtime collaborative markdown notes service. Using
   [docker-hackmd](https://github.com/hackmdio/docker-hackmd).
 * [Transmission](https://transmissionbt.com/): Using
-  [linuxserver/transmission](https://github.com/linuxserver/docker-transmission).
+  [linuxserver/transmission](https://github.com/linuxserver/docker-transmission)
+  or [docker-transmission-openvpn](https://github.com/haugene/docker-transmission-openvpn).
 * [Wallabag](https://wallabag.org/): Using
   [wallabag/wallabag](https://github.com/wallabag/docker).
 * [Syncthing](https://syncthing.net/): Using
