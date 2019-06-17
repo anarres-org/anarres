@@ -622,6 +622,7 @@
 - name: Deploy transmission_openvpn in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: transmission_openvpn
@@ -671,6 +672,7 @@
 - name: Get transmission_openvpn subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_openvpn_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -682,6 +684,7 @@
 - name: Configure nginx proxy for transmission_openvpn
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_openvpn_domain }}"
     binded_port: "{{ transmission_openvpn_internal_web_port }}"
