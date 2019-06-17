@@ -510,6 +510,8 @@
       -p {{ transmission_openvpn_internal_web_port }}:9091 \
       -p 51413:51413/tcp \
       -p 51413:51413/udp \
+      --cap-add=NET_ADMIN \
+      --dns {{ transmission_openvpn_dns }} \
       {{ docker_image }}
   pre_tasks:
     - name: Create transmission_openvpn directories

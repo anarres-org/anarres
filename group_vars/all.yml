@@ -118,6 +118,8 @@ transmission_openvpn_internal_web_port: 9091
 transmission_openvpn_peer_port: 51413
 transmission_openvpn_local_network: 192.168.1.0/24
 
+transmission_openvpn_dns: 1.1.1.1
+
 transmission_openvpn_vpn:
   provider:
   conf:
