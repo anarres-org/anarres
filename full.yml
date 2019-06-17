@@ -3,6 +3,7 @@
 - name: Initial tasks
   hosts: all
   become: true
+  gather_facts: false
   tasks:
     - name: Create data directory
       file:
@@ -16,6 +17,7 @@
 - name: Deploy common
   hosts: all
   become: true
+  gather_facts: false
   roles:
     - role: anarres-common
   tags: common
@@ -23,34 +25,24 @@
 - name: Deploy sec
   hosts: all
   become: true
+  gather_facts: false
   roles:
     - role: anarres-sec
   tags: sec
 
-- name: Setup requiered web iptables rules
+- name: Deploy web related services
   hosts: all
   become: true
-  tasks:
-    - name: Add iptables rules for HTTP and HTTPS
-      iptables_raw:
-        name: web_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
-  tags:
-    - iptables
-    - web-iptables
-    - web
+  gather_facts: false
+  vars:
+    domain: "{{ base_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+    letsencrypt_method: standalone
+  pre_tasks:
+    - name: Gather facts
+      setup:
+        filter: ansible_*
 
-- name: "[Pretask] Prepare web deployment"
-  hosts: all
-  become: true
-  gather_facts: true
-  tags:
-    - web-prepare
-    - web
-  tasks:
     - name: Add group name ssl-cert for SSL certificates
       group:
         name: ssl-cert
@@ -81,22 +73,22 @@
         owner: www-data
         group: www-data
         mode: "u=rwx,g=r,o="
-
-- name: Deploy web related services
-  hosts: all
-  become: true
-  gather_facts: true
+    - name: Add iptables rules for HTTP and HTTPS
+      iptables_raw:
+        name: web_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: letsencrypt-request
-      letsencrypt_renew_hook: /usr/sbin/service nginx reload
-      letsencrypt_method: standalone
       tags:
         - base_cert
         - letsencrypt_request
+        - letsencrypt
     - role: anarres-nginx
       tags: nginx
-  vars:
-    domain: "{{ base_domain }}"
   tags:
     - web-base
     - web
@@ -106,6 +98,7 @@
 - name: Get openldap subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ openldap_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
@@ -117,6 +110,7 @@
 - name: Deploy openldap in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -219,6 +213,7 @@
 - name: Deploy phpldapadmin in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -239,6 +234,7 @@
 - name: Get phpldapadmin subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ phpldapadmin_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -250,6 +246,7 @@
 - name: Configure nginx proxy for phpldapadmin
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ phpldapadmin_domain }}"
     binded_port: "{{ phpldapadmin_internal_web_port }}"
@@ -260,18 +257,26 @@
 
 ## Gitea
 
-- name: Prepare gitea deployment
+- name: Deploy gitea in docker
   hosts: all
-  tasks:
-    - name: Add iptables rules for gitea
-      become: true
-      iptables_raw:
-        name: gitea_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
-      tags: iptables
-
+  become: true
+  gather_facts: false
+  vars:
+    service_name: gitea
+    docker_image: "{{ gitea_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ gitea_directory.data }}":/data \
+      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+    docker_service_directory_db: "{{ gitea_directory.db }}"
+    service_db_name: "{{ gitea_db_service_name }}"
+    db_name: "{{ gitea_db_name }}"
+    db_user: "{{ gitea_db_user }}"
+    db_user_pass: "{{ gitea_db_user_pass }}"
+  pre_tasks:
     - name: Create gitea directories 755
       file:
         path: "{{ item }}"
@@ -292,6 +297,7 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
       with_items:
+        - "{{ gitea_directory.db }}"
         - "{{ gitea_directory.ssh_data }}"
 
     - name: Configure gitea
@@ -302,25 +308,15 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0644
-  tags: gitea
-
-- name: Deploy gitea in docker
-  hosts: all
-  become: true
-  vars:
-    service_name: gitea
-    docker_image: "{{ gitea_docker_image }}"
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ gitea_directory.data }}":/data \
-      -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
-      -e "USER_UID=1000" -e "USER_GID=1000" \
-      --network "{{ gitea_network }}" \
-      "{{ docker_image }}"
-    service_db_name: "{{ gitea_db_service_name }}"
-    db_name: "{{ gitea_db_name }}"
-    db_user: "{{ gitea_db_user }}"
-    db_user_pass: "{{ gitea_db_user_pass }}"
+  post_tasks:
+    - name: Add iptables rules for gitea
+      become: true
+      iptables_raw:
+        name: gitea_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: gitea
@@ -328,6 +324,7 @@
 - name: Get gitea subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ gitea_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -339,6 +336,7 @@
 - name: Configure nginx proxy for gitea
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ gitea_domain }}"
     binded_port: "{{ gitea_internal_web_port }}"
@@ -347,11 +345,89 @@
       tags: proxy
   tags: gitea
 
+## CodiMD
+
+- name: Deploy codimd in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: codimd
+    docker_image: "{{ codimd_docker_image }}"
+    docker_db_image: "{{ codimd_db_image }}"
+    create_network: true
+    db_type: postgres
+    docker_service_directory_db: "{{ codimd_directory.db }}"
+    db_user_pass: "{{ codimd_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ codimd_db_name }}"
+    db_user: "{{ codimd_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ codimd_web_port }}:3000" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "CMD_DOMAIN={{ codimd_domain }}" \
+      -e "CMD_DB_URL=postgres://{{ codimd_db_user }}:{{ codimd_db_user_pass }}@{{ codimd_db_service_name }}:5432/{{ codimd_db_name }}" \
+      -e "CMD_URL_ADDPORT=false" \
+      {% if codimd_enable_ldap %}
+      -e "CMD_LDAP_URL={{ codimd_ldap_url }}" \
+      -e "CMD_LDAP_BINDDN={{ codimd_ldap_bind_dn }}" \
+      -e "CMD_LDAP_BINDCREDENTIALS={{ codimd_ldap_bind_credentials }}" \
+      -e "CMD_LDAP_SEARCHBASE={{ codimd_ldap_search_base }}" \
+      -e "CMD_LDAP_SEARCHFILTER={{ codimd_ldap_search_filter }}" \
+      -e "CMD_LDAP_SEARCHATTRIBUTES={{ codimd_ldap_search_attributes }}" \
+      -e "CMD_LDAP_USERIDFIELD={{ codimd_ldap_user_field }}" \
+      -e "CMD_LDAP_USERNAMEFIELD={{ codimd_ldap_user_name_field }}" \
+      -e 'CMD_IMAGE_UPLOAD_TYPE=filesystem' \
+      -e "CMD_LDAP_TLS_CA=/etc/ssl/certs/ca-certificates.crt" \
+      -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
+      -v "{{ codimd_directory.uploads }}:/codimd/public/uploads/" \
+      {% endif %}
+      --network "{{ codimd_network_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create codimd directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ codimd_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: codimd
+
+- name: Get codimd subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ codimd_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: codimd
+
+- name: Configure nginx proxy for codimd
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ codimd_domain }}"
+    binded_port: "{{ codimd_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: codimd
+
 ## Drone
 
 - name: Deploy drone in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: drone
@@ -385,17 +461,19 @@
 - name: Get drone subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service nginx restart
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
   tags: drone
 
-- name: Configure ningx proxy for drone
+- name: Configure nginx proxy for drone
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ drone_domain }}"
     binded_port: "{{ drone_internal_web_port }}"
@@ -404,44 +482,73 @@
       tags: proxy
   tags: drone
 
-## Transmission
+## Drone for GitHub
 
-- name: Prepare transmission deployment
+- name: Deploy drone for github in docker
   hosts: all
-  tasks:
-    - name: Create transmission directories
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: drone_github
+    docker_image: "{{ drone_github_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v "{{ drone_github_directory.data }}":/data \
+      -p "{{ drone_github_internal_web_port }}:80" \
+      -e "USER_UID=1000" -e "USER_GID=1000" \
+      -e "DRONE_GITHUB_SERVER=https://github.com" \
+      -e "DRONE_GITHUB_CLIENT_ID={{ drone_github_client_id }}" \
+      -e "DRONE_GITHUB_CLIENT_SECRET={{ drone_github_client_secret }}" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_SERVER_HOST={{ drone_github_domain }}" \
+      -e "DRONE_SERVER_PROTO=https" \
+      -e "DRONE_TLS_AUTOCERT=false" \
+      --network "{{ gitea_network }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create drone_github directories
       file:
-        path: "{{ item.value }}"
+        path: "{{ drone_github_directory.data }}"
         state: directory
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
-      with_dict: "{{ transmission_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: drone_github
 
-    - name: Configure transmission
-      template:
-        src: transmission-settings.json.j2
-        dest: "{{ transmission_directory.conf }}/settings.json"
-        force: "{{ override | default('no') }}"
-  tags: transmission
-
-- name: Setup requiered transmission iptables rules
+- name: Get drone_github subdomain Let's Encrypt certificate
   hosts: all
   become: true
-  tasks:
-    - name: Add iptables rules for transmission
-      iptables_raw:
-        name: transmission_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
-      tags: iptables
-  tags: transmission
+  gather_facts: false
+  vars:
+    domain: "{{ drone_github_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: drone_github
+
+- name: Configure nginx proxy for drone_github
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ drone_github_domain }}"
+    binded_port: "{{ drone_github_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: drone_github
+
+## Transmission
 
 - name: Deploy transmission in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     enable_db: false
     service_name: transmission
@@ -458,6 +565,30 @@
       -p 51413:51413/tcp \
       -p 51413:51413/udp \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create transmission directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ transmission_directory }}"
+
+    - name: Configure transmission
+      template:
+        src: transmission-settings.json.j2
+        dest: "{{ transmission_directory.conf }}/settings.json"
+        force: "{{ override | default('no') }}"
+  post_tasks:
+    - name: Add iptables rules for transmission
+      iptables_raw:
+        name: transmission_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: transmission
@@ -465,6 +596,7 @@
 - name: Get transmission subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -476,6 +608,7 @@
 - name: Configure nginx proxy for transmission
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ transmission_domain }}"
     binded_port: "{{ transmission_internal_web_port }}"
@@ -559,22 +692,10 @@
 
 ## Wallabag
 
-- name: Prepare wallabag deployment
-  hosts: all
-  become: true
-  tasks:
-    - name: Create wallabag images directory
-      file:
-        path: "{{ wallabag_path_images }}"
-        state: directory
-        owner: nobody
-        group: nogroup
-        mode: 0700
-  tags: wallabag
-
 - name: Deploy wallabag in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: wallabag
@@ -583,7 +704,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ wallabag_internal_web_port }}:80" \
-      -v "{{ wallabag_path_images }}":/var/www/wallabag/web/assets/images \
+      -v "{{ wallabag_directory.images }}":/var/www/wallabag/web/assets/images \
       --network "{{ service_name }}" \
       -e "MYSQL_ROOT_PASSWORD={{ db_pass }}" \
       -e "SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain }}" \
@@ -595,10 +716,26 @@
       -e "SYMFONY__ENV__DATABASE_USER={{ wallabag_db_user }}" \
       -e "SYMFONY__ENV__DATABASE_PASSWORD={{ wallabag_db_user_pass }}" \
       "{{ docker_image }}"
+    docker_service_directory_db: "{{ wallabag_directory.db }}"
     service_db_name: "{{ wallabag_db_service_name }}"
     db_name: "{{ wallabag_db_name }}"
     db_user: "{{ wallabag_db_user }}"
     db_user_pass: "{{ wallabag_db_user_pass }}"
+  pre_tasks:
+    - name: "Create wallabag directories nobody:nogroup"
+      file:
+        path: "{{ wallabag_directory.images }}"
+        state: directory
+        owner: nobody
+        group: nogroup
+        mode: 0700
+    - name: Create wallabag directories 700
+      file:
+        path: "{{ wallabag_directory.db }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
   roles:
     - role: generic_docker_systemd
   tags: wallabag
@@ -606,6 +743,7 @@
 - name: Get wallabag subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ wallabag_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -617,6 +755,7 @@
 - name: Configure nginx proxy for wallabag
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ wallabag_domain }}"
     binded_port: "{{ wallabag_internal_web_port }}"
@@ -627,8 +766,8 @@
 
 ## Selfoss
 
-#  TODO: configuration template <06-07-18, m0u>
-#  TODO: external db <06-07-18, m0u>
+#  TODO: configuration template <06-07-18, m0wer>
+#  TODO: external db <06-07-18, m0wer>
 
 #
 # - name: Prepare selfoss deployment
@@ -682,36 +821,10 @@
 
 ## Syncthing
 
-- name: Prepare syncthing deployment
-  hosts: all
-  tasks:
-    - name: Create syncthing directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ syncthing_directory }}"
-  tags: syncthing
-
-- name: Setup requiered syncthing iptables rules
-  hosts: all
-  become: true
-  tasks:
-    - name: Add iptables rules for syncthing
-      iptables_raw:
-        name: syncthing_rules
-        weight: 20
-        rules: |
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
-      tags: iptables
-  tags: syncthing
-
 - name: Deploy syncthing in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: syncthing
@@ -725,6 +838,24 @@
       -p "{{ syncthing_listening_port }}:22000" \
       -p "{{ syncthing_discovery_port }}:21027/udp" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create syncthing directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ syncthing_directory }}"
+  post_tasks:
+    - name: Add iptables rules for syncthing
+      iptables_raw:
+        name: syncthing_rules
+        weight: 20
+        rules: |
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: syncthing
@@ -732,6 +863,7 @@
 - name: Get syncthing subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ syncthing_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -743,6 +875,7 @@
 - name: Configure nginx proxy for syncthing
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ syncthing_domain }}"
     binded_port: "{{ syncthing_internal_web_port }}"
@@ -753,26 +886,22 @@
 
 ## OpenVPN
 
-#  TODO: is this really needed? since the docker has full net capabilities <19-08-18, m0u>
-- name: Setup requiered openvpn iptables rules
+- name: Deploy openvpn in docker
   hosts: all
   become: true
-  tasks:
-    - name: Add iptables rules for openvpn
-      iptables_raw:
-        name: openvpn_rules
-        weight: 20
-        rules: |
-          {{ openvpn_iptables_p2p_rule }}
-      tags: iptables
-  tags: openvpn
-
-- name: Prepare openvpn deployment
-  hosts: all
-  become: true
+  gather_facts: false
   vars:
+    create_volume: false
     service_name: openvpn
-  tasks:
+    docker_image: "{{ openvpn_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ openvpn_directory.conf }}":/etc/openvpn \
+      --cap-add=NET_ADMIN \
+      -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
+      "{{ docker_image }}"
+  pre_tasks:
     - name: Create openvpn directories
       file:
         path: "{{ item.value }}"
@@ -782,7 +911,14 @@
         mode: 0700
       with_dict: "{{ openvpn_directory }}"
       notify: Configure openvpn container
-
+  post_tasks:
+    - name: Add iptables rules for openvpn
+      iptables_raw:
+        name: openvpn_rules
+        weight: 20
+        rules: |
+          {{ openvpn_iptables_p2p_rule }}
+      tags: iptables
   handlers:
     - name: Configure openvpn container
       command: "{{ openvpn_confiure_docker_command }}"
@@ -801,59 +937,16 @@
           "Re-Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
-  tags: openvpn
-
-- name: Deploy openvpn in docker
-  hosts: all
-  become: true
-  vars:
-    create_volume: false
-    service_name: openvpn
-    docker_image: "{{ openvpn_docker_image }}"
-    enable_db: false
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v "{{ openvpn_directory.conf }}":/etc/openvpn \
-      --cap-add=NET_ADMIN \
-      -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
-      "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
   tags: openvpn
 
 ## Radicale
 
-- name: Prepare radicale deployment
-  hosts: all
-  tasks:
-    - name: Create radicale directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ radicale_directory }}"
-    - name: Copy radicale configuration template
-      template:
-        src: radicale-config.j2
-        dest: "{{ radicale_directory.conf }}/config"
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-    - name: Add radicale login credentiasl
-      lineinfile:
-        path: "{{ radicale_directory.etc }}/users"
-        line: "{{ radicale_user }}:{{ radicale_pass }}"
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-        create: true
-  tags: radicale
-
 - name: Deploy radicale in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     service_name: radicale
@@ -873,6 +966,32 @@
       -v "{{ radicale_directory.etc }}":/etc/radicale \
       -v "{{ radicale_directory.conf }}":/config:ro \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create radicale directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ radicale_directory }}"
+
+    - name: Copy radicale configuration template
+      template:
+        src: radicale-config.j2
+        dest: "{{ radicale_directory.conf }}/config"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+
+    - name: Add radicale login credentiasl
+      lineinfile:
+        path: "{{ radicale_directory.etc }}/users"
+        line: "{{ radicale_user }}:{{ radicale_pass }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+        create: true
   roles:
     - role: generic_docker_systemd
   tags: radicale
@@ -880,6 +999,7 @@
 - name: Get radicale subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ radicale_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -891,6 +1011,7 @@
 - name: Configure nginx proxy for radicale
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ radicale_domain }}"
     binded_port: "{{ radicale_internal_web_port }}"
@@ -906,35 +1027,10 @@
 
 ## taskd
 
-- name: Prepare taskd deployment
-  hosts: all
-  tasks:
-    - name: Create taskd directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ taskd_directory }}"
-  tags: taskd
-
-- name: Setup requiered taskd iptables rules
-  hosts: all
-  become: true
-  tasks:
-    - name: Add iptables rules for taskd
-      iptables_raw:
-        name: taskd_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
-      tags: iptables
-  tags: taskd
-
 - name: Deploy taskd in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -945,33 +1041,38 @@
       -v "{{ taskd_directory.data }}":/var/taskd \
       -p "{{ taskd_port }}:53589" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create taskd directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ taskd_directory }}"
+  post_tasks:
+    - name: Add iptables rules for taskd
+      iptables_raw:
+        name: taskd_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
+      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: taskd
 
 ## Nextcloud
 
-- name: Prepare nextcloud deployment
-  hosts: all
-  tasks:
-    - name: Create nextcloud directories
-      become: true
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_33 }}"
-        group: 0
-        mode: 0750
-      with_dict: "{{ nextcloud_directory }}"
-  tags: nextcloud
-
 - name: Deploy nextcloud in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     service_name: nextcloud
     docker_image: "{{ nextcloud_docker_image }}"
     create_volume: false
+    docker_service_directory_db: "{{ nextcloud_directory.db }}"
     service_db_name: "{{ nextcloud_db_service_name }}"
     db_name: "{{ nextcloud_db_name }}"
     db_user: "{{ nextcloud_db_user }}"
@@ -986,6 +1087,27 @@
       -e "MYSQL_PASSWORD={{ db_user_pass }}" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
+  pre_tasks:
+    - name: Create nextcloud directories 750 uid 33
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_33 }}"
+        group: 0
+        mode: 0750
+      with_items:
+        - "{{ nextcloud_directory.data }}"
+    - name: Create nextcloud directories 700
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ nextcloud_directory.db }}"
   roles:
     - role: generic_docker_systemd
   tags: nextcloud
@@ -993,6 +1115,7 @@
 - name: Get nextcloud subdomain Let's Encrypt certificate
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ nextcloud_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
@@ -1004,6 +1127,7 @@
 - name: Configure nginx proxy for nextcloud
   hosts: all
   become: true
+  gather_facts: false
   vars:
     domain: "{{ nextcloud_domain }}"
     binded_port: "{{ nextcloud_internal_web_port }}"
@@ -1012,11 +1136,105 @@
       tags: proxy
   tags: nextcloud
 
+## Taiga
+
+- name: Deploy taiga in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: taiga
+    docker_image: "{{ taiga_docker_image }}"
+    docker_db_image: "{{ taiga_db_image }}"
+    create_network: true
+    create_volume: false
+    db_type: postgres
+    docker_service_directory_db: "{{ taiga_directory.db }}"
+    db_user_pass: "{{ taiga_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ taiga_db_name }}"
+    db_user: "{{ taiga_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ taiga_internal_web_port }}:80" \
+      -e "TAIGA_HOSTNAME={{ taiga_domain }}" \
+      -e 'TAIGA_SSL=true' \
+      -e "TAIGA_SECRET_KEY={{ taiga_secret_key }}" \
+      -e 'TAIGA_DB_HOST=taiga-db' \
+      -e "TAIGA_DB_NAME={{ db_name }}" \
+      -e "TAIGA_DB_USER={{ db_user }}" \
+      -e "TAIGA_DB_PASSWORD={{ db_user_pass }}" \
+      {% if taiga_enable_ldap %}
+      -e 'LDAP_ENABLE=true' \
+      -e "LDAP_SERVER={{ taiga_ldap_server }}" \
+      -e "LDAP_PORT={{ taiga_ldap_port }}" \
+      -e "LDAP_BIND_DN={{ taiga_ldap_bind_dn }}" \
+      -e "LDAP_BIND_PASSWORD={{ taiga_ldap_bind_credentials }}" \
+      -e "LDAP_SEARCH_BASE={{ taiga_ldap_search_base }}" \
+      -e "LDAP_SEARCH_PROPERTY={{ taiga_ldap_search_property }}" \
+      -e "LDAP_EMAIL_PROPERTY={{ taiga_ldap_email_attribute }}" \
+      -e "LDAP_FULL_NAME_PROPERTY={{ taiga_ldap_full_name_attribute }}" \
+      -e "TAIGA_BACKEND_WEBHOOKS_ENABLED={{ taiga_backend_webhooks_enabled }}" \
+      -v "{{ taiga_directory.media }}:/taiga.io/taiga-back/media" \
+      {% endif %}
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create taiga directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ taiga_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: taiga
+
+- name: Get taiga subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ taiga_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: taiga
+
+- name: Configure nginx proxy for taiga
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ taiga_domain }}"
+    binded_port: "{{ taiga_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: taiga
+
 ## NFS
 
-- name: Prepare nfs deployment
+- name: Deploy nfs in docker
   hosts: all
-  tasks:
+  become: true
+  gather_facts: false
+  vars:
+    service_name: nfs
+    docker_image: "{{ nfs_docker_image }}"
+    enable_db: false
+    create_network: false
+    create_volume: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --cap-add SYS_ADMIN \
+      -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
+      {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
+      "{{ docker_image }}"
+  pre_tasks:
     - name: Create nfs directories
       file:
         path: "{{ item.value }}"
@@ -1069,7 +1287,7 @@
       with_items:
         - nfs
         - nfsd
-
+  post_tasks:
     - name: Add iptables rules for nfs
       become: true
       iptables_raw:
@@ -1078,23 +1296,6 @@
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ nfs_port | default('2049') }} -j ACCEPT
       tags: iptables
-  tags: nfs
-
-- name: Deploy nfs in docker
-  hosts: all
-  become: true
-  vars:
-    service_name: nfs
-    docker_image: "{{ nfs_docker_image }}"
-    enable_db: false
-    create_network: false
-    create_volume: false
-    docker_command: |
-      /usr/bin/docker run --rm --name "{{ service_name }}" \
-      --cap-add SYS_ADMIN \
-      -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
-      {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
-      "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
   tags: nfs
@@ -1104,6 +1305,7 @@
 - name: Deploy bind_dns_server in docker
   hosts: all
   become: true
+  gather_facts: false
   vars:
     create_volume: false
     enable_db: false
@@ -1140,3 +1342,62 @@
   roles:
     - role: generic_docker_systemd
   tags: bind_dns_server
+
+## Murmur
+
+- name: Get murmur subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ murmur_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.murmur.service restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: murmur
+
+- name: Deploy murmur in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: murmur
+    docker_image: "{{ murmur_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -e 'PUID=1000' -e 'PGID=1000' \
+      -e 'RUN_CHOWN=false' \
+      -e "CERTDIR=/etc/letsencrypt/live/{{ murmur_domain }}" \
+      -v "{{ murmur_directory.conf }}":/opt/murmur/config \
+      -v "{{ murmur_directory.data }}":/opt/murmur/data \
+      -v "{{ murmur_directory.log }}":/opt/murmur/log \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -v /etc/letsencrypt/live/{{ murmur_domain }}:/etc/letsencrypt/live/{{ murmur_domain }}/:ro \
+      -v /etc/letsencrypt/archive/{{ murmur_domain }}:/etc/letsencrypt/archive/{{ murmur_domain }}/:ro \
+      -p "{{ murmur_port }}:64738/tcp" \
+      -p "{{ murmur_port }}:64738/udp" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create murmur directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ murmur_directory }}"
+  post_tasks:
+    - name: Add iptables rules for murmur
+      iptables_raw:
+        name: murmur_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ murmur_port }} -j ACCEPT
+          -A INPUT -p udp -m state --state NEW -m udp --dport {{ murmur_port }} -j ACCEPT
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: murmur

@@ -84,6 +84,8 @@ That's all.
 172.16.100.12	git.anarres.local
 172.16.100.12	cloud.anarres.local
 172.16.100.12	drone-github.anarres.local
+172.16.100.12	codimd.anarres.local
+172.16.100.12	taiga.anarres.local
 ```
 * You can get more information from `molecule` running it in **debug** mode: `molecule --debug test`.
 * Be careful for not adding folders like `.venv`. **Virtualenv must be outside**.

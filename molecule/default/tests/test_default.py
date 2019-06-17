@@ -10,6 +10,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 @pytest.mark.parametrize("service", [
     ("gitea"),
     ("drone"),
+    ("drone_github"),
+    ("codimd"),
     ("transmission"),
     ("wallabag"),
     ("syncthing"),
@@ -17,10 +19,13 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("radicale"),
     ("taskd"),
     ("nextcloud"),
+    ("taiga"),
     ("nfs"),
     ("openldap"),
     ("phpldapadmin"),
-    ("bind_dns_server")
+    ("bind_dns_server"),
+    ("murmur"),
+    ("wikijs")
 ])
 def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")

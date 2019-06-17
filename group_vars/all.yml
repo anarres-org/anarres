@@ -13,7 +13,11 @@ group_gid_1000: "{{ user_uid_1000 }}"
 user_uid_33: www-data
 group_gid_33: "{{ user_uid_33 }}"
 
+ca_certs_path: /etc/ssl/certs/ca-certificates.crt
+
 docker_db_image: mariadb:10.3
+docker_db_postgres_image: postgres:11
+dockerfiles_path: /root/dockerfiles
 
 ## Following values will be used for the root account of every docker database
 db_pass:
@@ -51,13 +55,19 @@ openldap_readonly_password:
 
 ## OpenLDAP for services
 
-openldap_server_uri: "ldaps://{{ base_domain }}:636"
+openldap_server_protocol: 'ldaps://'
+openldap_server_domain: "{{ base_domain }}"
+openldap_server_port: 636
+openldap_server_uri: "{{ openldap_server_protocol }}{{ openldap_server_domain }}:{{ openldap_server_port }}"
 openldap_validate_certs: true
+openldap_bind_dn: "cn=readonly,{{ openldap_base_DN }}"
+openldap_bind_credentials: "{{ openldap_readonly_password }}"
+openldap_search_base: "ou=users,{{ openldap_base_DN }}"
 
 ## phpLDAPadmin
 
 phpldapadmin_domain: "ldap.{{ base_domain }}"
-phpldapadmin_docker_image: osixia/phpldapadmin:0.7.2
+phpldapadmin_docker_image: osixia/phpldapadmin:0.8.0
 phpldapadmin_internal_web_port: 4002
 
 phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
@@ -76,6 +86,7 @@ gitea_db_user_pass:
 
 gitea_directory:
   data: "{{ data_path }}/gitea/data"
+  db: "{{ data_path }}/gitea/db"
   conf: "{{ data_path }}/gitea/data/gitea/conf"
   git_data: "{{ data_path }}/gitea/data/git"
   ssh_data: "{{ data_path }}/gitea/data/ssh"
@@ -92,6 +103,49 @@ drone_domain: "drone.{{ base_domain }}"
 
 drone_directory:
   data: "{{ data_path }}/drone/data"
+
+## Drone for GitHub
+
+drone_github_docker_image: drone/drone:1
+drone_github_internal_web_port: 3031
+drone_github_domain: "drone-github.{{ base_domain }}"
+
+drone_github_directory:
+  data: "{{ data_path }}/drone_github/data"
+
+drone_github_client_id:
+drone_github_client_secret:
+
+## CodiMD
+
+codimd_docker_image: hackmdio/hackmd:1-alpine
+codimd_domain: "codimd.{{ base_domain }}"
+codimd_web_port: 3040
+codimd_network_name: "codimd"
+
+codimd_directory:
+  db: "{{ data_path }}/codimd/db"
+  uploads: "{{ data_path }}/codimd/uploads"
+
+### DB
+
+codimd_db_image: "{{ docker_db_postgres_image }}"
+codimd_db_service_name: codimd-db
+codimd_db_user: "codimd"
+codimd_db_user_pass:
+codimd_db_name: "codimd"
+
+### LDAP
+
+codimd_enable_ldap: true
+codimd_ldap_url: "{{ openldap_server_uri }}"
+codimd_ldap_bind_dn: "{{ openldap_bind_dn }}"
+codimd_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+codimd_ldap_search_base: "{{ openldap_search_base }}"
+codimd_ldap_search_filter: "{{ '(uid={{username}})' }}"
+codimd_ldap_search_attributes: 'uid, mail'
+codimd_ldap_user_field: 'uid'
+codimd_ldap_user_name_field: 'uid'
 
 ## Transmission
 
@@ -138,7 +192,9 @@ transmission_openvpn_directory:
 wallabag_domain: "wallabag.{{ base_domain }}"
 wallabag_docker_image: wallabag/wallabag:2.3.5
 
-wallabag_path_images: "{{ data_path }}/wallabag/images"
+wallabag_directory:
+  db: "{{ data_path }}/wallabag/db"
+  images: "{{ data_path }}/wallabag/images"
 
 ### DB
 
@@ -221,6 +277,7 @@ nextcloud_internal_web_port: 4001
 
 nextcloud_directory:
   data: "{{ data_path }}/nextcloud/data"
+  db: "{{ data_path }}/nextcloud/db"
 
 ### DB
 
@@ -228,6 +285,38 @@ nextcloud_db_service_name: nextcloud-db
 nextcloud_db_name: nextcloud
 nextcloud_db_user: nextcloud
 nextcloud_db_user_pass:
+
+## Taiga
+
+taiga_domain: "taiga.{{ base_domain }}"
+taiga_docker_image: m0wer/docker-taiga:v4.2.1
+taiga_internal_web_port: 3050
+taiga_secret_key:
+taiga_backend_webhooks_enabled: false
+
+taiga_directory:
+  media: "{{ data_path }}/taiga/media"
+  db: "{{ data_path }}/taiga/db"
+
+### DB
+
+taiga_db_image: "{{ docker_db_postgres_image }}"
+taiga_db_service_name: taiga-db
+taiga_db_name: taiga
+taiga_db_user: taiga
+taiga_db_user_pass:
+
+### LDAP
+
+taiga_enable_ldap: true
+taiga_ldap_server: "{{ openldap_server_protocol }}{{ openldap_server_domain }}"
+taiga_ldap_port: "{{ openldap_server_port }}"
+taiga_ldap_bind_dn: "{{ openldap_bind_dn }}"
+taiga_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+taiga_ldap_search_base: "{{ openldap_search_base }}"
+taiga_ldap_search_property: 'uid'
+taiga_ldap_email_attribute: 'mail'
+taiga_ldap_full_name_attribute: 'cn'
 
 ## NFS
 
@@ -254,3 +343,51 @@ bind_dns_server_port: 53
 
 bind_dns_server_directory:
   data: "{{ data_path }}/bind_dns_server/data"
+
+## Murmur
+
+murmur_domain: "mumble.{{ base_domain }}"
+murmur_docker_image: goofball222/murmur:latest
+murmur_port: 64738
+
+murmur_directory:
+  conf: "{{ data_path }}/murmur/conf"
+  data: "{{ data_path }}/murmur/data"
+  log: "{{ data_path }}/murmur/log"
+
+## Wiki.js
+
+wikijs_docker_image: requarks/wiki:latest
+wikijs_domain: "wiki.{{ base_domain }}"
+wikijs_web_port: 3060
+wikijs_network_name: "wikijs"
+
+wikijs_directory:
+  conf: "{{ data_path }}/wikijs/conf"
+  db: "{{ data_path }}/wikijs/db"
+
+wikijs_admin_email:
+wikijs_title:
+wikijs_public:
+wikijs_session_secret:
+wikijs_repo_url:
+wikijs_repo_branch:
+wikijs_repo_user:
+wikijs_repo_pass:
+wikijs_repo_commit_email:
+
+### DB
+
+wikijs_db_image: "{{ docker_db_mongo_image }}"
+wikijs_db_service_name: wikijs-db
+wikijs_db_user: wikijs
+wikijs_db_user_pass:
+wikijs_db_name: wikijs
+
+### LDAP
+
+wikijs_enable_ldap: false
+wikijs_ldap_url: "{{ openldap_server_uri }}"
+wikijs_ldap_bind_dn: "{{ openldap_bind_dn }}"
+wikijs_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+wikijs_ldap_search_base: "{{ openldap_search_base }}"
