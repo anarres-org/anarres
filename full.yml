@@ -1162,6 +1162,14 @@
       -e "TAIGA_DB_NAME={{ db_name }}" \
       -e "TAIGA_DB_USER={{ db_user }}" \
       -e "TAIGA_DB_PASSWORD={{ db_user_pass }}" \
+      -e "TAIGA_DEFAULT_FROM_EMAIL={{ taiga_default_from_email }}" \
+      -e "TAIGA_EMAIL_BACKEND={{ taiga_email_backend }}" \
+      -e "TAIGA_EMAIL_USE_TLS={{ taiga_email_use_tls }}" \
+      -e "TAIGA_EMAIL_USE_SSL={{ taiga_email_use_ssl }}" \
+      -e "TAIGA_EMAIL_HOST={{ taiga_email_host }}" \
+      -e "TAIGA_EMAIL_PORT={{ taiga_email_port }}" \
+      -e "TAIGA_EMAIL_USER={{ taiga_email_user }}" \
+      -e "TAIGA_EMAIL_PASSWORD={{ taiga_email_password }}" \
       {% if taiga_enable_ldap %}
       -e 'LDAP_ENABLE=true' \
       -e "LDAP_SERVER={{ taiga_ldap_server }}" \

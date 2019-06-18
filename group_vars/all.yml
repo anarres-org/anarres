@@ -291,7 +291,7 @@ nextcloud_db_user_pass:
 ## Taiga
 
 taiga_domain: "taiga.{{ base_domain }}"
-taiga_docker_image: m0wer/docker-taiga:v4.2.1
+taiga_docker_image: m0wer/docker-taiga:v4.2.6
 taiga_internal_web_port: 3050
 taiga_secret_key:
 taiga_backend_webhooks_enabled: false
@@ -307,6 +307,17 @@ taiga_db_service_name: taiga-db
 taiga_db_name: taiga
 taiga_db_user: taiga
 taiga_db_user_pass:
+
+### Email
+
+taiga_default_from_email: "noreply@{{ taiga_domain }}"
+taiga_email_backend: "django.core.mail.backends.smtp.EmailBackend"
+taiga_email_use_tls: false
+taiga_email_use_ssl: false
+taiga_email_host: localhost
+taiga_email_port: 25
+taiga_email_user:
+taiga_email_password:
 
 ### LDAP
 
