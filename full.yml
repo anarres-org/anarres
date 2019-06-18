@@ -657,15 +657,6 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
       with_dict: "{{ transmission_openvpn_directory }}"
-  post_tasks:
-    - name: Add iptables rules for transmission_openvpn
-      iptables_raw:
-        name: transmission_openvpn_rules
-        weight: 20
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_openvpn_peer_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_openvpn_peer_port }} -j ACCEPT
-      tags: iptables
   roles:
     - role: generic_docker_systemd
   tags: transmission_openvpn
