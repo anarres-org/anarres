@@ -638,6 +638,7 @@
       -e OPENVPN_CONFIG={{ transmission_openvpn_vpn.conf }} \
       -e OPENVPN_USERNAME={{ transmission_openvpn_vpn.user }} \
       -e OPENVPN_PASSWORD={{ transmission_openvpn_vpn.pass }} \
+      -e TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=true \
       -e TRANSMISSION_RPC_USERNAME={{ transmission_openvpn_rpc.user }} \
       -e TRANSMISSION_RPC_PASSWORD={{ transmission_openvpn_rpc.pass }} \
       -e WEBPROXY_ENABLED=false \
