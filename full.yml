@@ -642,6 +642,9 @@
       -e TRANSMISSION_RPC_USERNAME={{ transmission_openvpn_rpc.user }} \
       -e TRANSMISSION_RPC_PASSWORD={{ transmission_openvpn_rpc.pass }} \
       -e WEBPROXY_ENABLED=false \
+      {% for env_var in transmission_openvpn_extra_env -%}
+      -e {{ env_var }} \
+      {% endfor -%}
       -p {{ transmission_openvpn_internal_web_port }}:9091 \
       -p 51413:51413/tcp \
       -p 51413:51413/udp \

@@ -185,6 +185,10 @@ transmission_openvpn_rpc:
 transmission_openvpn_directory:
   data: "{{ data_path }}/transmission_openvpn/data"
 
+transmission_openvpn_extra_env:
+  - TRANSMISSION_RATIO_LIMIT_ENABLED=false
+  - TRANSMISSION_RATIO_LIMIT=10
+
 ## Wallabag
 
 wallabag_domain: "wallabag.{{ base_domain }}"
