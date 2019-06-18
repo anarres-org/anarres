@@ -24,6 +24,17 @@
 * `taiga_db_user`: (Default: `taiga`) Username for the database and the
   app.
 * `taiga_db_user_pass`: Password for that user.
+* `taiga_default_from_email`: Default "from" email address for notifications.
+* `taiga_email_backend`: Backend for sending emails (default:
+   `django.core.mail.backends.smtp.EmailBackend`).
+* `taiga_email_use_tls`: Boolean to use or not TLS with the email server
+   (default: `false`).
+* `taiga_email_use_ssl`: Boolean to use or not SSL with the email server
+   (default: `false`).
+* `taiga_email_host`: Email server host (default: `localhost`).
+* `taiga_email_port`: Email server port (default: `25`).
+* `taiga_email_user`: Email server user, if login is required.
+* `taiga_email_password`: Email server password, if login is required.
 * `taiga_enable_ldap`: (Default: `true`) Boolean to enable or disable
   the LDAP logging ability.
 * `taiga_ldap_server`: LDAP server address. Include `ldaps://` at the
