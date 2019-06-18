@@ -24,6 +24,9 @@ tunnel.
    * `pass`: Password for the web interface.
 * `transmission_openvpn_directory`:
    * `data`: Path on the host for the downloads.
+* `transmission_openvpn_extra_env`: List of extra environment variables to pass
+   to the container. You can get some ideas from the
+   [Dockerfile](https://github.com/haugene/docker-transmission-openvpn/blob/master/Dockerfile.alpine).
 
 For more info about how to choose the variables, please refer to the
 [docs](https://haugene.github.io/docker-transmission-openvpn/).
