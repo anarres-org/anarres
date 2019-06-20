@@ -413,8 +413,8 @@ prosody_domain: "{{ base_domain }}"
 prosody_directory:
   conf: "{{ data_path }}/prosody/conf"
   data: "{{ data_path }}/prosody/data"
-  modules_community: "{{ data_path }}/prosody/modules_community"
-  modules_custom: "{{ data_path }}/prosody/modules_custom"
+  modules_community: "{{ data_path }}/prosody/modules-community"
+  modules_custom: "{{ data_path }}/prosody/modules-custom"
 
 prosody_cert_path:
   privkey: "/etc/letsencrypt/live/{{ prosody_domain }}/privkey.pem"

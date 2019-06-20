@@ -1435,8 +1435,8 @@
       /usr/bin/docker run --rm --name {{ service_name }} \
       -v {{ prosody_directory.conf }}:/etc/prosody \
       -v {{ prosody_directory.data }}:/var/lib/prosody \
-      -v {{ prosody_directory.modules_community }}:/usr/lib/prosody/modules_community \
-      -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules_custom \
+      -v {{ prosody_directory.modules_community }}:/usr/lib/prosody/modules-community \
+      -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules-custom \
       -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
       -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
       -p {{ prosody_port_c2s }}:5222 \
