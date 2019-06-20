@@ -1434,10 +1434,14 @@
     docker_command: |
       /usr/bin/docker run --rm --name {{ service_name }} \
       -v {{ prosody_directory.conf }}:/etc/prosody \
+      -v {{ prosody_directory.data }}:/var/lib/prosody \
+      -v {{ prosody_directory.modules_community }}:/usr/lib/prosody/modules_community \
+      -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules_custom \
       -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
       -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
-      -p {{ prosody_port_c2s}}:5222 \
-      -p {{ prosody_port_s2s}}:5269 \
+      -p {{ prosody_port_c2s }}:5222 \
+      -p {{ prosody_port_s2s }}:5269 \
+      --user 1000:1000 \
       "{{ docker_image }}"
   pre_tasks:
     - name: Create prosody directories
@@ -1457,6 +1461,16 @@
         group: "{{ group_gid_1000 }}"
         mode: 0600
   post_tasks:
+    - name: Register jabber users
+      expect:
+        command: "docker exec -it {{ service_name }} prosodyctl adduser {{ item.jid }}"
+        timeout: 60
+        creates: "{{ prosody_directory.data }}/{{ item.jid.split('@') | last | replace('.', '%2e') }}/accounts/{{ item.jid.split('@') | first }}.dat"
+        responses:
+          "Enter new password:": "{{ item.pass }}"
+          "Retype new password:": "{{ item.pass }}"
+      with_items: "{{ prosody_users }}"
+      no_log: true
     - name: Add iptables rules for prosody
       iptables_raw:
         name: prosody_rules
