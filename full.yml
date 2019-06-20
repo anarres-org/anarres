@@ -1407,3 +1407,64 @@
   roles:
     - role: generic_docker_systemd
   tags: murmur
+
+## Prosody
+
+- name: Get prosody subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prosody_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: prosody
+
+- name: Deploy prosody in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: prosody
+    docker_image: "{{ prosody_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name {{ service_name }} \
+      -v {{ prosody_directory.conf }}:/etc/prosody \
+      -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
+      -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
+      -p {{ prosody_port_c2s}}:5222 \
+      -p {{ prosody_port_s2s}}:5269 \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create prosody directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ prosody_directory }}"
+    - name: Configure prosody
+      template:
+        src: prosody-conf.j2
+        dest: "{{ prosody_directory.conf }}/prosody.cfg.lua"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0600
+  post_tasks:
+    - name: Add iptables rules for prosody
+      iptables_raw:
+        name: prosody_rules
+        weight: 20
+        rules: |
+          {{ prosody_iptables_c2s_rule }}
+          {{ prosody_iptables_s2s_rule }}
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: prosody
