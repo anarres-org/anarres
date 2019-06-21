@@ -207,7 +207,10 @@ VirtualHost "{{ prosody_domain }}"
 -- For more information on components, see https://prosody.im/doc/components
 
 ---Set up a MUC (multi-user chat) room server on conference.example.com:
---Component "conference.example.com" "muc"
+{% if prosody_enable_muc %}
+Component "{{ prosody_domain_muc }}" "muc"
+	name = "{{ prosody_domain }} Chatrooms"
+{% endif %}
 
 ---Set up an external component (default component port is 5347)
 --

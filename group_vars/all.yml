@@ -409,6 +409,9 @@ wikijs_ldap_search_base: "{{ openldap_search_base }}"
 
 prosody_docker_image: unclev/prosody-docker-extended:0.11
 prosody_domain: "{{ base_domain }}"
+prosody_domain_muc: "conference.{{ prosody_domain }}"
+
+prosody_enable_muc: true
 
 prosody_directory:
   conf: "{{ data_path }}/prosody/conf"
