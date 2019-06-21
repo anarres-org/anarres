@@ -197,6 +197,21 @@ certificates = "certs"
 -- Settings under each VirtualHost entry apply *only* to that host.
 
 VirtualHost "{{ prosody_domain }}"
+{% if prosody_enable_tor %}
+	modules_enabled = { "onions" };
+
+VirtualHost "{{ prosody_tor_hostname }}"
+        modules_enabled = { "onions" };
+
+onions_tor_all = true
+onions_only = false
+onions_map = {
+        ["jabber.calyxinstitute.org"] = "ijeeynrc6x2uy5ob.onion";
+        ["riseup.net"] = "4cjw6cwpeaeppfqz.onion";
+        ["inventati.org"] = "wi7qkxyrdpu5cmvr.onion";
+        ["jabber.otr.im"] = "5rgdtlawqkcplz75.onion";
+}
+{% endif %}
 
 --VirtualHost "example.com"
 --	certificate = "/path/to/example.crt"
@@ -210,6 +225,11 @@ VirtualHost "{{ prosody_domain }}"
 {% if prosody_enable_muc %}
 Component "{{ prosody_domain_muc }}" "muc"
 	name = "{{ prosody_domain }} Chatrooms"
+	{% if prosody_enable_tor %}
+	modules_enabled = { "onions" }
+	onions_tor_all = true
+	onions_only = false
+	{% endif %}
 {% endif %}
 
 ---Set up an external component (default component port is 5347)

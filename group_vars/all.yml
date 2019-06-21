@@ -5,6 +5,7 @@
 # Common
 
 base_domain:
+tor_hostname:
 data_path: /data
 
 user_uid_1000:
@@ -412,6 +413,8 @@ prosody_domain: "{{ base_domain }}"
 prosody_domain_muc: "conference.{{ prosody_domain }}"
 
 prosody_enable_muc: true
+prosody_enable_tor: false
+prosody_tor_hostname: "{{ tor_hostname }}"
 
 prosody_directory:
   conf: "{{ data_path }}/prosody/conf"
