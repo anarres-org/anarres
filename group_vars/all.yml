@@ -103,10 +103,11 @@ prosody_port_s2s: 5269
 prosody_iptables_c2s_rule: "-A INPUT -p tcp -m state --state NEW -m tcp --dport {{ prosody_port_c2s }} -j ACCEPT"
 prosody_iptables_s2s_rule: "-A INPUT -p tcp -m state --state NEW -m tcp --dport {{ prosody_port_s2s }} -j ACCEPT"
 
-prosody_admin_xmpp: "admin@{{ prosody_domain }}"
+prosody_admins_xmpp:
+  - "admin@{{ prosody_domain }}"
 prosody_allow_remote_registration: false
 prosody_users:
-  - jid: "{{ prosody_admin_xmpp }}"
+  - jid: "{{ prosody_admins_xmpp.0 }}"
     pass:
   - jid: "{{ sendxmpp_jid }}"
     pass: "{{ sendxmpp_pass }}"
