@@ -5,6 +5,7 @@
 # Common
 
 base_domain:
+tor_hostname:
 data_path: /data
 
 user_uid_1000:
@@ -23,9 +24,13 @@ dockerfiles_path: /root/dockerfiles
 db_pass:
 db_config_port: 3306
 
+sendxmpp_jid: "{{ user_uid_1000 }}@{{ prosody_domain }}"
+sendxmpp_pass:
+
 ## anarres-sec
 
 ssh_port: 2222
+admin_xmpp:
 
 ## Web and Let's Encrypt
 
@@ -71,6 +76,48 @@ phpldapadmin_docker_image: osixia/phpldapadmin:0.8.0
 phpldapadmin_internal_web_port: 4002
 
 phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
+
+## Prosody
+
+prosody_docker_image: unclev/prosody-docker-extended:0.11
+prosody_domain: "{{ base_domain }}"
+prosody_domain_muc: "conference.{{ prosody_domain }}"
+prosody_domain_upload: "upload.{{ prosody_domain }}"
+
+prosody_enable_muc: true
+prosody_enable_http_upload: false
+prosody_enable_http: "{{ prosody_enable_http_upload }}"
+prosody_enable_tor: false
+prosody_tor_hostname: "{{ tor_hostname }}"
+
+prosody_directory:
+  conf: "{{ data_path }}/prosody/conf"
+  data: "{{ data_path }}/prosody/data"
+  modules_community: "{{ data_path }}/prosody/modules-community"
+  modules_custom: "{{ data_path }}/prosody/modules-custom"
+
+prosody_cert_path:
+  privkey: "/etc/letsencrypt/live/{{ prosody_domain }}/privkey.pem"
+  cert: "/etc/letsencrypt/live/{{ prosody_domain }}/fullchain.pem"
+
+prosody_port_c2s: 5222
+prosody_port_s2s: 5269
+prosody_port_internal_http: 5280
+prosody_port_external_https: 5281
+
+prosody_iptables_c2s_rule: "-A INPUT -p tcp -m state --state NEW -m tcp --dport {{ prosody_port_c2s }} -j ACCEPT"
+prosody_iptables_s2s_rule: "-A INPUT -p tcp -m state --state NEW -m tcp --dport {{ prosody_port_s2s }} -j ACCEPT"
+prosody_iptables_https_rule: |
+  -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ prosody_port_external_https }} -j ACCEPT
+
+prosody_admins_xmpp:
+  - "admin@{{ prosody_domain }}"
+prosody_allow_remote_registration: false
+prosody_users:
+  - jid: "{{ prosody_admins_xmpp.0 }}"
+    pass:
+  - jid: "{{ sendxmpp_jid }}"
+    pass: "{{ sendxmpp_pass }}"
 
 ## Gitea
 
