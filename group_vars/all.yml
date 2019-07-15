@@ -100,10 +100,6 @@ prosody_cert_path:
   privkey: "/etc/letsencrypt/live/{{ prosody_domain }}/privkey.pem"
   cert: "/etc/letsencrypt/live/{{ prosody_domain }}/fullchain.pem"
 
-prosody_cert_path_upload:
-  privkey: "/etc/letsencrypt/live/{{ prosody_domain_upload }}/privkey.pem"
-  cert: "/etc/letsencrypt/live/{{ prosody_domain_upload }}/fullchain.pem"
-
 prosody_port_c2s: 5222
 prosody_port_s2s: 5269
 prosody_port_internal_http: 5280

@@ -89,6 +89,8 @@ directory, by default */data*.
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
 * [Wiki.js](https://wiki.js.org/): Using
   [requarks/wiki](https://github.com/Requarks/wiki).
+* [Prosody IM](https://prosody.im/): A modern XMPP communication server. Using
+  [unclev/prosody-docker-extended](https://github.com/unclev/prosody-docker-extended).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
