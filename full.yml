@@ -255,6 +255,127 @@
       tags: proxy
   tags: phpldapadmin
 
+## Prosody
+
+- name: Get prosody subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prosody_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: prosody
+
+- name: Get prosody subdomain Let's Encrypt certificate for MUC
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prosody_domain_muc }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+      when: "{{ prosody_enable_muc }}"
+  tags: prosody
+
+- name: Get prosody subdomain Let's Encrypt certificate for http_upload
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prosody_domain_upload }}"
+    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+      when: prosody_enable_http_upload
+  tags: prosody
+
+- name: Deploy prosody in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: prosody
+    docker_image: "{{ prosody_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name {{ service_name }} \
+      -v {{ prosody_directory.conf }}:/etc/prosody \
+      -v {{ prosody_directory.data }}:/var/lib/prosody \
+      -v {{ prosody_directory.modules_community }}:/usr/lib/prosody/modules-community \
+      -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules-custom \
+      -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
+      -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
+      -p {{ prosody_port_c2s }}:5222 \
+      -p {{ prosody_port_s2s }}:5269 \
+      {% if prosody_enable_http %}
+      -p {{ prosody_port_internal_http }}:5280 \
+      {% endif %}
+      --user 1000:1000 \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create prosody directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ prosody_directory }}"
+    - name: Configure prosody
+      template:
+        src: prosody-conf.j2
+        dest: "{{ prosody_directory.conf }}/prosody.cfg.lua"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0600
+  post_tasks:
+    - name: Register jabber users
+      expect:
+        command: "docker exec -it {{ service_name }} prosodyctl adduser {{ item.jid }}"
+        timeout: 60
+        creates: "{{ prosody_directory.data }}/{{ item.jid.split('@') | last | replace('.', '%2e') }}/accounts/{{ item.jid.split('@') | first }}.dat"
+        responses:
+          "Enter new password:": "{{ item.pass }}"
+          "Retype new password:": "{{ item.pass }}"
+      with_items: "{{ prosody_users }}"
+      no_log: true
+    - name: Add iptables rules for prosody
+      iptables_raw:
+        name: prosody_rules
+        weight: 20
+        rules: |
+          {{ prosody_iptables_c2s_rule }}
+          {{ prosody_iptables_s2s_rule }}
+          {% if prosody_enable_http %}
+          {{ prosody_iptables_https_rule }}
+          {% endif %}
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: prosody
+
+- name: Configure nginx proxy for prosody http_upload
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ prosody_domain_upload }}"
+    binded_port: "{{ prosody_port_internal_http }}"
+    external_port: "{{ prosody_port_external_https }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+      when: prosody_enable_http_upload
+  tags: prosody
+
 ## Gitea
 
 - name: Deploy gitea in docker
@@ -1407,124 +1528,3 @@
   roles:
     - role: generic_docker_systemd
   tags: murmur
-
-## Prosody
-
-- name: Get prosody subdomain Let's Encrypt certificate
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    domain: "{{ prosody_domain }}"
-    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-  tags: prosody
-
-- name: Get prosody subdomain Let's Encrypt certificate for MUC
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    domain: "{{ prosody_domain_muc }}"
-    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-      when: "{{ prosody_enable_muc }}"
-  tags: prosody
-
-- name: Get prosody subdomain Let's Encrypt certificate for http_upload
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    domain: "{{ prosody_domain_upload }}"
-    letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
-  roles:
-    - role: letsencrypt-request
-      tags: letsecrypt_request
-      when: prosody_enable_http_upload
-  tags: prosody
-
-- name: Deploy prosody in docker
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    create_volume: false
-    service_name: prosody
-    docker_image: "{{ prosody_docker_image }}"
-    enable_db: false
-    docker_command: |
-      /usr/bin/docker run --rm --name {{ service_name }} \
-      -v {{ prosody_directory.conf }}:/etc/prosody \
-      -v {{ prosody_directory.data }}:/var/lib/prosody \
-      -v {{ prosody_directory.modules_community }}:/usr/lib/prosody/modules-community \
-      -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules-custom \
-      -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
-      -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
-      -p {{ prosody_port_c2s }}:5222 \
-      -p {{ prosody_port_s2s }}:5269 \
-      {% if prosody_enable_http %}
-      -p {{ prosody_port_internal_http }}:5280 \
-      {% endif %}
-      --user 1000:1000 \
-      "{{ docker_image }}"
-  pre_tasks:
-    - name: Create prosody directories
-      file:
-        path: "{{ item.value }}"
-        state: directory
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0700
-      with_dict: "{{ prosody_directory }}"
-    - name: Configure prosody
-      template:
-        src: prosody-conf.j2
-        dest: "{{ prosody_directory.conf }}/prosody.cfg.lua"
-        force: "{{ override | default('no') }}"
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
-        mode: 0600
-  post_tasks:
-    - name: Register jabber users
-      expect:
-        command: "docker exec -it {{ service_name }} prosodyctl adduser {{ item.jid }}"
-        timeout: 60
-        creates: "{{ prosody_directory.data }}/{{ item.jid.split('@') | last | replace('.', '%2e') }}/accounts/{{ item.jid.split('@') | first }}.dat"
-        responses:
-          "Enter new password:": "{{ item.pass }}"
-          "Retype new password:": "{{ item.pass }}"
-      with_items: "{{ prosody_users }}"
-      no_log: true
-    - name: Add iptables rules for prosody
-      iptables_raw:
-        name: prosody_rules
-        weight: 20
-        rules: |
-          {{ prosody_iptables_c2s_rule }}
-          {{ prosody_iptables_s2s_rule }}
-          {% if prosody_enable_http %}
-          {{ prosody_iptables_https_rule }}
-          {% endif %}
-      tags: iptables
-  roles:
-    - role: generic_docker_systemd
-  tags: prosody
-
-- name: Configure nginx proxy for prosody http_upload
-  hosts: all
-  become: true
-  gather_facts: false
-  vars:
-    domain: "{{ prosody_domain_upload }}"
-    binded_port: "{{ prosody_port_internal_http }}"
-    external_port: "{{ prosody_port_external_https }}"
-  roles:
-    - role: add_nginx_proxy_conf
-      tags: proxy
-      when: prosody_enable_http_upload
-  tags: prosody

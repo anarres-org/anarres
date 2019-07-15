@@ -59,6 +59,8 @@ directory, by default */data*.
 * [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
    Using
    [osixia/phpldapadmin](https://github.com/osixia/docker-phpLDAPadmin).
+* [Prosody IM](https://prosody.im/): A modern XMPP communication server. Using
+  [unclev/prosody-docker-extended](https://github.com/unclev/prosody-docker-extended).
 * [Gitea](https://docs.gitea.io/): Using
   [gitea/gitea](https://github.com/go-gitea/gitea).
 * [Drone](https://drone.io/): Using
@@ -87,10 +89,8 @@ directory, by default */data*.
   [docker-taiga](https://github.com/m0wer/docker-taiga).
 * [NFS Server](https://sourceforge.net/projects/nfs/): Using
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
-* [Wiki.js](https://wiki.js.org/): Using
-  [requarks/wiki](https://github.com/Requarks/wiki).
-* [Prosody IM](https://prosody.im/): A modern XMPP communication server. Using
-  [unclev/prosody-docker-extended](https://github.com/unclev/prosody-docker-extended).
+* [BIND9](https://www.isc.org/bind/) Versatile, classic, complete name server
+   software. Using [sameersbn/bind](https://github.com/sameersbn/docker-bind).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
