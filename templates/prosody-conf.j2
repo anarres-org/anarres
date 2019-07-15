@@ -83,6 +83,9 @@ modules_enabled = {
 		--"proxy65"; -- Enables a file transfer proxy service which clients behind NAT can use
 
 	-- Extra
+		{% if prosody_enable_http %}
+		"http";
+		{% endif %}
 		"smacks"
 }
 
@@ -103,6 +106,8 @@ ssl = {
     certificate = "certs/{{ prosody_domain }}.crt";
     key = "certs/{{ prosody_domain }}.key";
 }
+
+http_ports = { {{ prosody_port_internal_http }} }
 
 -- Force clients to use encrypted connections? This option will
 -- prevent clients from authenticating unless they are using encryption.
@@ -202,6 +207,7 @@ VirtualHost "{{ prosody_domain }}"
 
 VirtualHost "{{ prosody_tor_hostname }}"
         modules_enabled = { "onions" };
+        modules_disabled = { "tls" };
 
 onions_tor_all = true
 onions_only = false
@@ -221,10 +227,24 @@ onions_map = {
 -- like multi-user conferences, and transports.
 -- For more information on components, see https://prosody.im/doc/components
 
----Set up a MUC (multi-user chat) room server on conference.example.com:
 {% if prosody_enable_muc %}
+---Set up a MUC (multi-user chat) room server on conference.example.com:
 Component "{{ prosody_domain_muc }}" "muc"
 	name = "{{ prosody_domain }} Chatrooms"
+	{% if prosody_enable_tor %}
+	modules_enabled = { "onions" }
+	onions_tor_all = true
+	onions_only = false
+	{% endif %}
+{% endif %}
+
+{% if prosody_enable_http_upload %}
+---Set up HTTP upload on upload.example.com
+Component "{{ prosody_domain_upload }}" "http_upload"
+	http_external_url = "https://{{ prosody_domain_upload }}:{{ prosody_port_external_https }}/"
+	http_upload_file_size_limit = 10 * 1000000 -- bytes (10MB)
+	http_upload_expire_after = 60 * 60 * 24 * 7 -- a week in seconds
+	http_upload_quota = 1000 * 1000000 -- bytes (1GB)
 	{% if prosody_enable_tor %}
 	modules_enabled = { "onions" }
 	onions_tor_all = true
