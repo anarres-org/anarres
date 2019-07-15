@@ -279,7 +279,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-      when: "{{ prosody_enable_muc }}"
+      when: prosody_enable_muc
   tags: prosody
 
 - name: Get prosody subdomain Let's Encrypt certificate for http_upload
