@@ -5,7 +5,7 @@
 ## Variables
 
 * `prosody_docker_image`: Name for the local service docker image.
-* `prosody_domain: Domain/subdomain for the service.
+* `prosody_domain`: Domain/subdomain for the service.
 * `prosody_domain_muc`: Domain for the Multi User Chatrooms.
 * `prosody_domain_upload`: Domain for the HTTP Upload.
 * `prosody_enable_muc`: Boolean to enable or disable Multi User Chatrooms.
