@@ -91,6 +91,9 @@ directory, by default */data*.
   [erichough/nfs-server](https://github.com/ehough/docker-nfs-server).
 * [BIND9](https://www.isc.org/bind/) Versatile, classic, complete name server
    software. Using [sameersbn/bind](https://github.com/sameersbn/docker-bind).
+* [Murmur](https://wiki.mumble.info/wiki/Main_Page): Open source, low-latency,
+   high quality voice chat software. Using
+   [m0wer/murmur](https://hub.docker.com/r/m0wer/murmur).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
