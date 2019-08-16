@@ -53,6 +53,11 @@ provisioner:
       taiga_secret_key: changeme
       taiga_db_user_pass: changeme
       user_uid_101: systemd-network
+      influxdb_db: telegraf
+      influxdb_admin_user: admin
+      influxdb_admin_password: changeme
+      influxdb_user: telegraf
+      influxdb_user_password: changeme
   lint:
     name: ansible-lint
     options:
