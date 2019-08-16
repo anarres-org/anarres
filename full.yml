@@ -1528,3 +1528,74 @@
   roles:
     - role: generic_docker_systemd
   tags: murmur
+
+## InfluxDB
+
+- name: Deploy influxdb in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: influxdb
+    docker_image: "{{ influxdb_docker_image }}"
+    enable_db: false
+    create_network: true
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v "{{ influxdb_directory.data }}":/var/lib/influxdb \
+      -p "{{ influxdb_port }}:8086" \
+      --network {{ service_name }} \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create influxdb directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ influxdb_directory }}"
+    - name: Check if influxdb is already configured
+      stat:
+        path: "{{ influxdb_directory.data }}/data"
+      register: database_influxdb_conf
+    - name: Configure influxdb
+      docker_container:
+        image: "{{ influxdb_docker_image }}"
+        name: influxdb-conf
+        cleanup: true
+        user: 1000:1000
+        volumes:
+          - "{{ influxdb_directory.data }}:/var/lib/influxdb"
+        env:
+          INFLUXDB_DB: "{{ influxdb_db }}"
+          INFLUXDB_ADMIN_USER: "{{ influxdb_admin_user }}"
+          INFLUXDB_ADMIN_PASSWORD: "{{ influxdb_admin_password }}"
+          INFLUXDB_USER: "{{ influxdb_user }}"
+          INFLUXDB_USER_PASSWORD: "{{ influxdb_user_password }}"
+        ports:
+          - "{{ influxdb_port }}:8086"
+      when: not database_influxdb_conf.stat.exists
+    - name: Wait for configuration container to finish setting up
+      wait_for:
+        port: "{{ influxdb_port }}"
+      when: not database_influxdb_conf.stat.exists
+    - name: Remove configuration container
+      docker_container:
+        name: influxdb-conf
+        state: absent
+      when: not database_influxdb_conf.stat.exists
+  post_tasks:
+    - name: Add iptables rules for influxdb
+      iptables_raw:
+        name: influxdb_rules
+        weight: 20
+        rules: |
+          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ influxdb_port }} -j ACCEPT
+      when: influxdb_open_port
+      tags: iptables
+  roles:
+    - role: generic_docker_systemd
+  tags: influxdb

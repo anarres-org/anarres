@@ -451,3 +451,21 @@ wikijs_ldap_url: "{{ openldap_server_uri }}"
 wikijs_ldap_bind_dn: "{{ openldap_bind_dn }}"
 wikijs_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
 wikijs_ldap_search_base: "{{ openldap_search_base }}"
+
+## InfluxDB
+
+influxdb_docker_image: influxdb:alpine
+
+influxdb_directory:
+  data: "{{ data_path }}/influxdb/data"
+
+influxdb_port: 8086
+influxdb_open_port: false
+
+### DB
+
+influxdb_db: telegraf
+influxdb_admin_user: admin
+influxdb_admin_password:
+influxdb_user: telegraf
+influxdb_user_password:
