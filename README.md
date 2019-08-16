@@ -94,6 +94,9 @@ directory, by default */data*.
 * [Murmur](https://wiki.mumble.info/wiki/Main_Page): Open source, low-latency,
    high quality voice chat software. Using
    [m0wer/murmur](https://hub.docker.com/r/m0wer/murmur).
+* [InfluxDB](https://www.influxdata.com/): Scalable datastore for metrics,
+   events, and real-time analytics. Using
+   [influxdb](https://hub.docker.com/_/influxdb).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
