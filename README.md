@@ -97,6 +97,9 @@ directory, by default */data*.
 * [InfluxDB](https://www.influxdata.com/): Scalable datastore for metrics,
    events, and real-time analytics. Using
    [influxdb](https://hub.docker.com/_/influxdb).
+* [Grafana](https://grafana.com/): The open platform for beautiful
+   analytics and monitoring. Using
+   [grafana/grafana](https://hub.docker.com/r/grafana/grafana).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
