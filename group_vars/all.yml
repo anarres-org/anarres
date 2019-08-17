@@ -469,3 +469,19 @@ influxdb_admin_user: admin
 influxdb_admin_password:
 influxdb_user: telegraf
 influxdb_user_password:
+
+## Grafana
+
+grafana_domain: "metrics.{{ base_domain }}"
+grafana_docker_image: grafana/grafana:latest
+
+grafana_directory:
+  conf: "{{ data_path }}/grafana/conf"
+  data: "{{ data_path }}/grafana/data"
+
+grafana_internal_web_port: 3070
+
+grafana_admin_user: admin
+grafana_admin_pass:
+
+grafana_allow_sign_up: "false"

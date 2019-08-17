@@ -1599,3 +1599,69 @@
   roles:
     - role: generic_docker_systemd
   tags: influxdb
+
+## Grafana
+
+- name: Deploy grafana in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: grafana
+    docker_image: "{{ grafana_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v "{{ grafana_directory.conf }}":/etc/grafana \
+      -v "{{ grafana_directory.data }}":/var/lib/grafana \
+      -p "{{ grafana_internal_web_port }}:3000" \
+      {% if grafana_network is defined %}
+      --network {{ service_name }} \
+      {% endif %}
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create grafana directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ grafana_directory }}"
+    - name: Configure grafana
+      template:
+        src: grafana.ini.j2
+        dest: "{{ grafana_directory.conf }}/grafana.ini"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0600
+  roles:
+    - role: generic_docker_systemd
+  tags: grafana
+
+- name: Get grafana subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ grafana_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: grafana
+
+- name: Configure nginx proxy for grafana
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ grafana_domain }}"
+    binded_port: "{{ grafana_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: grafana
