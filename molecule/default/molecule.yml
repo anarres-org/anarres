@@ -58,6 +58,7 @@ provisioner:
       influxdb_admin_password: changeme
       influxdb_user: telegraf
       influxdb_user_password: changeme
+      grafana_admin_pass: changeme
   lint:
     name: ansible-lint
     options:
