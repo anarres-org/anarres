@@ -100,6 +100,9 @@ directory, by default */data*.
 * [Grafana](https://grafana.com/): The open platform for beautiful
    analytics and monitoring. Using
    [grafana/grafana](https://hub.docker.com/r/grafana/grafana).
+* [Home Assistant](https://www.home-assistant.io/) Open source home automation
+   that puts local control and privacy first. Using
+   [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
