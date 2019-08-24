@@ -1665,3 +1665,88 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: grafana
+
+## Home Assistant
+
+- name: Deploy home_assistant in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: home_assistant
+    docker_image: "{{ home_assistant_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v "{{ home_assistant_directory.conf }}":/config \
+      -v /etc/localtime:/etc/localtime:ro \
+      --net=host \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create home_assistant directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ home_assistant_directory }}"
+    - name: Touch home_assistant extra configuration files
+      file:
+        path: "{{ home_assistant_directory.conf }}/{{ item }}"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+      with_items:
+        - groups.yaml
+        - scripts.yaml
+    - name: Copy empty automations file
+      copy:
+        src: home_assistant_automations.yaml
+        dest: "{{ home_assistant_directory.conf }}/automations.yaml"
+        force: "{{ override | default('no') }}"
+    - name: Configure home_assistant
+      template:
+        src: home_assistant.yaml.j2
+        dest: "{{ home_assistant_directory.conf }}/configuration.yaml"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0600
+  roles:
+    - role: generic_docker_systemd
+  tags: home_assistant
+
+- name: Get home_assistant subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ home_assistant_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: home_assistant
+
+- name: Configure nginx proxy for home_assistant
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ home_assistant_domain }}"
+    binded_port: "{{ home_assistant_internal_web_port }}"
+    proxy_conf: |
+      proxy_pass        http://127.0.0.1:{{ binded_port }};
+      proxy_set_header  X-Script-Name /;
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_pass_header Authorization;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: home_assistant

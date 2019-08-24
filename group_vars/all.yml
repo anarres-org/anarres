@@ -485,3 +485,13 @@ grafana_admin_user: admin
 grafana_admin_pass:
 
 grafana_allow_sign_up: "false"
+
+## Home Assistant
+
+home_assistant_domain: "home.{{ base_domain }}"
+home_assistant_docker_image: homeassistant/home-assistant:0.97.2
+
+home_assistant_directory:
+  conf: "{{ data_path }}/home_assistant/conf"
+
+home_assistant_internal_web_port: 8123
