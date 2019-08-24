@@ -6,7 +6,7 @@ analytics and monitoring.
 ## Variables
 
 * `grafana_docker_image`: Name for the service docker image.
-* `murmur_domain`: Domain/subdomain for the service.
+* `grafana_domain`: Domain/subdomain for the service.
 * `grafana_directory`:
    * `conf`: Path on the host for persistent configurations.
    * `data`: Path on the host for persistent data.
