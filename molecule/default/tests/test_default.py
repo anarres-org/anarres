@@ -27,7 +27,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("bind_dns_server"),
     ("murmur"),
     ("influxdb"),
-    ("grafana")
+    ("grafana"),
+    ("home_assistant")
 ])
 def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")
