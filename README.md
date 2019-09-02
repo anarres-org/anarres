@@ -54,6 +54,9 @@ Included as submodules in *roles/*.
 Their data and configuration files will be stored in your hosts `data_path`
 directory, by default */data*.
 
+* [Docker Registry](https://docs.docker.com/registry/): A stateless, highly
+   scalable server side application that stores and lets you distribute Docker
+   images. Using [library/registry](https://hub.docker.com/_/registry).
 * [OpenLDAP](http://www.openldap.org/): Using
    [osixia/openldap](https://github.com/osixia/docker-openldap).
 * [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
