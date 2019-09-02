@@ -35,6 +35,8 @@ provisioner:
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
+      registry_user: anarres
+      registry_pass: changeme
       openldap_organization: anarres
       openldap_base_DN: dc=anarres,dc=local
       openldap_admin_password: changeme
