@@ -93,6 +93,74 @@
     - web-base
     - web
 
+## Registry
+
+- name: Deploy registry in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: registry
+    docker_image: "{{ registry_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v {{ registry_directory.data }}:/var/lib/registry \
+      -p {{ registry_internal_web_port }}:5000 \
+      {{ docker_image }}
+  pre_tasks:
+    - name: Create registry directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ registry_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: registry
+
+- name: Get registry subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ registry_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: registry
+
+- name: Configure nginx proxy for registry
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ registry_domain }}"
+    binded_port: "{{ registry_internal_web_port }}"
+    external_port: 443
+    ssl_certificate: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+    ssl_certificate_key: "/etc/letsencrypt/live/{{ domain }}/privkey.pem"
+    template_path: registry_nginx.conf.j2
+  pre_tasks:
+    - pip:
+        name: passlib
+    - htpasswd:
+        path: /etc/nginx/conf.d/nginx.htpasswd
+        name: "{{ registry_user }}"
+        password: "{{ registry_pass }}"
+        owner: root
+        group: www-data
+        mode: 0640
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: registry
+
 ## OpenLDAP
 
 - name: Get openldap subdomain Let's Encrypt certificate

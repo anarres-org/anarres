@@ -43,6 +43,19 @@ web_path: /var/www
 web_path_letsencrypt: "{{ web_path }}/letsencrypt"
 web_path_default: "{{ web_path }}/default"
 
+## Registry
+
+registry_domain: "registry.{{ base_domain }}"
+registry_docker_image: registry:2
+
+registry_directory:
+  data: "{{ data_path }}/registry/data"
+
+registry_internal_web_port: 5000
+
+registry_user:
+registry_pass:
+
 ## OpenLDAP
 
 openldap_domain: "{{ base_domain }}"
