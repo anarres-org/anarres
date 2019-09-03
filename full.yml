@@ -147,9 +147,11 @@
     ssl_certificate_key: "/etc/letsencrypt/live/{{ domain }}/privkey.pem"
     template_path: registry_nginx.conf.j2
   pre_tasks:
-    - pip:
+    - name: Install passlib via pip
+      pip:
         name: passlib
-    - htpasswd:
+    - name: Insert htpasswd for Nginx basic auth
+      htpasswd:
         path: /etc/nginx/conf.d/nginx.htpasswd
         name: "{{ registry_user }}"
         password: "{{ registry_pass }}"
