@@ -163,6 +163,52 @@
       tags: proxy
   tags: registry
 
+## CoreOS Clair
+
+- name: Deploy clair in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: clair
+    docker_image: "{{ clair_docker_image }}"
+    docker_db_image: "{{ clair_db_image }}"
+    create_network: true
+    service_db_name: "{{ clair_db_service_name }}"
+    db_type: postgres
+    docker_service_directory_db: "{{ clair_directory.db }}"
+    db_user_pass: "{{ clair_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ clair_db_name }}"
+    db_user: "{{ clair_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -p {{ clair_internal_ports }}:6060-6061 \
+      -v {{ clair_directory.conf }}:/config \
+      --network "{{ service_name }}" \
+      {{ docker_image }} -config=/config/config.yaml
+  pre_tasks:
+    - name: Create clair directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ clair_directory }}"
+    - name: Configure clair
+      template:
+        src: clair_config.yaml.j2
+        dest: "{{ clair_directory.conf }}/config.yaml"
+        force: "{{ override | default('no') }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0600
+  roles:
+    - role: generic_docker_systemd
+  tags: clair
+
 ## Registry web interface
 
 - name: Deploy registry_web_interface in docker
@@ -177,7 +223,13 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p {{ registry_web_interface_internal_web_port }}:8080 \
+      {% if registry_web_interface_enable_clair %}
+      --network clair \
+      {% endif %}
       {{ docker_image }} server \
+      {% if registry_web_interface_enable_clair %}
+      --clair http://clair:6060 \
+      {% endif %}
       --registry {{ registry_web_interface_registry_url }} \
       --username {{ registry_web_interface_registry_user }} \
       --password {{ registry_web_interface_registry_pass }}

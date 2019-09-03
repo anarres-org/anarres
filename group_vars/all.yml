@@ -56,12 +56,29 @@ registry_internal_web_port: 5000
 registry_user:
 registry_pass:
 
+## CoreOS Clair
+
+clair_docker_image: quay.io/coreos/clair:latest
+clair_db_image: "{{ docker_db_postgres_image }}"
+clair_internal_ports: 6060-6061
+clair_db_service_name: clair-db
+
+clair_directory:
+  conf: "{{ data_path }}/clair/conf"
+  db: "{{ data_path }}/clair/db"
+
+clair_db_name: clair
+clair_db_user: clair
+clair_db_user_pass:
+
 ## Registry web interface
 
 registry_web_interface_domain: "r.{{ base_domain }}"
 registry_web_interface_docker_image: jessfraz/reg
 
 registry_web_interface_internal_web_port: 4080
+
+registry_web_interface_enable_clair: true
 
 registry_web_interface_registry_url: "https://{{ registry_domain }}"
 registry_web_interface_registry_user: "{{ registry_user }}"
