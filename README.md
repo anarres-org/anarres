@@ -57,6 +57,10 @@ directory, by default */data*.
 * [Docker Registry](https://docs.docker.com/registry/): A stateless, highly
    scalable server side application that stores and lets you distribute Docker
    images. Using [library/registry](https://hub.docker.com/_/registry).
+* [Jessfraz Docker registry web interface](https://github.com/genuinetools/reg):
+   Docker registry v2 command line client and repo listing generator with
+   security checks. Using
+   [jessfraz/reg](https://hub.docker.com/r/jessfraz/reg).
 * [OpenLDAP](http://www.openldap.org/): Using
    [osixia/openldap](https://github.com/osixia/docker-openldap).
 * [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
