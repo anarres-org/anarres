@@ -9,6 +9,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 @pytest.mark.parametrize("service", [
     ("registry"),
+    ("registry_web_interface"),
     ("prosody"),
     ("gitea"),
     ("drone"),
