@@ -56,6 +56,17 @@ registry_internal_web_port: 5000
 registry_user:
 registry_pass:
 
+## Registry web interface
+
+registry_web_interface_domain: "r.{{ base_domain }}"
+registry_web_interface_docker_image: jessfraz/reg
+
+registry_web_interface_internal_web_port: 4080
+
+registry_web_interface_registry_url: "https://{{ registry_domain }}"
+registry_web_interface_registry_user: "{{ registry_user }}"
+registry_web_interface_registry_pass: "{{ registry_pass }}"
+
 ## OpenLDAP
 
 openldap_domain: "{{ base_domain }}"

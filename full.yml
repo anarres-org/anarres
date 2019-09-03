@@ -163,6 +163,52 @@
       tags: proxy
   tags: registry
 
+## Registry web interface
+
+- name: Deploy registry_web_interface in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: registry_web_interface
+    docker_image: "{{ registry_web_interface_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p {{ registry_web_interface_internal_web_port }}:8080 \
+      {{ docker_image }} server \
+      --registry {{ registry_web_interface_registry_url }} \
+      --username {{ registry_web_interface_registry_user }} \
+      --password {{ registry_web_interface_registry_pass }}
+  roles:
+    - role: generic_docker_systemd
+  tags: registry_web_interface
+
+- name: Get registry_web_interface subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ registry_web_interface_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: registry_web_interface
+
+- name: Configure nginx proxy for registry_web_interface
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ registry_web_interface_domain }}"
+    binded_port: "{{ registry_web_interface_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: registry_web_interface
+
 ## OpenLDAP
 
 - name: Get openldap subdomain Let's Encrypt certificate
