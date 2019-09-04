@@ -62,6 +62,7 @@ clair_docker_image: quay.io/coreos/clair:latest
 clair_db_image: "{{ docker_db_postgres_image }}"
 clair_internal_ports: 6060-6061
 clair_db_service_name: clair-db
+clair_update_interval: 24h
 
 clair_directory:
   conf: "{{ data_path }}/clair/conf"

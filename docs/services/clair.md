@@ -10,6 +10,8 @@ for Containers.
 * `clair_internal_ports`: (Default: `6060-6061`) Range of two ports for the
   service. The first one is for the HTTP API and the second one for health
   checks.
+* `clair_update_interval`: (Default: `24h`) Frequency the database will be
+   updated with vulnerabilities from the default data sources.
 * `clair_db_service_name`: (Default: `clair-db`) Name for the database for this app.
 * `clair_directory`:
    * `conf`: Path on the host for the configuration directory.

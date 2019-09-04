@@ -54,7 +54,7 @@ clair:
   updater:
     # Frequency the database will be updated with vulnerabilities from the default data sources
     # The value 0 disables the updater entirely.
-    interval: 2h
+    interval: {{ clair_update_interval }}
     enabledupdaters: 
       - debian
       - ubuntu
