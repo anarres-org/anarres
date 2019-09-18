@@ -113,6 +113,10 @@ directory, by default */data*.
 * [Home Assistant](https://www.home-assistant.io/) Open source home automation
    that puts local control and privacy first. Using
    [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
+* [RStudio](https://www.rstudio.com/) provides popular open source and
+   enterprise-ready professional software for the R statistical computing
+   environment. Using
+   [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
