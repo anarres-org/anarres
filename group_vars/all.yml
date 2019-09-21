@@ -553,3 +553,14 @@ rstudio_cpus_limit: 2
 rstudio_memory_limit: 3gb
 
 rstudio_internal_web_port: 8787
+
+## Jellyfin
+
+jellyfin_docker_image: jellyfin/jellyfin
+jellyfin_internal_web_port: 8096
+jellyfin_domain: "jellyfin.{{ base_domain }}"
+
+jellyfin_directory:
+  cache: "{{ data_path }}/jellyfin/cache"
+  config: "{{ data_path }}/jellyfin/config"
+  media: "{{ data_path }}/jellyfin/media"
