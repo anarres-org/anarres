@@ -2027,6 +2027,10 @@
   vars:
     domain: "{{ jellyfin_domain }}"
     binded_port: "{{ jellyfin_internal_web_port }}"
+    external_port: 443
+    ssl_certificate: "/etc/letsencrypt/live/{{ domain }}/fullchain.pem"
+    ssl_certificate_key: "/etc/letsencrypt/live/{{ domain }}/privkey.pem"
+    template_path: jellyfin_nginx.conf.j2
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
