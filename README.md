@@ -117,6 +117,8 @@ directory, by default */data*.
    enterprise-ready professional software for the R statistical computing
    environment. Using
    [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio).
+* [Jellyfin](https://jellyfin.media/) The Free Software Media System. Using
+  [jellyfin/jellyfin](https://github.com/jellyfin/jellyfin).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
