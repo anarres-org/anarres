@@ -564,3 +564,12 @@ jellyfin_directory:
   cache: "{{ data_path }}/jellyfin/cache"
   config: "{{ data_path }}/jellyfin/config"
   media: "{{ data_path }}/jellyfin/media"
+
+## Portainer
+
+portainer_docker_image: portainer/portainer
+portainer_internal_web_port: 3060
+portainer_domain: "portainer.{{ base_domain }}"
+
+portainer_directory:
+  data: "{{ data_path }}/portainer/data"
