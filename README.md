@@ -119,6 +119,8 @@ directory, by default */data*.
    [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio).
 * [Jellyfin](https://jellyfin.media/) The Free Software Media System. Using
   [jellyfin/jellyfin](https://github.com/jellyfin/jellyfin).
+* [Portainer](https://www.portainer.io/) Making Docker management easy. Using
+  [portainer/portainer](https://hub.docker.com/r/portainer/portainer).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
