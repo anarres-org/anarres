@@ -555,17 +555,18 @@
     docker_image: "{{ drone_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -v /var/run/docker.sock:/var/run/docker.sock \
       -v "{{ drone_directory.data }}":/data \
       -p "{{ drone_internal_web_port }}:80" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "DRONE_GITEA_SERVER=https://{{ gitea_domain }}" \
+      -e "DRONE_GITEA_CLIENT_ID={{ gitea_oauth_client_id }}" \
+      -e "DRONE_GITEA_CLIENT_SECRET={{ gitea_oauth_client_secret }}" \
+      -e "DRONE_RPC_SECRET={{ drone_rpc_scret }}" \
       -e "DRONE_GIT_ALWAYS_AUTH=false" \
       -e "DRONE_RUNNER_CAPACITY=2" \
       -e "DRONE_SERVER_HOST={{ drone_domain }}" \
       -e "DRONE_SERVER_PROTO=https" \
       -e "DRONE_TLS_AUTOCERT=false" \
-      --network "{{ gitea_network }}" \
       "{{ docker_image }}"
   pre_tasks:
     - name: Create drone directories
@@ -601,6 +602,29 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
+  tags: drone
+
+## Drone docker runner
+
+- name: Deploy drone docker runner in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: drone-docker-runner
+    docker_image: "{{ drone_docker_runner_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ drone_docker_runner_internal_web_port }}:3000" \
+      -e "DRONE_RPC_PROTO=https" \
+      -e "DRONE_RPC_HOST={{ drone_domain }}" \
+      -e "DRONE_RPC_SECRET={{ drone_rpc_scret }}"" \
+      -e "DRONE_RUNNER_CAPACITY=2" \
+      -e "DRONE_RUNNER_NAME={{ drone_runner_name }}"" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
   tags: drone
 
 ## Drone for GitHub
