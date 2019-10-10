@@ -121,6 +121,9 @@ directory, by default */data*.
   [jellyfin/jellyfin](https://github.com/jellyfin/jellyfin).
 * [Portainer](https://www.portainer.io/) Making Docker management easy. Using
   [portainer/portainer](https://hub.docker.com/r/portainer/portainer).
+* [Anki sync server](https://github.com/tsudoko/anki-sync-server) This is a
+   personal Anki server, which you can sync against instead of AnkiWeb. Using
+   [kuklinistvan/anki-sync-server](https://hub.docker.com/r/kuklinistvan/anki-sync-server/tags).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
