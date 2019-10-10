@@ -573,3 +573,12 @@ portainer_domain: "portainer.{{ base_domain }}"
 
 portainer_directory:
   data: "{{ data_path }}/portainer/data"
+
+## Anki Sync Server
+
+anki_docker_image: kuklinistvan/anki-sync-server:latest
+anki_internal_web_port: 27701
+anki_domain: "anki.{{ base_domain }}"
+
+anki_directory:
+  data: "{{ data_path }}/anki/data"
