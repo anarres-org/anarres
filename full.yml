@@ -105,7 +105,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: openldap
+  tags: [ never, openldap ]
 
 - name: Deploy openldap in docker
   hosts: all
@@ -206,7 +206,7 @@
         - ldap-setup
   roles:
     - role: generic_docker_systemd
-  tags: openldap
+  tags: [ never, openldap ]
 
 ## phpLDAPadmin
 
@@ -229,7 +229,7 @@
       {{ docker_image }}
   roles:
     - role: generic_docker_systemd
-  tags: phpldapadmin
+  tags: [ never, phpldapadmin ]
 
 - name: Get phpldapadmin subdomain Let's Encrypt certificate
   hosts: all
@@ -241,7 +241,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: phpldapadmin
+  tags: [ never, phpldapadmin ]
 
 - name: Configure nginx proxy for phpldapadmin
   hosts: all
@@ -253,7 +253,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: phpldapadmin
+  tags: [ never, phpldapadmin ]
 
 ## Prosody
 
@@ -267,7 +267,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: prosody
+  tags: [ never, prosody ]
 
 - name: Get prosody subdomain Let's Encrypt certificate for MUC
   hosts: all
@@ -280,7 +280,7 @@
     - role: letsencrypt-request
       tags: letsecrypt_request
       when: prosody_enable_muc
-  tags: prosody
+  tags: [ never, prosody ]
 
 - name: Get prosody subdomain Let's Encrypt certificate for http_upload
   hosts: all
@@ -293,7 +293,7 @@
     - role: letsencrypt-request
       tags: letsecrypt_request
       when: prosody_enable_http_upload
-  tags: prosody
+  tags: [ never, prosody ]
 
 - name: Deploy prosody in docker
   hosts: all
@@ -360,7 +360,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: prosody
+  tags: [ never, prosody ]
 
 - name: Configure nginx proxy for prosody http_upload
   hosts: all
@@ -374,7 +374,7 @@
     - role: add_nginx_proxy_conf
       tags: proxy
       when: prosody_enable_http_upload
-  tags: prosody
+  tags: [ never, prosody ]
 
 ## Gitea
 
@@ -440,7 +440,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: gitea
+  tags: [ never, gitea ]
 
 - name: Get gitea subdomain Let's Encrypt certificate
   hosts: all
@@ -452,7 +452,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: gitea
+  tags: [ never, gitea ]
 
 - name: Configure nginx proxy for gitea
   hosts: all
@@ -464,7 +464,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: gitea
+  tags: [ never, gitea ]
 
 ## CodiMD
 
@@ -517,7 +517,7 @@
       with_dict: "{{ codimd_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: codimd
+  tags: [ never, codimd ]
 
 - name: Get codimd subdomain Let's Encrypt certificate
   hosts: all
@@ -529,7 +529,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: codimd
+  tags: [ never, codimd ]
 
 - name: Configure nginx proxy for codimd
   hosts: all
@@ -541,7 +541,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: codimd
+  tags: [ never, codimd ]
 
 ## Drone
 
@@ -578,7 +578,7 @@
         mode: 0700
   roles:
     - role: generic_docker_systemd
-  tags: drone
+  tags: [ never, drone ]
 
 - name: Get drone subdomain Let's Encrypt certificate
   hosts: all
@@ -590,7 +590,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: drone
+  tags: [ never, drone ]
 
 - name: Configure nginx proxy for drone
   hosts: all
@@ -602,7 +602,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: drone
+  tags: [ never, drone ]
 
 ## Drone docker runner
 
@@ -625,7 +625,7 @@
       "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
-  tags: drone
+  tags: [ never, drone ]
 
 ## Drone for GitHub
 
@@ -662,7 +662,7 @@
         mode: 0700
   roles:
     - role: generic_docker_systemd
-  tags: drone_github
+  tags: [ never, drone_github ]
 
 - name: Get drone_github subdomain Let's Encrypt certificate
   hosts: all
@@ -674,7 +674,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: drone_github
+  tags: [ never, drone_github ]
 
 - name: Configure nginx proxy for drone_github
   hosts: all
@@ -686,7 +686,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: drone_github
+  tags: [ never, drone_github ]
 
 ## Transmission
 
@@ -736,7 +736,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: transmission
+  tags: [ never, transmission ]
 
 - name: Get transmission subdomain Let's Encrypt certificate
   hosts: all
@@ -748,7 +748,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: transmission
+  tags: [ never, transmission ]
 
 - name: Configure nginx proxy for transmission
   hosts: all
@@ -760,7 +760,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: transmission
+  tags: [ never, transmission ]
 
 ## Transmission-OpenVPN
 
@@ -807,7 +807,7 @@
       with_dict: "{{ transmission_openvpn_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: transmission_openvpn
+  tags: [ never, transmission_openvpn ]
 
 - name: Get transmission_openvpn subdomain Let's Encrypt certificate
   hosts: all
@@ -819,7 +819,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: transmission_openvpn
+  tags: [ never, transmission_openvpn ]
 
 - name: Configure nginx proxy for transmission_openvpn
   hosts: all
@@ -831,7 +831,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: transmission_openvpn
+  tags: [ never, transmission_openvpn ]
 
 ## Wallabag
 
@@ -881,7 +881,7 @@
         mode: 0700
   roles:
     - role: generic_docker_systemd
-  tags: wallabag
+  tags: [ never, wallabag ]
 
 - name: Get wallabag subdomain Let's Encrypt certificate
   hosts: all
@@ -893,7 +893,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: wallabag
+  tags: [ never, wallabag ]
 
 - name: Configure nginx proxy for wallabag
   hosts: all
@@ -905,7 +905,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: wallabag
+  tags: [ never, wallabag ]
 
 ## Selfoss
 
@@ -1001,7 +1001,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: syncthing
+  tags: [ never, syncthing ]
 
 - name: Get syncthing subdomain Let's Encrypt certificate
   hosts: all
@@ -1013,7 +1013,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: syncthing
+  tags: [ never, syncthing ]
 
 - name: Configure nginx proxy for syncthing
   hosts: all
@@ -1025,7 +1025,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: syncthing
+  tags: [ never, syncthing ]
 
 ## OpenVPN
 
@@ -1082,7 +1082,7 @@
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
   roles:
     - role: generic_docker_systemd
-  tags: openvpn
+  tags: [ never, openvpn ]
 
 ## Radicale
 
@@ -1137,7 +1137,7 @@
         create: true
   roles:
     - role: generic_docker_systemd
-  tags: radicale
+  tags: [ never, radicale ]
 
 - name: Get radicale subdomain Let's Encrypt certificate
   hosts: all
@@ -1149,7 +1149,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: radicale
+  tags: [ never, radicale ]
 
 - name: Configure nginx proxy for radicale
   hosts: all
@@ -1166,7 +1166,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: radicale
+  tags: [ never, radicale ]
 
 ## taskd
 
@@ -1203,7 +1203,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: taskd
+  tags: [ never, taskd ]
 
 ## Nextcloud
 
@@ -1253,7 +1253,7 @@
         - "{{ nextcloud_directory.db }}"
   roles:
     - role: generic_docker_systemd
-  tags: nextcloud
+  tags: [ never, nextcloud ]
 
 - name: Get nextcloud subdomain Let's Encrypt certificate
   hosts: all
@@ -1265,7 +1265,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: nextcloud
+  tags: [ never, nextcloud ]
 
 - name: Configure nginx proxy for nextcloud
   hosts: all
@@ -1277,7 +1277,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: nextcloud
+  tags: [ never, nextcloud ]
 
 ## Taiga
 
@@ -1341,7 +1341,7 @@
       with_dict: "{{ taiga_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: taiga
+  tags: [ never, taiga ]
 
 - name: Get taiga subdomain Let's Encrypt certificate
   hosts: all
@@ -1353,7 +1353,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: taiga
+  tags: [ never, taiga ]
 
 - name: Configure nginx proxy for taiga
   hosts: all
@@ -1365,7 +1365,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: taiga
+  tags: [ never, taiga ]
 
 ## NFS
 
@@ -1449,7 +1449,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: nfs
+  tags: [ never, nfs ]
 
 ## BIND DNS Server
 
@@ -1492,7 +1492,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: bind_dns_server
+  tags: [ never, bind_dns_server ]
 
 ## Murmur
 
@@ -1506,7 +1506,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: murmur
+  tags: [ never, murmur ]
 
 - name: Deploy murmur in docker
   hosts: all
@@ -1551,7 +1551,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: murmur
+  tags: [ never, murmur ]
 
 ## InfluxDB
 
@@ -1622,7 +1622,7 @@
       tags: iptables
   roles:
     - role: generic_docker_systemd
-  tags: influxdb
+  tags: [ never, influxdb ]
 
 ## Grafana
 
@@ -1664,7 +1664,7 @@
         mode: 0600
   roles:
     - role: generic_docker_systemd
-  tags: grafana
+  tags: [ never, grafana ]
 
 - name: Get grafana subdomain Let's Encrypt certificate
   hosts: all
@@ -1676,7 +1676,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: grafana
+  tags: [ never, grafana ]
 
 - name: Configure nginx proxy for grafana
   hosts: all
@@ -1688,7 +1688,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: grafana
+  tags: [ never, grafana ]
 
 ## Home Assistant
 
@@ -1741,7 +1741,7 @@
         mode: 0600
   roles:
     - role: generic_docker_systemd
-  tags: home_assistant
+  tags: [ never, home_assistant ]
 
 - name: Get home_assistant subdomain Let's Encrypt certificate
   hosts: all
@@ -1753,7 +1753,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: home_assistant
+  tags: [ never, home_assistant ]
 
 - name: Configure nginx proxy for home_assistant
   hosts: all
@@ -1773,4 +1773,4 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: home_assistant
+  tags: [ never, home_assistant ]
