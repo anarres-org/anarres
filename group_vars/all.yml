@@ -158,7 +158,7 @@ drone_rpc_scret: "changeme"
 ## Drone docker runner
 
 drone_docker_runner_docker_image: drone/agent:1
-drone_docker_runner_internal_web_port: 3000
+drone_docker_runner_internal_web_port: 3031
 drone_runner_name: "drone-runner.{{ base_domain }}"
 
 ## Drone for GitHub
