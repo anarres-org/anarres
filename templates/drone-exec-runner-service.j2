@@ -1,0 +1,22 @@
+[Unit]
+Description=Drone Exec Runner
+ConditionFileIsExecutable={{ drone_exec_runner_script_path }}/drone-runner-exec
+
+[Service]
+User={{ user_uid_1000 }}
+Group={{ group_gid_1000 }}
+StartLimitInterval=5
+StartLimitBurst=10
+ExecStart={{ drone_exec_runner_script_path }}/drone-runner-exec "service" "run" "--config" "{{ drone_exec_runner_path.config }}"
+
+
+
+
+
+
+Restart=always
+RestartSec=120
+EnvironmentFile=-/etc/sysconfig/drone-runner-exec
+
+[Install]
+WantedBy=multi-user.target

@@ -161,6 +161,20 @@ drone_docker_runner_docker_image: drone/agent:1
 drone_docker_runner_internal_web_port: 3031
 drone_runner_name: "drone-runner.{{ base_domain }}"
 
+## Drone exec runner
+
+drone_exec_runner_download: https://github.com/drone-runners/drone-runner-exec/releases/download/v1.0.0-beta.5/drone_runner_exec_linux_amd64.tar.gz
+drone_exec_runner_download_path: /tmp/drone_runner_exec.tar.gz
+drone_exec_runner_script_path: /usr/local/bin
+drone_exec_runner_service_name: drone.exec-runner
+drone_exec_runner_directory:
+  config: "/home/{{ user_uid_1000 }}/.drone-exec-runner"
+  log: "/home/{{ user_uid_1000 }}/.drone-exec-runner"
+
+drone_exec_runner_path:
+  config: "{{ drone_exec_runner_directory.config}}/config"
+  log: "{{ drone_exec_runner_directory.log}}/log.txt"
+
 ## Drone for GitHub
 
 drone_github_docker_image: drone/drone:1

@@ -628,6 +628,69 @@
     - role: generic_docker_systemd
   tags: drone
 
+## Drone exec runner
+
+- name: Install drone exec runner
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Provisioning drone exec runner
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ user_uid_1000 }}"
+        mode: 0755
+      with_items:
+        - "{{ drone_exec_runner_directory.config }}"
+        - "{{ drone_exec_runner_directory.log }}"
+    - name: Check if there is a drone exec runner installed
+      stat:
+        path: "{{ drone_exec_runner_script_path }}/drone-runner-exec"
+      register: drone_exec_runner_script
+    - name: Download install script drone exec runner
+      get_url:
+        url: "{{ drone_exec_runner_download }}"
+        dest: "{{ drone_exec_runner_download_path }}"
+      when:
+        - not drone_exec_runner_script.stat.exists
+    - name: Extract install script drone exec runner
+      unarchive:
+        src: "{{ drone_exec_runner_download_path }}"
+        dest: "{{ drone_exec_runner_script_path }}"
+        remote_src: yes
+        owner: root
+        group: root
+        mode: 0755
+      when:
+        - not drone_exec_runner_script.stat.exists
+    - name: Set drone exec runner config
+      template:
+        src: drone-exec-runner-config.j2
+        dest: "{{ drone_exec_runner_path.config }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ user_uid_1000 }}"
+        mode: 0755
+      register: drone_exec_runner_config
+    - name: Install new drone exec runner config
+      become: true
+      template:
+        src: drone-exec-runner-service.j2
+        dest: "/etc/systemd/system/{{ drone_exec_runner_service_name }}.service"
+        owner: root
+        group: root
+      register: drone_exec_runner_service
+    - name: Start drone exec runner service
+      become: true
+      systemd:
+        name: "{{ drone_exec_runner_service_name }}"
+        enabled: yes
+        daemon_reload: yes
+        state: started
+      when: drone_exec_runner_config.changed or drone_exec_runner_service.changed
+  tags: [ never, drone ]
+
 ## Drone for GitHub
 
 - name: Deploy drone for github in docker
