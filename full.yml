@@ -672,7 +672,8 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ user_uid_1000 }}"
         mode: 0755
-      register: drone_exec_runner_config
+      notify:
+        - Start drone exec runner service
     - name: Install new drone exec runner config
       become: true
       template:
@@ -680,7 +681,9 @@
         dest: "/etc/systemd/system/{{ drone_exec_runner_service_name }}.service"
         owner: root
         group: root
-      register: drone_exec_runner_service
+      notify:
+        - Start drone exec runner service
+  handlers:
     - name: Start drone exec runner service
       become: true
       systemd:
@@ -688,7 +691,6 @@
         enabled: yes
         daemon_reload: yes
         state: started
-      when: drone_exec_runner_config.changed or drone_exec_runner_service.changed
   tags: [ never, drone ]
 
 ## Drone for GitHub

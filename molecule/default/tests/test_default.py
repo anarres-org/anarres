@@ -34,3 +34,8 @@ def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")
     assert service.is_enabled
     assert service.is_running
+
+def test_drone_exec_service_are_enabled_and_running(host, service):
+    service = host.service("drone.exec-runner.service")
+    assert service.is_enabled
+    assert service.is_running
