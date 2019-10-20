@@ -655,7 +655,6 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ codimd_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
-      -e "CMD_DOMAIN={{ codimd_domain }}" \
       -e "CMD_DB_URL=postgres://{{ codimd_db_user }}:{{ codimd_db_user_pass }}@{{ codimd_db_service_name }}:5432/{{ codimd_db_name }}" \
       -e "CMD_URL_ADDPORT=false" \
       {% if codimd_enable_ldap %}
