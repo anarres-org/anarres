@@ -121,7 +121,7 @@
       with_dict: "{{ registry_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: registry
+  tags: [ never, registry ]
 
 - name: Get registry subdomain Let's Encrypt certificate
   hosts: all
@@ -133,7 +133,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: registry
+  tags: [ never, registry ]
 
 - name: Configure nginx proxy for registry
   hosts: all
@@ -161,7 +161,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: registry
+  tags: [ never, registry ]
 
 ## CoreOS Clair
 
@@ -207,7 +207,7 @@
         mode: 0600
   roles:
     - role: generic_docker_systemd
-  tags: clair
+  tags: [ never, clair ]
 
 ## Registry web interface
 
@@ -235,7 +235,7 @@
       --password {{ registry_web_interface_registry_pass }}
   roles:
     - role: generic_docker_systemd
-  tags: registry_web_interface
+  tags: [ never, registry_web_interface ]
 
 - name: Get registry_web_interface subdomain Let's Encrypt certificate
   hosts: all
@@ -247,7 +247,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: registry_web_interface
+  tags: [ never, registry_web_interface ]
 
 - name: Configure nginx proxy for registry_web_interface
   hosts: all
@@ -259,7 +259,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: registry_web_interface
+  tags: [ never, registry_web_interface ]
 
 ## OpenLDAP
 
@@ -1940,7 +1940,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: home_assistant
+  tags: [ never, home_assistant ]
 
 ## RStudio
 
@@ -1974,7 +1974,7 @@
       with_dict: "{{ rstudio_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: rstudio
+  tags: [ never, rstudio ]
 
 - name: Get rstudio subdomain Let's Encrypt certificate
   hosts: all
@@ -1986,7 +1986,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: rstudio
+  tags: [ never, rstudio ]
 
 - name: Configure nginx proxy for rstudio
   hosts: all
@@ -1998,7 +1998,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: rstudio
+  tags: [ never, rstudio ]
 
 ## Jellyfin
 
@@ -2029,7 +2029,7 @@
       with_dict: "{{ jellyfin_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: jellyfin
+  tags: [ never, jellyfin ]
 
 - name: Get jellyfin subdomain Let's Encrypt certificate
   hosts: all
@@ -2041,7 +2041,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: jellyfin
+  tags: [ never, jellyfin ]
 
 - name: Configure nginx proxy for jellyfin
   hosts: all
@@ -2057,7 +2057,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: jellyfin
+  tags: [ never, jellyfin ]
 
 ## Portainer
 
@@ -2087,7 +2087,7 @@
       with_dict: "{{ portainer_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: portainer
+  tags: [ never, portainer ]
 
 - name: Get portainer subdomain Let's Encrypt certificate
   hosts: all
@@ -2099,7 +2099,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: portainer
+  tags: [ never, portainer ]
 
 - name: Configure nginx proxy for portainer
   hosts: all
@@ -2111,7 +2111,7 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: portainer
+  tags: [ never, portainer ]
 
 ## Anki Sync Server
 
@@ -2141,7 +2141,7 @@
       with_dict: "{{ anki_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: anki
+  tags: [ never, anki ]
 
 - name: Get anki subdomain Let's Encrypt certificate
   hosts: all
@@ -2153,7 +2153,7 @@
   roles:
     - role: letsencrypt-request
       tags: letsecrypt_request
-  tags: anki
+  tags: [ never, anki ]
 
 - name: Configure nginx proxy for anki
   hosts: all
@@ -2165,4 +2165,4 @@
   roles:
     - role: add_nginx_proxy_conf
       tags: proxy
-  tags: anki
+  tags: [ never, anki ]
