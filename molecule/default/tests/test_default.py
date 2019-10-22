@@ -8,6 +8,9 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 @pytest.mark.parametrize("service", [
+    ("registry"),
+    ("clair"),
+    ("registry_web_interface"),
     ("prosody"),
     ("gitea"),
     ("drone"),
@@ -28,7 +31,11 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("murmur"),
     ("influxdb"),
     ("grafana"),
-    ("home_assistant")
+    ("home_assistant"),
+    ("rstudio"),
+    ("jellyfin"),
+    ("portainer"),
+    ("anki")
 ])
 def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")

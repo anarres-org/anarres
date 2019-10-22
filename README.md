@@ -54,6 +54,16 @@ Included as submodules in *roles/*.
 Their data and configuration files will be stored in your hosts `data_path`
 directory, by default */data*.
 
+* [Docker Registry](https://docs.docker.com/registry/): A stateless, highly
+   scalable server side application that stores and lets you distribute Docker
+   images. Using [library/registry](https://hub.docker.com/_/registry).
+* [CoreOS Clair](https://github.com/coreos/clair): Vulnerability Static Analysis
+   for Containers. Using
+   [quay.io/coreos/clair](https://quay.io/repository/coreos/clair).
+* [Jessfraz Docker registry web interface](https://github.com/genuinetools/reg):
+   Docker registry v2 command line client and repo listing generator with
+   security checks. Using
+   [jessfraz/reg](https://hub.docker.com/r/jessfraz/reg).
 * [OpenLDAP](http://www.openldap.org/): Using
    [osixia/openldap](https://github.com/osixia/docker-openldap).
 * [phpLDAPadmin](http://phpldapadmin.sourceforge.net/):
@@ -103,6 +113,17 @@ directory, by default */data*.
 * [Home Assistant](https://www.home-assistant.io/) Open source home automation
    that puts local control and privacy first. Using
    [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
+* [RStudio](https://www.rstudio.com/) provides popular open source and
+   enterprise-ready professional software for the R statistical computing
+   environment. Using
+   [rocker/rstudio](https://hub.docker.com/r/rocker/rstudio).
+* [Jellyfin](https://jellyfin.media/) The Free Software Media System. Using
+  [jellyfin/jellyfin](https://github.com/jellyfin/jellyfin).
+* [Portainer](https://www.portainer.io/) Making Docker management easy. Using
+  [portainer/portainer](https://hub.docker.com/r/portainer/portainer).
+* [Anki sync server](https://github.com/tsudoko/anki-sync-server) This is a
+   personal Anki server, which you can sync against instead of AnkiWeb. Using
+   [kuklinistvan/anki-sync-server](https://hub.docker.com/r/kuklinistvan/anki-sync-server/tags).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).

@@ -35,6 +35,9 @@ provisioner:
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
+      registry_user: anarres
+      registry_pass: changeme
+      clair_db_user_pass: changeme
       openldap_organization: anarres
       openldap_base_DN: dc=anarres,dc=local
       openldap_admin_password: changeme
@@ -59,6 +62,7 @@ provisioner:
       influxdb_user: telegraf
       influxdb_user_password: changeme
       grafana_admin_pass: changeme
+      rstudio_pass: changeme
   lint:
     name: ansible-lint
     options:
