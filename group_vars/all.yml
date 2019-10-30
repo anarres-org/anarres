@@ -363,7 +363,7 @@ taskd_directory:
 ## Nextcloud
 
 nextcloud_domain: "cloud.{{ base_domain }}"
-nextcloud_docker_image: nextcloud:production-apache
+nextcloud_docker_image: nextcloud:stable-apache
 nextcloud_internal_web_port: 4001
 
 nextcloud_directory:
@@ -380,7 +380,7 @@ nextcloud_db_user_pass:
 ## Taiga
 
 taiga_domain: "taiga.{{ base_domain }}"
-taiga_docker_image: m0wer/docker-taiga:v4.2.7
+taiga_docker_image: m0wer/docker-taiga:v4.2.14
 taiga_internal_web_port: 3050
 taiga_secret_key:
 taiga_backend_webhooks_enabled: false
