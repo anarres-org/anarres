@@ -21,6 +21,16 @@ reboot).
 Apart from this, it's easy to extend and doesn't prevent you from using other
 playbooks apart from this one or installing things manually.
 
+## Usage
+
+Clone the repo and its submodules with:
+
+```bash
+git clone --recurse-submodules -j8 [repo]
+```
+
+Then follow the [Setup](#setup) section.
+
 ## Compatibility
 
 These are the tested GNU/Linux distributions. Maybe it works on some other
