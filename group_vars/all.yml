@@ -582,3 +582,22 @@ anki_domain: "anki.{{ base_domain }}"
 
 anki_directory:
   data: "{{ data_path }}/anki/data"
+
+## Moodle
+
+moodle_docker_image: moodlehq/moodle-php-apache:7.3
+moodle_internal_web_port: 8082
+moodle_domain: "moodle.{{ base_domain }}"
+
+moodle_git_repo: git://git.moodle.org/moodle.git
+moodle_git_repo_version: MOODLE_37_STABLE
+
+moodle_db_image: "{{ docker_db_postgres_image }}"
+moodle_db_name: moodle
+moodle_db_user: moodle
+moodle_db_user_pass:
+
+moodle_directory:
+  db: "{{ data_path }}/moodle/db"
+  data: "{{ data_path }}/moodle/data"
+  html: "{{ data_path }}/moodle/html"

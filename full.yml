@@ -2142,3 +2142,90 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: [ never, anki ]
+
+## Moodle
+
+- name: Deploy moodle in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: moodle
+    docker_image: "{{ moodle_docker_image }}"
+    docker_db_image: "{{ moodle_db_image }}"
+    create_network: true
+    service_db_name: "{{ service_name }}-db"
+    db_type: postgres
+    docker_service_directory_db: "{{ moodle_directory.db }}"
+    db_user_pass: "{{ moodle_db_user_pass }}"
+    db_config_port: 5432
+    db_name: "{{ moodle_db_name }}"
+    db_user: "{{ moodle_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ moodle_directory.html }}":/var/www/html \
+      -v "{{ moodle_directory.data }}":/var/www/moodledata \
+      -p "{{ moodle_internal_web_port }}:80" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create moodle directories 750 uid 33
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_33 }}"
+        group: "{{ group_gid_33 }}"
+        mode: 0750
+      with_items:
+        - "{{ moodle_directory.data }}"
+        - "{{ moodle_directory.html }}"
+    - name: Create moodle directories 700 uid 1000
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ moodle_directory.db }}"
+    - name: Clone moodle repo
+      git:
+        repo: "{{ moodle_git_repo }}"
+        dest: "{{ moodle_directory.html }}"
+        version: "{{ moodle_git_repo_version }}"
+        # - name: Configure moodle
+        #   template:
+        #     src: moodle-config.php.j2
+        #     dest: "{{ moodle_directory.html }}/config.php"
+        #     force: "{{ override | default('no') }}"
+        #     owner: "{{ user_uid_33 }}"
+        #     group: "{{ group_gid_33 }}"
+        #     mode: 0640
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, moodle ]
+
+- name: Get moodle subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ moodle_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, moodle ]
+
+- name: Configure nginx proxy for moodle
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ moodle_domain }}"
+    binded_port: "{{ moodle_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: [ never, moodle ]
