@@ -63,6 +63,7 @@ provisioner:
       influxdb_user_password: changeme
       grafana_admin_pass: changeme
       rstudio_pass: changeme
+      moodle_db_user_pass: changeme
   lint:
     name: ansible-lint
     options:
