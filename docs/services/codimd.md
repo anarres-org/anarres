@@ -22,7 +22,7 @@ Realtime collaborative markdown notes on all platforms. Like
 * `codimd_db_user`: (Default: `codimd`) Username for the database and the
   app.
 * `codimd_db_user_pass`: Password for that user.
-* `codimd_db_name`: (Default: codimd`) Name for the database for this app.
+* `codimd_db_name`: (Default: `codimd`) Name for the database for this app.
 * `codimd_enable_ldap`: (Default: `true`) Boolean to enable or disable
   the LDAP logging ability.
 * `codimd_ldap_url`: LDAP server address. Include `ldaps://` at the
