@@ -134,6 +134,8 @@ directory, by default */data*.
 * [Anki sync server](https://github.com/tsudoko/anki-sync-server) This is a
    personal Anki server, which you can sync against instead of AnkiWeb. Using
    [kuklinistvan/anki-sync-server](https://hub.docker.com/r/kuklinistvan/anki-sync-server/tags).
+* [Moodle](https://moodle.org/) Open-source learning plataform. Using
+  [moodlehq/moodle-php-apache](https://hub.docker.com/r/moodlehq/moodle-php-apache).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
