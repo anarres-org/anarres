@@ -16,8 +16,8 @@ group_gid_33: "{{ user_uid_33 }}"
 
 ca_certs_path: /etc/ssl/certs/ca-certificates.crt
 
-docker_db_image: mariadb:latest
-docker_db_postgres_image: postgres:latest
+docker_db_image: mariadb:10
+docker_db_postgres_image: postgres:11-alpine
 dockerfiles_path: /root/dockerfiles
 
 ## Following values will be used for the root account of every docker database
