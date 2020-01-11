@@ -585,12 +585,12 @@ anki_directory:
 
 ## Moodle
 
-moodle_docker_image: moodlehq/moodle-php-apache:7.3
+moodle_docker_image: moodlehq/moodle-php-apache:7.4
 moodle_internal_web_port: 8082
 moodle_domain: "moodle.{{ base_domain }}"
 
 moodle_git_repo: git://git.moodle.org/moodle.git
-moodle_git_repo_version: MOODLE_37_STABLE
+moodle_git_repo_version: MOODLE_38_STABLE
 
 moodle_db_image: "{{ docker_db_postgres_image }}"
 moodle_db_name: moodle
