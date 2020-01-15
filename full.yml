@@ -1456,8 +1456,8 @@
       -e "TAIGA_EMAIL_USE_SSL={{ taiga_email_use_ssl }}" \
       -e "TAIGA_EMAIL_HOST={{ taiga_email_host }}" \
       -e "TAIGA_EMAIL_PORT={{ taiga_email_port }}" \
-      -e "TAIGA_EMAIL_USER={{ taiga_email_user }}" \
-      -e "TAIGA_EMAIL_PASSWORD={{ taiga_email_password }}" \
+      -e "TAIGA_EMAIL_HOST_USER={{ taiga_email_host_user }}" \
+      -e "TAIGA_EMAIL_HOST_PASSWORD={{ taiga_email_host_password }}" \
       {% if taiga_enable_ldap %}
       -e 'LDAP_ENABLE=true' \
       -e "LDAP_SERVER={{ taiga_ldap_server }}" \

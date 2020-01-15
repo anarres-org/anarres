@@ -405,8 +405,8 @@ taiga_email_use_tls: false
 taiga_email_use_ssl: false
 taiga_email_host: localhost
 taiga_email_port: 25
-taiga_email_user:
-taiga_email_password:
+taiga_email_host_user:
+taiga_email_host_password:
 
 ### LDAP
 

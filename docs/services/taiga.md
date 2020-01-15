@@ -33,8 +33,8 @@
    (default: `false`).
 * `taiga_email_host`: Email server host (default: `localhost`).
 * `taiga_email_port`: Email server port (default: `25`).
-* `taiga_email_user`: Email server user, if login is required.
-* `taiga_email_password`: Email server password, if login is required.
+* `taiga_email_host_user`: Email server user, if login is required.
+* `taiga_email_host_password`: Email server password, if login is required.
 * `taiga_enable_ldap`: (Default: `true`) Boolean to enable or disable
   the LDAP logging ability.
 * `taiga_ldap_server`: LDAP server address. Include `ldaps://` at the
