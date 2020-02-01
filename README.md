@@ -136,6 +136,9 @@ directory, by default */data*.
    [kuklinistvan/anki-sync-server](https://hub.docker.com/r/kuklinistvan/anki-sync-server/tags).
 * [Moodle](https://moodle.org/) Open-source learning plataform. Using
   [moodlehq/moodle-php-apache](https://hub.docker.com/r/moodlehq/moodle-php-apache).
+* [JupyterHub](https://jupyter.org/hub) A multi-user version of the notebook
+   designed for companies, classrooms and research labs. Using
+   [m0wer/jupyterhub](https://hub.docker.com/r/m0wer/jupyterhub).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
