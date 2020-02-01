@@ -601,3 +601,27 @@ moodle_directory:
   db: "{{ data_path }}/moodle/db"
   data: "{{ data_path }}/moodle/data"
   html: "{{ data_path }}/moodle/html"
+
+## JupyterHub
+
+jupyterhub_docker_image: local/jupyterhub
+jupyterhub_internal_web_port: 8000
+jupyterhub_domain: "jupyter.{{ base_domain }}"
+
+jupyterhub_directory:
+  data: "{{ data_path }}/jupyterhub/data"
+  user_data: "{{ data_path }}/jupyterhub/user_data"
+
+jupyterhub_jupyter_docker_image: 'jupyterhub/singleuser'
+
+jupyterhub_admin_users:
+  - admin
+jupyterhub_user_container_mem_limit: '2G'
+
+jupyterhub_ldap_hostname: "{{ openldap_domain }}"
+jupyterhub_ldap_bind_dn: "{{ openldap_bind_dn }}"
+jupyterhub_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+jupyterhub_ldap_search_base: "{{ openldap_search_base }}"
+jupyterhub_ldap_user_attribute: 'uid'
+jupyterhub_ldap_user_dn_attribute: 'cn'
+jupyterhub_bind_dn_template: "{{ jupyterhub_ldap_user_dn_attribute }}={username},{{ jupyterhub_ldap_search_base }}"
