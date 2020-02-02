@@ -20,6 +20,8 @@ docker_db_image: mariadb:10
 docker_db_postgres_image: postgres:11
 dockerfiles_path: /root/dockerfiles
 
+nvidia_runtime: false
+
 ## Following values will be used for the root account of every docker database
 db_pass:
 db_config_port: 3306
@@ -617,6 +619,7 @@ jupyterhub_jupyter_docker_image: 'jupyterhub/singleuser'
 jupyterhub_admin_users:
   - admin
 jupyterhub_user_container_mem_limit: '2G'
+jupyterhub_nvidia_runtime: "{{ nvidia_runtime }}"
 
 jupyterhub_ldap_hostname: "{{ openldap_domain }}"
 jupyterhub_ldap_bind_dn: "{{ openldap_bind_dn }}"

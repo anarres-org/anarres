@@ -211,6 +211,14 @@ authenticator = webroot
 webroot_path = /var/www/letsencrypt,
 ```
 
+### Nvidia runtime support
+
+Some services (such as jellyfin and jupyter) can benefit from GPU acceleration.
+In order to generally enable nvdia runtime support for the services set the
+variable `nvidia_runtime` to `true`. Note that the nvidia-container-toolkit
+must be installed manually, check
+[nvidia-docker](https://github.com/NVIDIA/nvidia-docker).
+
 ## Backup
 
 Make sure to backup your `data_path` (by default */data*) and the docker
