@@ -183,6 +183,10 @@ An example approach would be:
    ansible-playbook -i custom/[project]/hosts.yml full.yml --extra-vars
    ansible_become_pass="[sudo_password]" --ask-vault-pass -t gitea
    ```
+* By default, the configuration files of the services won't be overridden in
+  most cases, meaning that if they already existed they won't be modified, to
+  preserve their possible manual modifications. To avoid this behaviour and
+  overwrite them, pass the `override=True` extra var.
 
 ### Firewall
 
