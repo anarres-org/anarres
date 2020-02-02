@@ -2248,7 +2248,6 @@
       -v "{{ jupyterhub_directory.data }}/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro" \
       -v "{{ jupyterhub_directory.data }}/cull_idle_servers.py:/srv/jupyterhub/cull_idle_servers.py:ro" \
       -v "{{ jupyterhub_directory.user_data }}:/home" \
-      -e DOCKER_NETWORK_NAME="{{ service_name }}" \
       -p "{{ jupyterhub_internal_web_port }}:8000" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
