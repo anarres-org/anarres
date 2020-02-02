@@ -1993,6 +1993,11 @@
       -v "{{ jellyfin_directory.config }}":/config \
       -v "{{ jellyfin_directory.media }}":/media \
       -p "{{ jellyfin_internal_web_port }}:8096" \
+      {% if jellyfin_nvidia_runtime %}
+      --runtime=nvidia \
+      -e NVIDIA_VISIBLE_DEVICES=all \
+      -e NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
+      {% endif %}
       "{{ docker_image }}"
   pre_tasks:
     - name: Create jellyfin directories

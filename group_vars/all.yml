@@ -567,6 +567,8 @@ jellyfin_directory:
   config: "{{ data_path }}/jellyfin/config"
   media: "{{ data_path }}/jellyfin/media"
 
+jellyfin_nvidia_runtime: "{{ nvidia_runtime }}"
+
 ## Portainer
 
 portainer_docker_image: portainer/portainer
