@@ -2264,6 +2264,7 @@
       template:
         src: jupyterhub_config.py.j2
         dest: "{{ jupyterhub_directory.data }}/jupyterhub_config.py"
+        force: "{{ override | default('no') }}"
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
