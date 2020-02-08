@@ -494,12 +494,18 @@ c.DockerSpawner.extra_host_config = {
 #notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
 
 
-notebook_dir = '/home/{username}'
+#notebook_dir = '/home/{username}'
+notebook_dir = '/home/jovyan'
 
 import os
 
 
 def create_user_dir(spawner):
+    """Create a directory for the user with appropriate permissions.
+
+    For this function to work, the host path for user data must be mounted on
+    jupyterhub's /home.
+    """
     username = spawner.user.name
     notebook_dir = '/home/{username}'.format(username=username)
     os.makedirs(notebook_dir, mode=0o700, exist_ok=True)
