@@ -327,7 +327,7 @@
 
     - name: Install requiered python LDAP module
       package:
-        name: python-ldap
+        name: python3-ldap
         state: present
       tags: dependencies
 
