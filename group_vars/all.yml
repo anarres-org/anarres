@@ -195,6 +195,16 @@ drone_domain: "drone.{{ base_domain }}"
 drone_directory:
   data: "{{ data_path }}/drone/data"
 
+gitea_oauth_client_id: "changeme"
+gitea_oauth_client_secret: "changeme"
+drone_rpc_scret: "changeme"
+
+## Drone docker runner
+
+drone_docker_runner_docker_image: drone/agent:1
+drone_docker_runner_internal_web_port: 3031
+drone_runner_name: "drone-runner.{{ base_domain }}"
+
 ## Drone for GitHub
 
 drone_github_docker_image: drone/drone:1
