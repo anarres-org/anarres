@@ -517,7 +517,9 @@ c.DockerSpawner.notebook_dir = notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
 #c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
-c.DockerSpawner.volumes = { '{{ jupyterhub_directory.user_data }}/{username}': notebook_dir }
+c.DockerSpawner.volumes = { '{{ jupyterhub_directory.user_data }}/{username}': notebook_dir,
+                            '/etc/localtime': '/etc/localtime'
+                          }
 
 ## Path to SSL certificate file for the public facing interface of the proxy
 #  
