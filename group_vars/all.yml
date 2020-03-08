@@ -649,3 +649,14 @@ jackett_domain: "jackett.{{ base_domain }}"
 
 jackett_directory:
   conf: "{{ data_path }}/jackett/conf"
+
+## Sonarr
+
+sonarr_docker_image: 'linuxserver/sonarr'
+sonarr_internal_web_port: 8989
+sonarr_domain: "sonarr.{{ base_domain }}"
+
+sonarr_directory:
+  conf: "{{ data_path }}/sonarr/conf"
+  tvseries: "{{ transmission_directory.downloads }}/completed/tvshows"
+  downloadclient: "{{ transmission_directory.downloads }}/incomplete"

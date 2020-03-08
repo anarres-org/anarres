@@ -2402,3 +2402,62 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: [ never, jackett ]
+
+## Sonarr
+
+- name: Deploy sonarr in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: sonarr
+    docker_image: "{{ sonarr_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /etc/localtime:/etc/localtime:ro \
+      -e "PGID=1000" -e "PUID=1000" \
+      -v "{{ sonarr_directory.conf }}:/config" \
+      -v "{{ sonarr_directory.tvseries }}:/tv" \
+      -v "{{ sonarr_directory.downloadclient }}:/downloads" \
+      -p "{{ sonarr_internal_web_port }}:8989" \
+      --network "jellyfin" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create sonarr directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ sonarr_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, sonarr ]
+
+- name: Get sonarr subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ sonarr_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, sonarr ]
+
+- name: Configure nginx proxy for sonarr
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ sonarr_domain }}"
+    binded_port: "{{ sonarr_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: [ never, sonarr ]
