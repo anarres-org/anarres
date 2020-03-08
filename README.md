@@ -142,6 +142,9 @@ directory, by default */data*.
 * [Jackett](https://github.com/Jackett/Jackett) API Support for your favorite
    torrent trackers. Using
    [linuxserver/jackett](https://hub.docker.com/r/linuxserver/jackett).
+* [Sonarr](https://github.com/Sonarr/Sonarr) API Support for your favorite
+   torrent trackers. Using
+   [linuxserver/sonarr](https://hub.docker.com/r/linuxserver/sonarr).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
