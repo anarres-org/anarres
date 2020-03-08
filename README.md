@@ -139,6 +139,9 @@ directory, by default */data*.
 * [JupyterHub](https://jupyter.org/hub) A multi-user version of the notebook
    designed for companies, classrooms and research labs. Using
    [m0wer/jupyterhub](https://hub.docker.com/r/m0wer/jupyterhub).
+* [Jackett](https://github.com/Jackett/Jackett) API Support for your favorite
+   torrent trackers. Using
+   [linuxserver/jackett](https://hub.docker.com/r/linuxserver/jackett).
 
 For more info about each service and how to set it up, go to
 [docs/services](docs/services).
