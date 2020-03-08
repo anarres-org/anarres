@@ -660,3 +660,12 @@ sonarr_directory:
   conf: "{{ data_path }}/sonarr/conf"
   tvseries: "{{ transmission_directory.downloads }}/completed/tvshows"
   downloadclient: "{{ transmission_directory.downloads }}/incomplete"
+
+## Ombi
+
+ombi_docker_image: 'linuxserver/ombi'
+ombi_internal_web_port: 3579
+ombi_domain: "ombi.{{ base_domain }}"
+
+ombi_directory:
+  conf: "{{ data_path }}/ombi/conf"
