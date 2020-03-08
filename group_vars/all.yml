@@ -640,3 +640,12 @@ jupyterhub_ldap_search_base: "{{ openldap_search_base }}"
 jupyterhub_ldap_user_attribute: 'uid'
 jupyterhub_ldap_user_dn_attribute: 'cn'
 jupyterhub_bind_dn_template: "{{ jupyterhub_ldap_user_dn_attribute }}={username},{{ jupyterhub_ldap_search_base }}"
+
+## Jackett
+
+jackett_docker_image: 'linuxserver/jackett'
+jackett_internal_web_port: 9117
+jackett_domain: "jackett.{{ base_domain }}"
+
+jackett_directory:
+  conf: "{{ data_path }}/jackett/conf"
