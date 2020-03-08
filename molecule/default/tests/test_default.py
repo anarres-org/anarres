@@ -37,7 +37,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("portainer"),
     ("anki"),
     ("moodle"),
-    ("jupyterhub")
+    ("jupyterhub"),
+    ("jackett")
 ])
 def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")
