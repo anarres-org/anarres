@@ -41,6 +41,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("jackett"),
     ("sonarr"),
     ("radarr"),
+    ("lidarr"),
     ("ombi")
 ])
 def test_services_are_enabled_and_running(host, service):
