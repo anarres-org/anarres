@@ -2462,6 +2462,66 @@
       tags: proxy
   tags: [ never, sonarr ]
 
+## Radarr
+
+- name: Deploy radarr in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: radarr
+    docker_image: "{{ radarr_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /etc/localtime:/etc/localtime:ro \
+      -e "PGID=1000" -e "PUID=1000" \
+      -v "{{ radarr_directory.conf }}:/config" \
+      -v "{{ radarr_directory.movies }}:/movies" \
+      -v "{{ radarr_directory.downloadclient }}:/downloads" \
+      -p "{{ radarr_internal_web_port }}:7878" \
+      --network "jellyfin" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create radarr directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ radarr_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, radarr ]
+
+- name: Get radarr subdomain let's encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ radarr_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, radarr ]
+
+- name: Configure nginx proxy for radarr
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ radarr_domain }}"
+    binded_port: "{{ radarr_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: [ never, radarr ]
+
+
 ## Ombi
 
 - name: Deploy ombi in docker
