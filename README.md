@@ -145,6 +145,9 @@ directory, by default */data*.
 * [Sonarr](https://github.com/Sonarr/Sonarr) API Support for your favorite
    torrent trackers. Using
    [linuxserver/sonarr](https://hub.docker.com/r/linuxserver/sonarr).
+* [Radarr](https://github.com/Radarr/Radarr) A fork of Sonarr to work with movies
+   à la Couchpotato. Using
+   [linuxserver/radarr](https://hub.docker.com/r/linuxserver/radarr).
 * [Ombi](https://github.com/tidusjar/Ombi) Want a Movie or TV Show on Plex or
    Emby? Use Ombi! Using
    [linuxserver/ombi](https://github.com/linuxserver/docker-ombi).
