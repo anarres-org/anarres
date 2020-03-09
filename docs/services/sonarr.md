@@ -27,3 +27,14 @@ torrent trackers.
 #### Configuring Jackett
 
 * [Reddit](https://www.reddit.com/r/sonarr/comments/936s4n/cant_configure_jackett_in_sonarr/)
+
+#### Configuring Transmission as the download client
+
+Since the route where Transmission downloads the files in its container might
+not be the same as the mount point of that directory on the Sonarr container,
+you might have to specify a remote path mapping in the **Download Client** tab
+in Sonarr's settings such as:
+
+| Host                  | Remote Path     | Local Path  |
+| --------------------- | --------------- | ----------- |
+| torrent.anarres.local | /data/complete/ | /downloads/ |
