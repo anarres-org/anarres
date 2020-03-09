@@ -148,6 +148,9 @@ directory, by default */data*.
 * [Radarr](https://github.com/Radarr/Radarr) A fork of Sonarr to work with movies
    à la Couchpotato. Using
    [linuxserver/radarr](https://hub.docker.com/r/linuxserver/radarr).
+* [Lidarr](https://github.com/lidarr/Lidarr) Looks and smells like Sonarr but
+   made for music. Using
+   [linuxserver/lidarr](https://hub.docker.com/r/linuxserver/lidarr).
 * [Ombi](https://github.com/tidusjar/Ombi) Want a Movie or TV Show on Plex or
    Emby? Use Ombi! Using
    [linuxserver/ombi](https://github.com/linuxserver/docker-ombi).
