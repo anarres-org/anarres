@@ -2521,6 +2521,64 @@
       tags: proxy
   tags: [ never, radarr ]
 
+## Lidarr
+
+- name: Deploy lidarr in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    enable_db: false
+    create_network: true
+    service_name: lidarr
+    docker_image: "{{ lidarr_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v /etc/localtime:/etc/localtime:ro \
+      -e "PGID=1000" -e "PUID=1000" \
+      -v "{{ lidarr_directory.conf }}:/config" \
+      -v "{{ lidarr_directory.music }}:/music" \
+      -v "{{ lidarr_directory.downloadclient }}:/downloads" \
+      -p "{{ lidarr_internal_web_port }}:8686" \
+      --network "jellyfin" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create lidarr directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_dict: "{{ lidarr_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, lidarr ]
+
+- name: Get lidarr subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ lidarr_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, lidarr ]
+
+- name: Configure nginx proxy for lidarr
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ lidarr_domain }}"
+    binded_port: "{{ lidarr_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: [ never, lidarr ]
 
 ## Ombi
 
