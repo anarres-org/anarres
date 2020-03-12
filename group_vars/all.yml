@@ -461,7 +461,7 @@ bind_dns_server_directory:
 ## Murmur
 
 murmur_domain: "mumble.{{ base_domain }}"
-murmur_docker_image: goofball222/murmur:latest
+murmur_docker_image: m0wer/murmur:latest
 murmur_port: 64738
 
 murmur_directory:
