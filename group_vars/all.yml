@@ -351,7 +351,7 @@ openvpn_ca_CN: "{{ openvpn_domain }}"
 ## Radicale
 
 radicale_domain: "radicale.{{ base_domain }}"
-radicale_docker_image: tomsquest/docker-radicale:amd64
+radicale_docker_image: tomsquest/docker-radicale:2.1.11.5
 
 radicale_user:
 radicale_pass:

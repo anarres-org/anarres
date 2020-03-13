@@ -1264,11 +1264,11 @@
     enable_db: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -e UID=1000 -e GID=1000 \
+      -e PUID=1000 -e PGID=1000 \
       -p "127.0.0.1:5232:{{ radicale_internal_web_port }}" \
       --init \
       --pids-limit 50 \
-      --security-opt="no-new-privileges:true" \
+      --memory 256M \
       --health-cmd="curl --fail http://localhost:5232 || exit 1" \
       --health-interval=30s \
       --health-retries=3 \
