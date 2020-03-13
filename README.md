@@ -151,6 +151,10 @@ directory, by default */data*.
 * [Lidarr](https://github.com/lidarr/Lidarr) Looks and smells like Sonarr but
    made for music. Using
    [linuxserver/lidarr](https://hub.docker.com/r/linuxserver/lidarr).
+* [Bazarr](https://github.com/morpheus65535/bazarr) is a companion application
+   to Sonarr and Radarr. It manages and downloads subtitles based on your
+   requirements. Using
+   [linuxserver/bazarr](https://hub.docker.com/r/linuxserver/bazarr).
 * [Ombi](https://github.com/tidusjar/Ombi) Want a Movie or TV Show on Plex or
    Emby? Use Ombi! Using
    [linuxserver/ombi](https://github.com/linuxserver/docker-ombi).
