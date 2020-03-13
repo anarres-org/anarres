@@ -108,6 +108,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       --user 1000:1000 \
       -v {{ registry_directory.data }}:/var/lib/registry \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p {{ registry_internal_web_port }}:5000 \
       {{ docker_image }}
   pre_tasks:
@@ -186,6 +187,7 @@
       --user 1000:1000 \
       -p {{ clair_internal_ports }}:6060-6061 \
       -v {{ clair_directory.conf }}:/config \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --network "{{ service_name }}" \
       {{ docker_image }} -config=/config/config.yaml
   pre_tasks:
@@ -223,6 +225,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p {{ registry_web_interface_internal_web_port }}:8080 \
+      -v '/etc/localtime:/etc/localtime:ro' \
       {% if registry_web_interface_enable_clair %}
       --network clair \
       {% endif %}
@@ -292,6 +295,7 @@
       -v {{ openldap_directory.conf }}:/etc/ldap/slapd.d \
       -v /etc/letsencrypt/live/{{ openldap_domain }}:{{ container_certs_path }}/live/{{ openldap_domain }}/:ro \
       -v /etc/letsencrypt/archive/{{ openldap_domain }}:{{ container_certs_path }}/archive/{{ openldap_domain }}/:ro \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p {{ openldap_port_secure }}:636 \
       -e LDAP_ORGANISATION="{{ openldap_domain }}" \
       -e LDAP_DOMAIN="{{ openldap_domain }}" \
@@ -393,6 +397,7 @@
       -e  PHPLDAPADMIN_LDAP_HOSTS="{{ phpldapadmin_ldap_hosts }}" \
       -e PHPLDAPADMIN_HTTPS="false" \
       -e PHPLDAPADMIN_LDAP_CLIENT_TLS_REQCERT="allow" \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --network openldap \
       {{ docker_image }}
   roles:
@@ -480,6 +485,7 @@
       -v {{ prosody_directory.modules_custom }}:/usr/lib/prosody/modules-custom \
       -v {{ prosody_cert_path.privkey }}:/etc/prosody/certs/{{ prosody_domain }}.key:ro \
       -v {{ prosody_cert_path.cert }}:/etc/prosody/certs/{{ prosody_domain }}.crt:ro \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p {{ prosody_port_c2s }}:5222 \
       -p {{ prosody_port_s2s }}:5269 \
       {% if prosody_enable_http %}
@@ -556,6 +562,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ gitea_directory.data }}":/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ gitea_ssh_port }}:22" -p "{{ gitea_internal_web_port }}:3000" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       --network "{{ gitea_network }}" \
@@ -671,6 +678,7 @@
       -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
       -v "{{ codimd_directory.uploads }}:/codimd/public/uploads/" \
       {% endif %}
+      -v '/etc/localtime:/etc/localtime:ro' \
       --network "{{ codimd_network_name }}" \
       "{{ docker_image }}"
   pre_tasks:
@@ -724,6 +732,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v "{{ drone_directory.data }}":/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ drone_internal_web_port }}:80" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "DRONE_GITEA_SERVER=https://{{ gitea_domain }}" \
@@ -783,6 +792,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ drone_docker_runner_internal_web_port }}:3000" \
       -e "DRONE_RPC_PROTO=https" \
       -e "DRONE_RPC_HOST={{ drone_domain }}" \
@@ -808,6 +818,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v "{{ drone_github_directory.data }}":/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ drone_github_internal_web_port }}:80" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "DRONE_GITHUB_SERVER=https://github.com" \
@@ -871,6 +882,7 @@
       -v "{{ transmission_directory.conf }}":/config \
       -v "{{ transmission_directory.downloads }}":/downloads \
       -v "{{ transmission_directory.watch }}":/watch \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -e "PGID=1000" -e "PUID=1000" \
       -e "TZ={{ transmission_timezone }}" \
       -p "{{ transmission_internal_web_port }}:9091" \
@@ -1015,6 +1027,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ wallabag_internal_web_port }}:80" \
       -v "{{ wallabag_directory.images }}":/var/www/wallabag/web/assets/images \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --network "{{ service_name }}" \
       -e "MYSQL_ROOT_PASSWORD={{ db_pass }}" \
       -e "SYMFONY__ENV__DOMAIN_NAME=https://{{ wallabag_domain }}" \
@@ -1144,6 +1157,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ syncthing_directory.conf }}":/var/syncthing/config \
       -v "{{ syncthing_directory.data }}":/var/syncthing \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ syncthing_internal_web_port }}:8384" \
       -p "{{ syncthing_listening_port }}:22000" \
       -p "{{ syncthing_discovery_port }}:21027/udp" \
@@ -1208,6 +1222,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ openvpn_directory.conf }}":/etc/openvpn \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --cap-add=NET_ADMIN \
       -p "{{ openvpn_port }}:1194/{{ openvpn_protocol }}" \
       "{{ docker_image }}"
@@ -1275,6 +1290,7 @@
       -v "{{ radicale_directory.data }}":/data \
       -v "{{ radicale_directory.etc }}":/etc/radicale \
       -v "{{ radicale_directory.conf }}":/config:ro \
+      -v '/etc/localtime:/etc/localtime:ro' \
       "{{ docker_image }}"
   pre_tasks:
     - name: Create radicale directories
@@ -1349,6 +1365,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ taskd_directory.data }}":/var/taskd \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ taskd_port }}:53589" \
       "{{ docker_image }}"
   pre_tasks:
@@ -1390,6 +1407,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ nextcloud_directory.data }}":/var/www/html \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ nextcloud_internal_web_port }}:80" \
       -e "MYSQL_HOST={{ service_db_name }}" \
       -e "MYSQL_DATABASE={{ db_name }}" \
@@ -1493,8 +1511,9 @@
       -e "LDAP_EMAIL_PROPERTY={{ taiga_ldap_email_attribute }}" \
       -e "LDAP_FULL_NAME_PROPERTY={{ taiga_ldap_full_name_attribute }}" \
       -e "TAIGA_BACKEND_WEBHOOKS_ENABLED={{ taiga_backend_webhooks_enabled }}" \
-      -v "{{ taiga_directory.media }}:/taiga.io/taiga-back/media" \
       {% endif %}
+      -v "{{ taiga_directory.media }}:/taiga.io/taiga-back/media" \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
   pre_tasks:
@@ -1550,6 +1569,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       --cap-add SYS_ADMIN \
       -v "{{ nfs_directory.conf }}/exports":/etc/exports:ro \
+      -v '/etc/localtime:/etc/localtime:ro' \
       {{ nfs_export_volumes }}-p "{{ nfs_port | default('2049') }}:2049" \
       "{{ docker_image }}"
   pre_tasks:
@@ -1634,6 +1654,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v {{ bind_dns_server_directory.data }}:/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p {{ bind_dns_server_port }}:53/tcp \
       -p {{ bind_dns_server_port }}:53/udp \
       -e WEBMIN_ENABLED=false \
@@ -1736,6 +1757,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       --user 1000:1000 \
       -v "{{ influxdb_directory.data }}":/var/lib/influxdb \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ influxdb_port }}:8086" \
       --network {{ service_name }} \
       "{{ docker_image }}"
@@ -1807,6 +1829,7 @@
       --user 1000:1000 \
       -v "{{ grafana_directory.conf }}":/etc/grafana \
       -v "{{ grafana_directory.data }}":/var/lib/grafana \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ grafana_internal_web_port }}:3000" \
       {% if grafana_network is defined %}
       --network {{ service_name }} \
@@ -2017,6 +2040,7 @@
       -v "{{ jellyfin_directory.cache }}":/cache \
       -v "{{ jellyfin_directory.config }}":/config \
       -v "{{ jellyfin_directory.media }}":/media \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ jellyfin_internal_web_port }}:8096" \
       --network "{{ service_name }}" \
       {% if jellyfin_nvidia_runtime %}
@@ -2081,6 +2105,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v "{{ portainer_directory.data }}":/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ portainer_internal_web_port }}:9000" \
       "{{ docker_image }}"
   pre_tasks:
@@ -2134,6 +2159,7 @@
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ anki_directory.data }}":/app/data \
+      -v '/etc/localtime:/etc/localtime:ro' \
       --user 1000:1000 \
       -p "{{ anki_internal_web_port }}:27701" \
       "{{ docker_image }}"
@@ -2197,6 +2223,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -v "{{ moodle_directory.html }}":/var/www/html \
       -v "{{ moodle_directory.data }}":/var/www/moodledata \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ moodle_internal_web_port }}:80" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
@@ -2279,6 +2306,7 @@
       -v "{{ jupyterhub_directory.data }}/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py:ro" \
       -v "{{ jupyterhub_directory.data }}/cull_idle_servers.py:/srv/jupyterhub/cull_idle_servers.py:ro" \
       -v "{{ jupyterhub_directory.user_data }}:/home" \
+      -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ jupyterhub_internal_web_port }}:8000" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
