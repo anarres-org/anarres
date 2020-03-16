@@ -6,7 +6,9 @@ In order to deploy Drone against Gitea, you must set up some variables. Follow t
 
 ### Create an OAuth Application
 
-Create a Gitea OAuth application. The Consumer Key and Consumer Secret are used to authorize access to Gitea resources.
+Create a Gitea OAuth application. You mus go you profile *Settings* and go to *Applications*. Set up **Applicaction Name** with a simple name, and **Redirect URI** with the drone subdomain.
+
+The Consumer Key and Consumer Secret are used to authorize access to Gitea resources.
 
 The authorization callback URL must match the below format and path, and must use your exact server scheme and host.
 
