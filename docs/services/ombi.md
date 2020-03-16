@@ -22,4 +22,4 @@ Emby? Use Ombi!
 
 #### Jellyfin connection
 
-* [Issue](https://github.com/tidusjar/Ombi/issues/3245)
+* [Issue](https://github.com/tidusjar/Ombi/issues/3245#issuecomment-573049587)
