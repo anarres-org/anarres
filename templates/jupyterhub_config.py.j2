@@ -93,6 +93,7 @@ c.LDAPAuthenticator.server_address = '{{ jupyterhub_ldap_hostname }}'
 c.LDAPAuthenticator.use_ssl = True
 c.LDAPAuthenticator.bind_dn_template = '{{ jupyterhub_bind_dn_template }}'
 c.LDAPAuthenticator.lookup_dn = True
+c.LDAPAuthenticator.lookup_dn_username = False
 c.LDAPAuthenticator.user_search_base = '{{ jupyterhub_ldap_search_base }}'
 c.LDAPAuthenticator.user_attribute = '{{ jupyterhub_ldap_user_attribute }}'
 c.LDAPAuthenticator.lookup_dn_search_user = '{{ jupyterhub_ldap_bind_dn }}'
