@@ -736,7 +736,9 @@
       -p "{{ drone_internal_web_port }}:80" \
       -e "USER_UID=1000" -e "USER_GID=1000" \
       -e "DRONE_GITEA_SERVER=https://{{ gitea_domain }}" \
-      -e "DRONE_GIT_ALWAYS_AUTH=false" \
+      -e "DRONE_GITEA_CLIENT_ID={{ gitea_oauth_client_id }}" \
+      -e "DRONE_GITEA_CLIENT_SECRET={{ gitea_oauth_client_secret }}" \
+      -e "DRONE_RPC_SECRET={{ drone_rpc_scret }}" \
       -e "DRONE_RUNNER_CAPACITY=2" \
       -e "DRONE_SERVER_HOST={{ drone_domain }}" \
       -e "DRONE_SERVER_PROTO=https" \
