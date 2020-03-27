@@ -16,3 +16,23 @@ high quality voice chat software.
 ## Ports (by default)
 
 * **64738/tcp** for the client connections.
+
+## Configuration
+
+Murmur is configured via [Mumble Client](https://www.mumble.info/downloads/).
+
+1. Connect to your server.
+
+2. Enable `Advanced options` in `Config > Settings` in the lower left corner.
+
+3. Apply changes, close and right click on your user. Register yourself.
+
+4. Disconnect from the server and reconnect with `SuperUser` as user and  its
+password.
+
+5. > The password is generated on the server creation. You can see it on the
+logs or recreate it by deleting the database and restarting the service.
+
+6. Now, as `SuperUser` you can create permanent channels, sub-channels and edit
+ACLs.
+7. Once you finish, disconnect and reconnect as your normal user.
