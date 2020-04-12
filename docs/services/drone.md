@@ -38,3 +38,21 @@ The output of this command is the content of the variable `drone_rpc_scret`
 ```
 $ ansible-playbook --ask-vault-pass -i custom/KLK/hosts.yml --tags "drone" full.yml
 ```
+
+### Deploying Drone Docker Runner with Anarres
+
+The Docker runner is a daemon that executes pipelines steps inside ephemeral Docker containers. Docs of Drone Docker Runner can be found [here](https://docs.drone.io/runner/docker/overview/).
+
+```
+$ ansible-playbook --ask-vault-pass -i custom/KLK/hosts.yml --tags "drone_docker_runner" full.yml
+```
+
+### Deploying Drone SSH Runner with Anarres
+
+The SSH runner executes pipeline commands on a static, remote server using the SSH protocol. The pipeline commands are executed directly on the remote server without isolation, using the default shell. Docs of Drone SSH Runner can be found [here](https://docs.drone.io/runner/ssh/overview/)
+
+**Important**. We strongly suggest using Docker Runner instead this runner because SSH Runner is not very stable, and more secure.
+
+```
+$ ansible-playbook --ask-vault-pass -i custom/KLK/hosts.yml --tags "drone_ssh_runner" full.yml
+```

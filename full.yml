@@ -789,7 +789,7 @@
   gather_facts: false
   vars:
     enable_db: false
-    service_name: drone-docker-runner
+    service_name: drone_docker_runner
     docker_image: "{{ drone_docker_runner_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
@@ -814,7 +814,7 @@
   gather_facts: false
   vars:
     enable_db: false
-    service_name: drone-ssh-runner
+    service_name: drone_ssh_runner
     docker_image: "{{ drone_ssh_runner_docker_image }}"
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
