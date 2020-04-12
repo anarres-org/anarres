@@ -804,7 +804,28 @@
       "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
-  tags: drone
+  tags: [ never, drone_docker_runner ]
+
+## Drone ssh runner
+
+- name: Deploy drone ssh runner in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    enable_db: false
+    service_name: drone-ssh-runner
+    docker_image: "{{ drone_ssh_runner_docker_image }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ drone_ssh_runner_internal_web_port }}:3000" \
+      -e "DRONE_RPC_PROTO=https" \
+      -e "DRONE_RPC_HOST={{ drone_domain }}" \
+      -e "DRONE_RPC_SECRET={{ drone_rpc_scret }}" \
+      "{{ docker_image }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, drone_ssh_runner ]
 
 ## Drone for GitHub
 

@@ -205,6 +205,11 @@ drone_docker_runner_docker_image: drone/agent:1
 drone_docker_runner_internal_web_port: 3031
 drone_runner_name: "drone-runner.{{ base_domain }}"
 
+## Drone ssh runner
+
+drone_ssh_runner_docker_image: drone/drone-runner-ssh:1
+drone_ssh_runner_internal_web_port: 3000
+
 ## Drone for GitHub
 
 drone_github_docker_image: drone/drone:1
