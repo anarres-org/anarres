@@ -1302,7 +1302,7 @@
     enable_db: false
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
-      -e PUID=1000 -e PGID=1000 \
+      -e UID=1000 -e GID=1000 \
       -p "127.0.0.1:5232:{{ radicale_internal_web_port }}" \
       --init \
       --pids-limit 50 \
