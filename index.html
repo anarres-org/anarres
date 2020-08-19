@@ -243,13 +243,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#playbook-variables" class="md-nav__link">
-    Playbook Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dependencies" class="md-nav__link">
     Dependencies
   </a>
@@ -259,6 +252,13 @@
         <li class="md-nav__item">
   <a href="#services" class="md-nav__link">
     Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
   </a>
   
 </li>
@@ -860,13 +860,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#playbook-variables" class="md-nav__link">
-    Playbook Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#dependencies" class="md-nav__link">
     Dependencies
   </a>
@@ -876,6 +869,13 @@
         <li class="md-nav__item">
   <a href="#services" class="md-nav__link">
     Services
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    Setup
   </a>
   
 </li>
@@ -946,11 +946,10 @@ distributions too or just requires a few changes.</p>
 <ul>
 <li><a href="https://www.debian.org/">debian</a></li>
 <li>stretch</li>
+<li>buster</li>
 </ul>
 <h2 id="requirements">Requirements</h2>
 <p><code>sudo</code> and <code>python</code>.</p>
-<h2 id="playbook-variables">Playbook Variables</h2>
-<p>TBD.</p>
 <h2 id="dependencies">Dependencies</h2>
 <p>Included as submodules in <em>roles/</em>.</p>
 <ul>
@@ -965,15 +964,20 @@ distributions too or just requires a few changes.</p>
 <h2 id="services">Services</h2>
 <p>Their data and configuration files will be stored in your hosts <code>data_path</code>
 directory, by default <em>/data</em>.</p>
-<p>For more info about each service and how to set it up, go to
-<a href="docs/services">docs/services</a>.</p>
+<p>Check the full list at <a href="https://anarres-org.github.io/anarres/supported_services_list/">Supported services list - Anarres
+documentation</a>.</p>
+<p>For more info about each service and how to set it up, refer to the
+documentation.</p>
+<h2 id="setup">Setup</h2>
+<p>Refer to <a href="https://anarres-org.github.io/anarres/setup/">Setup - Anarres
+documentation</a>.</p>
 <h2 id="backup">Backup</h2>
-<p>Make sure to backup your <code>data_path</code> (by default <em>/data</em>) and the docker
-volumes (used by the databases) from <em>/var/lib/docker/volumes</em> if used.</p>
+<p>Make sure to backup your <code>data_path</code> (by default <em>/data</em>).</p>
 <h2 id="license">License</h2>
 <p>GPLv3</p>
 <h2 id="author-information">Author Information</h2>
-<p>m0wer: m0wer (at) autistici.org</p>
+<p>m0wer: m0wer (at) autistici (dot) org
+acien101: amil101ftw (at) gmail (dot) com</p>
                 
                   
                     
@@ -982,7 +986,7 @@ volumes (used by the databases) from <em>/var/lib/docker/volumes</em> if used.</
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2020-08-19T17:44:10+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2020-08-19</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2020-08-19T17:51:14+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2020-08-19</span>
     
   </small>
 </div>
