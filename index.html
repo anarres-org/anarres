@@ -222,8 +222,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#documentation" class="md-nav__link">
+    Documentation
   </a>
   
 </li>
@@ -260,47 +260,6 @@
   <a href="#services" class="md-nav__link">
     Services
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    Setup
-  </a>
-  
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tips" class="md-nav__link">
-    Tips
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#firewall" class="md-nav__link">
-    Firewall
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#letsencrypt" class="md-nav__link">
-    Letsencrypt
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nvidia-runtime-support" class="md-nav__link">
-    Nvidia runtime support
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -350,6 +309,30 @@
 
 
   <li class="md-nav__item">
+    <a href="setup/" title="Setup" class="md-nav__link">
+      Setup
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="supported_services_list/" title="Supported services list" class="md-nav__link">
+      Supported services list
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
     <a href="testing/" title="Testing" class="md-nav__link">
       Testing
     </a>
@@ -363,16 +346,16 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-6" type="checkbox" id="nav-6">
     
-    <label class="md-nav__link" for="nav-4">
+    <label class="md-nav__link" for="nav-6">
       Services
       <span class="md-nav__icon md-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42z"/></svg>
       </span>
     </label>
     <nav class="md-nav" aria-label="Services" data-md-level="1">
-      <label class="md-nav__title" for="nav-4">
+      <label class="md-nav__title" for="nav-6">
         <span class="md-nav__icon md-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
         </span>
@@ -856,8 +839,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#usage" class="md-nav__link">
-    Usage
+  <a href="#documentation" class="md-nav__link">
+    Documentation
   </a>
   
 </li>
@@ -894,47 +877,6 @@
   <a href="#services" class="md-nav__link">
     Services
   </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setup" class="md-nav__link">
-    Setup
-  </a>
-  
-    <nav class="md-nav" aria-label="Setup">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#tips" class="md-nav__link">
-    Tips
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#firewall" class="md-nav__link">
-    Firewall
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#letsencrypt" class="md-nav__link">
-    Letsencrypt
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nvidia-runtime-support" class="md-nav__link">
-    Nvidia runtime support
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -996,12 +938,8 @@ service restarts (you can do this periodically or it'll happen anyways when you
 reboot).</p>
 <p>Apart from this, it's easy to extend and doesn't prevent you from using other
 playbooks apart from this one or installing things manually.</p>
-<h2 id="usage">Usage</h2>
-<p>Clone the repo and its submodules with:</p>
-<div class="highlight"><pre><span></span><code>git clone --recurse-submodules -j8 <span class="o">[</span>repo<span class="o">]</span>
-</code></pre></div>
-
-<p>Then follow the <a href="#setup">Setup</a> section.</p>
+<h2 id="documentation">Documentation</h2>
+<p><a href="https://anarres-org.github.io/anarres/">Anarres documentation</a>.</p>
 <h2 id="compatibility">Compatibility</h2>
 <p>These are the tested GNU/Linux distributions. Maybe it works on some other
 distributions too or just requires a few changes.</p>
@@ -1027,171 +965,8 @@ distributions too or just requires a few changes.</p>
 <h2 id="services">Services</h2>
 <p>Their data and configuration files will be stored in your hosts <code>data_path</code>
 directory, by default <em>/data</em>.</p>
-<ul>
-<li><a href="https://docs.docker.com/registry/">Docker Registry</a>: A stateless, highly
-   scalable server side application that stores and lets you distribute Docker
-   images. Using <a href="https://hub.docker.com/_/registry">library/registry</a>.</li>
-<li><a href="https://github.com/coreos/clair">CoreOS Clair</a>: Vulnerability Static Analysis
-   for Containers. Using
-   <a href="https://quay.io/repository/coreos/clair">quay.io/coreos/clair</a>.</li>
-<li><a href="https://github.com/genuinetools/reg">Jessfraz Docker registry web interface</a>:
-   Docker registry v2 command line client and repo listing generator with
-   security checks. Using
-   <a href="https://hub.docker.com/r/jessfraz/reg">jessfraz/reg</a>.</li>
-<li><a href="http://www.openldap.org/">OpenLDAP</a>: Using
-   <a href="https://github.com/osixia/docker-openldap">osixia/openldap</a>.</li>
-<li><a href="http://phpldapadmin.sourceforge.net/">phpLDAPadmin</a>:
-   Using
-   <a href="https://github.com/osixia/docker-phpLDAPadmin">osixia/phpldapadmin</a>.</li>
-<li><a href="https://prosody.im/">Prosody IM</a>: A modern XMPP communication server. Using
-  <a href="https://github.com/unclev/prosody-docker-extended">unclev/prosody-docker-extended</a>.</li>
-<li><a href="https://docs.gitea.io/">Gitea</a>: Using
-  <a href="https://github.com/go-gitea/gitea">gitea/gitea</a>.</li>
-<li><a href="https://drone.io/">Drone</a>: Using
-  <a href="https://github.com/drone/drone">drone/drone</a>. For the self hosted gitea and
-  for GitHub.</li>
-<li><a href="https://github.com/hackmdio/codimd">CodiMD</a>: <a href="https://hackmd.io/">HackMD</a>
-  like realtime collaborative markdown notes service. Using
-  <a href="https://github.com/hackmdio/docker-hackmd">docker-hackmd</a>.</li>
-<li><a href="https://transmissionbt.com/">Transmission</a>: Using
-  <a href="https://github.com/linuxserver/docker-transmission">linuxserver/transmission</a>
-  or <a href="https://github.com/haugene/docker-transmission-openvpn">docker-transmission-openvpn</a>.</li>
-<li><a href="https://wallabag.org/">Wallabag</a>: Using
-  <a href="https://github.com/wallabag/docker">wallabag/wallabag</a>.</li>
-<li><a href="https://syncthing.net/">Syncthing</a>: Using
-  <a href="https://github.com/syncthing/syncthing">syncthing/syncthing</a>.</li>
-<li><a href="https://openvpn.net/">OpenVPN</a>: Using
-  <a href="https://github.com/kylemanna/docker-openvpn">kylemanna/openvpn</a>.</li>
-<li><a href="https://radicale.org/">Radicale</a>: Using
-  <a href="https://github.com/tomsquest/docker-radicale">tomsquest/docker-radicale</a>.</li>
-<li><a href="https://taskwarrior.org/">Taskwarrior Server</a>: Using
-  <a href="https://github.com/andir/docker-taskd">andir/docker-taskd</a>.</li>
-<li><a href="https://nextcloud.com/">Nextcloud</a>: Using
-  <a href="https://github.com/nextcloud/docker">nextcloud</a>.</li>
-<li><a href="https://taiga.io/">Taiga</a>: Project management platform for agile developers
-   &amp; designers and project managers. Using
-  <a href="https://github.com/m0wer/docker-taiga">docker-taiga</a>.</li>
-<li><a href="https://sourceforge.net/projects/nfs/">NFS Server</a>: Using
-  <a href="https://github.com/ehough/docker-nfs-server">erichough/nfs-server</a>.</li>
-<li><a href="https://www.isc.org/bind/">BIND9</a> Versatile, classic, complete name server
-   software. Using <a href="https://github.com/sameersbn/docker-bind">sameersbn/bind</a>.</li>
-<li><a href="https://wiki.mumble.info/wiki/Main_Page">Murmur</a>: Open source, low-latency,
-   high quality voice chat software. Using
-   <a href="https://hub.docker.com/r/m0wer/murmur">m0wer/murmur</a>.</li>
-<li><a href="https://www.influxdata.com/">InfluxDB</a>: Scalable datastore for metrics,
-   events, and real-time analytics. Using
-   <a href="https://hub.docker.com/_/influxdb">influxdb</a>.</li>
-<li><a href="https://grafana.com/">Grafana</a>: The open platform for beautiful
-   analytics and monitoring. Using
-   <a href="https://hub.docker.com/r/grafana/grafana">grafana/grafana</a>.</li>
-<li><a href="https://www.home-assistant.io/">Home Assistant</a> Open source home automation
-   that puts local control and privacy first. Using
-   <a href="https://hub.docker.com/r/homeassistant/home-assistant">homeassistant/home-assistant</a></li>
-<li><a href="https://www.rstudio.com/">RStudio</a> provides popular open source and
-   enterprise-ready professional software for the R statistical computing
-   environment. Using
-   <a href="https://hub.docker.com/r/rocker/rstudio">rocker/rstudio</a>.</li>
-<li><a href="https://jellyfin.media/">Jellyfin</a> The Free Software Media System. Using
-  <a href="https://github.com/jellyfin/jellyfin">jellyfin/jellyfin</a>.</li>
-<li><a href="https://www.portainer.io/">Portainer</a> Making Docker management easy. Using
-  <a href="https://hub.docker.com/r/portainer/portainer">portainer/portainer</a>.</li>
-<li><a href="https://github.com/tsudoko/anki-sync-server">Anki sync server</a> This is a
-   personal Anki server, which you can sync against instead of AnkiWeb. Using
-   <a href="https://hub.docker.com/r/kuklinistvan/anki-sync-server/tags">kuklinistvan/anki-sync-server</a>.</li>
-<li><a href="https://moodle.org/">Moodle</a> Open-source learning plataform. Using
-  <a href="https://hub.docker.com/r/moodlehq/moodle-php-apache">moodlehq/moodle-php-apache</a>.</li>
-<li><a href="https://jupyter.org/hub">JupyterHub</a> A multi-user version of the notebook
-   designed for companies, classrooms and research labs. Using
-   <a href="https://hub.docker.com/r/m0wer/jupyterhub">m0wer/jupyterhub</a>.</li>
-<li><a href="https://github.com/Jackett/Jackett">Jackett</a> API Support for your favorite
-   torrent trackers. Using
-   <a href="https://hub.docker.com/r/linuxserver/jackett">linuxserver/jackett</a>.</li>
-<li><a href="https://github.com/Sonarr/Sonarr">Sonarr</a> API Support for your favorite
-   torrent trackers. Using
-   <a href="https://hub.docker.com/r/linuxserver/sonarr">linuxserver/sonarr</a>.</li>
-<li><a href="https://github.com/Radarr/Radarr">Radarr</a> A fork of Sonarr to work with movies
-   à la Couchpotato. Using
-   <a href="https://hub.docker.com/r/linuxserver/radarr">linuxserver/radarr</a>.</li>
-<li><a href="https://github.com/lidarr/Lidarr">Lidarr</a> Looks and smells like Sonarr but
-   made for music. Using
-   <a href="https://hub.docker.com/r/linuxserver/lidarr">linuxserver/lidarr</a>.</li>
-<li><a href="https://github.com/morpheus65535/bazarr">Bazarr</a> is a companion application
-   to Sonarr and Radarr. It manages and downloads subtitles based on your
-   requirements. Using
-   <a href="https://hub.docker.com/r/linuxserver/bazarr">linuxserver/bazarr</a>.</li>
-<li><a href="https://github.com/tidusjar/Ombi">Ombi</a> Want a Movie or TV Show on Plex or
-   Emby? Use Ombi! Using
-   <a href="https://github.com/linuxserver/docker-ombi">linuxserver/ombi</a>.</li>
-</ul>
 <p>For more info about each service and how to set it up, go to
 <a href="docs/services">docs/services</a>.</p>
-<h2 id="setup">Setup</h2>
-<ol>
-<li>Install <code>sudo</code> and <code>python</code>.</li>
-<li>Login as <strong>root</strong> and add your <strong>user</strong> to <em>sudoers</em> or to the <strong>sudo</strong>
-   group with <code>usermod -a -G sudo [user]</code>.</li>
-</ol>
-<p>The idea is that you run the playbooks with the tags of the services that you
-want to setup. But, there are some steps that "must" be run first, before
-deploying the actual services.</p>
-<p>An example approach would be:</p>
-<ol>
-<li>Deploy the basic stuff (dependencies, directory creation, security...):
-   <code>-t init,common,sec</code></li>
-<li>If everything goes well, deploy the base web server: <code>-t web</code></li>
-<li>Now you are ready to deploy the desired services, for example gitea: <code>-t
-   gitea</code></li>
-</ol>
-<h3 id="tips">Tips</h3>
-<ul>
-<li>You can check the available tags with:</li>
-</ul>
-<div class="highlight"><pre><span></span><code>ansible-playbook --list-tags full.yml
-</code></pre></div>
-
-<ul>
-<li>You can create a <em>custom/</em> folder in the playbook root directory. There you
-  can save your inventory files with your chosen variables for each host. This
-  folder will be ignored thanks to the <em>.gitignore</em> configuration.</li>
-<li>As some of the variables are passwords, you can encrypt them with
-  <a href="https://docs.ansible.com/ansible/latest/user_guide/vault.html">ansible-vault</a></li>
-<li>Before deploying anything, check the variables and their default values from
-  <em>group_vars/all.yml</em>. Copy and change the required ones to your custom
-  inventory file.</li>
-<li>Deploy only a few tags with:</li>
-</ul>
-<p><div class="highlight"><pre><span></span><code>ansible-playbook -i custom/<span class="o">[</span>project<span class="o">]</span>/hosts.yml full.yml --extra-vars
-<span class="nv">ansible_become_pass</span><span class="o">=</span><span class="s2">&quot;[sudo_password]&quot;</span> --ask-vault-pass -t gitea
-</code></pre></div>
-* By default, the configuration files of the services won't be overridden in
-  most cases, meaning that if they already existed they won't be modified, to
-  preserve their possible manual modifications. To avoid this behaviour and
-  overwrite them, pass the <code>override=True</code> extra var.</p>
-<h3 id="firewall">Firewall</h3>
-<p>If you are behind some kind of firewall or you need to setup NAT, you should
-add the following ports:</p>
-<ul>
-<li><strong>80</strong> for HTTP connections, used for the <code>letsencrypt</code> verification</li>
-<li><strong>443</strong> for HTTPs connections, used by the reverse proxy to serve access to
-  the web services.</li>
-<li>The SSH port you choose, or <strong>2222</strong> by default.</li>
-<li>All the desired ports that some services have.</li>
-</ul>
-<h3 id="letsencrypt">Letsencrypt</h3>
-<p>The main domain cert needs to be obtained using the <strong>standalone</strong> method since
-we don't have a working webserver by this point (the server needs the cert). So
-the webroot path will be empty in <em>/etc/letsencrypt/renewal/{{ base_domain
-}}.conf</em>. You should manually specify it adding:</p>
-<div class="highlight"><pre><span></span><code>authenticator = webroot
-webroot_path = /var/www/letsencrypt,
-</code></pre></div>
-
-<h3 id="nvidia-runtime-support">Nvidia runtime support</h3>
-<p>Some services (such as jellyfin and jupyter) can benefit from GPU acceleration.
-In order to generally enable nvdia runtime support for the services set the
-variable <code>nvidia_runtime</code> to <code>true</code>. Note that the nvidia-container-toolkit
-must be installed manually, check
-<a href="https://github.com/NVIDIA/nvidia-docker">nvidia-docker</a>.</p>
 <h2 id="backup">Backup</h2>
 <p>Make sure to backup your <code>data_path</code> (by default <em>/data</em>) and the docker
 volumes (used by the databases) from <em>/var/lib/docker/volumes</em> if used.</p>
@@ -1207,7 +982,7 @@ volumes (used by the databases) from <em>/var/lib/docker/volumes</em> if used.</
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2020-08-19T17:27:49+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2020-08-19</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-timeago"><span class="timeago" datetime="2020-08-19T17:44:10+00:00" locale="en"></span></span><span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-iso_date">2020-08-19</span>
     
   </small>
 </div>
