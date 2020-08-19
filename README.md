@@ -76,5 +76,5 @@ GPLv3
 
 ## Author Information
 
-m0wer: m0wer (at) autistici (dot) org
-acien101: amil101ftw (at) gmail (dot) com
+* m0wer: m0wer (at) autistici (dot) org
+* acien101: amil101ftw (at) gmail (dot) com
