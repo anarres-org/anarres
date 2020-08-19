@@ -18,13 +18,15 @@ ca_certs_path: /etc/ssl/certs/ca-certificates.crt
 
 docker_db_image: mariadb:10
 docker_db_postgres_image: postgres:11
+docker_db_mongo_image: mongo:4
+docker_db_redis_image: redis:5
 dockerfiles_path: /root/dockerfiles
 
 nvidia_runtime: false
 
 ## Following values will be used for the root account of every docker database
 db_pass:
-db_config_port: 3306
+default_db_config_port: 9999 # Just make sure its available on the host
 
 sendxmpp_jid: "{{ user_uid_1000 }}@{{ prosody_domain }}"
 sendxmpp_pass:
@@ -707,3 +709,40 @@ ombi_domain: "ombi.{{ base_domain }}"
 
 ombi_directory:
   conf: "{{ data_path }}/ombi/conf"
+
+## ShareLaTeX
+
+sharelatex_docker_image: sharelatex/sharelatex:2.4.0
+sharelatex_domain: "latex.{{ base_domain }}"
+sharelatex_web_port: 3080
+sharelatex_network_name: "sharelatex"
+sharelatex_app_name: ShareLaTeX
+
+sharelatex_directory:
+  data: "{{ data_path }}/sharelatex/data"
+  db: "{{ data_path }}/sharelatex/db"
+  redis: "{{ data_path }}/sharelatex/redis"
+
+### DB
+
+sharelatex_db_image: "{{ docker_db_mongo_image }}"
+sharelatex_db_service_name: sharelatex-db
+sharelatex_db_user: "sharelatex"
+sharelatex_db_user_pass:
+sharelatex_db_name: "sharelatex"
+
+### Redis
+
+sharelatex_redis_image: "{{ docker_db_redis_image }}"
+
+### LDAP
+
+sharelatex_enable_ldap: true
+sharelatex_ldap_url: "{{ openldap_server_uri }}"
+sharelatex_ldap_bind_dn: "{{ openldap_bind_dn }}"
+sharelatex_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+sharelatex_ldap_search_base: "{{ openldap_search_base }}"
+sharelatex_ldap_search_filter: "{{ '(uid={{username}})' }}"
+sharelatex_ldap_email_attribute: 'mail'
+sharelatex_ldap_name_attribute: 'cn'
+sharelatex_ldap_last_name_attribute: 'sn'

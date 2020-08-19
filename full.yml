@@ -676,8 +676,8 @@
       -e 'CMD_IMAGE_UPLOAD_TYPE=filesystem' \
       -e "CMD_LDAP_TLS_CA=/etc/ssl/certs/ca-certificates.crt" \
       -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
-      -v "{{ codimd_directory.uploads }}:/codimd/public/uploads/" \
       {% endif %}
+      -v "{{ codimd_directory.uploads }}:/codimd/public/uploads/" \
       -v '/etc/localtime:/etc/localtime:ro' \
       --network "{{ codimd_network_name }}" \
       "{{ docker_image }}"
@@ -2746,3 +2746,86 @@
     - role: add_nginx_proxy_conf
       tags: proxy
   tags: [ never, ombi ]
+
+## ShareLaTeX
+
+- name: Deploy sharelatex in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: sharelatex
+    docker_image: "{{ sharelatex_docker_image }}"
+    docker_db_image: "{{ sharelatex_db_image }}"
+    enable_redis: true
+    docker_redis_image: "{{ sharelatex_redis_image }}"
+    create_network: true
+    db_type: mongo
+    docker_service_directory_db: "{{ sharelatex_directory.db }}"
+    db_user_pass: "{{ sharelatex_db_user_pass }}"
+    db_config_port: "{{ default_db_config_port }}"
+    db_name: "{{ sharelatex_db_name }}"
+    db_user: "{{ sharelatex_db_user }}"
+    docker_service_directory_redis: "{{ sharelatex_directory.redis }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ sharelatex_web_port }}:80" \
+      -v "{{ sharelatex_directory.data }}:/var/lib/sharelatex" \
+      -e "SHARELATEX_MONGO_URL=mongodb://{{ sharelatex_db_user }}:{{ sharelatex_db_user_pass }}@{{ sharelatex_db_service_name }}:27017/{{ sharelatex_db_name }}" \
+      -e "SHARELATEX_APP_NAME={{ sharelatex_app_name }}" \
+      -e "SHARELATEX_REDIS_HOST={{ service_name }}-redis" \
+      -e "REDIS_HOST={{ service_name }}-redis" \
+      -e "ENABLED_LINKED_FILE_TYPES=url,project_file" \
+      -e "ENABLE_CONVERSIONS=true" \
+      -e "EMAIL_CONFIRMATION_DISABLED=true" \
+      {% if sharelatex_enable_ldap %}
+      -e "SHARELATEX_LDAP_URL={{ sharelatex_ldap_url }}" \
+      -e "SHARELATEX_LDAP_BIND_DN={{ sharelatex_ldap_bind_dn }}" \
+      -e "SHARELATEX_LDAP_BIND_CREDENTIALS={{ sharelatex_ldap_bind_credentials }}" \
+      -e "SHARELATEX_LDAP_SEARCH_BASE={{ sharelatex_ldap_search_base }}" \
+      -e "SHARELATEX_LDAP_SEARCH_FILTER={{ sharelatex_ldap_search_filter }}" \
+      -e "SHARELATEX_LDAP_EMAIL_ATT={{ sharelatex_ldap_email_attribute }}" \
+      -e "SHARELATEX_LDAP_NAME_ATT={{ sharelatex_ldap_name_attribute }}" \
+      -e "SHARELATEX_LDAP_LAST_NAME_ATT={{ sharelatex_ldap_last_name_attribute }}" \
+      -e "SHARELATEX_LDAP_UPDATE_USER_DETAILS_ON_LOGIN=true" \
+      -v "{{ ca_certs_path }}:/etc/ssl/certs/ca-certificates.crt:ro" \
+      {% endif %}
+      -v '/etc/localtime:/etc/localtime:ro' \
+      --network "{{ sharelatex_network_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create sharelatex directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ sharelatex_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, sharelatex ]
+
+- name: Get sharelatex subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ sharelatex_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, sharelatex ]
+
+- name: Configure nginx proxy for sharelatex
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ sharelatex_domain }}"
+    binded_port: "{{ sharelatex_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags: [ never, sharelatex ]
