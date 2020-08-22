@@ -1,25 +1,28 @@
 ---
-
 - name: Destroy
   hosts: localhost
   connection: local
-  gather_facts: False
-  no_log: "{{ not lookup('env', 'MOLECULE_DEBUG') | bool }}"
-  vars:
-    molecule_file: "{{ lookup('env', 'MOLECULE_FILE') }}"
-    molecule_instance_config: "{{ lookup('env',' MOLECULE_INSTANCE_CONFIG') }}"
-    molecule_yml: "{{ lookup('file', molecule_file) | molecule_from_yaml }}"
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
   tasks:
     - name: Destroy molecule instance(s)
-      molecule_vagrant:
+      vagrant:
         instance_name: "{{ item.name }}"
-        platform_box: "{{ item.box }}"
-        provider_name: "{{ molecule_yml.driver.provider.name }}"
-        force_stop: "{{ item.force_stop | default(True) }}"
+        platform_box: "{{ item.box | default(omit) }}"
+        provider_name: "{{ molecule_yml.driver.provider.name | default(omit, true) }}"
+        provider_options: "{{ item.provider_options | default(omit) }}"
+        provider_raw_config_args: "{{ item.provider_raw_config_args | default(omit) }}"
+        force_stop: "{{ item.force_stop | default(true) }}"
 
         state: destroy
       register: server
       with_items: "{{ molecule_yml.platforms }}"
+      loop_control:
+        label: "{{ item.name }}"
+      no_log: false
+
+    # NOTE(retr0h): Vagrant/VBox sucks and parallelizing instance deletion
+    # causes issues.
 
     # Mandatory configuration for Molecule to function.
 
@@ -27,10 +30,8 @@
       set_fact:
         instance_conf: {}
 
-    - name: Dump instance config
+    - name: Dump instance config  # noqa 503
       copy:
-        # NOTE(retr0h): Workaround for Ansible 2.2.
-        #               https://github.com/ansible/ansible/issues/20885
         content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
         dest: "{{ molecule_instance_config }}"
       when: server.changed | bool
