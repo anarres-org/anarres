@@ -6,7 +6,7 @@ driver:
     name: virtualbox
 platforms:
   - name: stretch
-    box: debian/stretch64
+    box: debian/buster64
     interfaces:
       - network_name: private_network
         auto_config: true
@@ -14,8 +14,8 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-    cpus: 2
-    memory: 2048
+    cpus: 4
+    memory: 4096
     groups:
       - anarres
 lint: |

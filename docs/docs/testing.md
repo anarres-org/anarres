@@ -41,7 +41,7 @@ You will need:
 * `vagrant`
 	* [vagrant-vbguest](https://github.com/dotless-de/vagrant-vbguest)
 	* [vagrant-cachier](https://github.com/fgrehm/vagrant-cachier) (optional).
-	* Used `vagrant` boxes. Example: `vagrant box add debian/stretch64`.
+	* Used `vagrant` boxes. Example: `vagrant box add debian/buster64`.
 * Python tools: `pip install molecule testinfra python-vagrant ansible yamllint ansible-lint`
 **Note:** a `virtualenv` (python2) is recommended. You can use
 [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/).
