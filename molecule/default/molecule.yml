@@ -28,6 +28,7 @@ provisioner:
   playbooks:
     converge: ../../full.yml
   options:
+    tags: test
     extra-vars:
       testing: true
       docker_registry_mirror: http://172.16.100.1:5000
