@@ -98,3 +98,6 @@ title: Supported services list
 * [Ombi](https://github.com/tidusjar/Ombi) Want a Movie or TV Show on Plex or
    Emby? Use Ombi! Using
    [linuxserver/ombi](https://github.com/linuxserver/docker-ombi).
+* [ShareLatex](https://github.com/overleaf/overleaf) A web-based collaborative
+   LaTeX editor. Using
+   [sharelatex/sharelatex](https://hub.docker.com/r/sharelatex/sharelatex).

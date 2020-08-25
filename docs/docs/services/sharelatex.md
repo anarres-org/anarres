@@ -55,3 +55,7 @@ Unfortunately, LDAP is not supported in the community version.
    ```
 
 Once this is done, regular users can be created from `/admin/register`.
+
+## Reference
+
+* [Quick Start Guide · overleaf/overleaf Wiki](https://github.com/overleaf/overleaf/wiki/Quick-Start-Guide)
