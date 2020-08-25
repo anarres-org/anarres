@@ -1,0 +1,20 @@
+---
+
+site_name: Anarres documentation
+site_url: https://anarres-org.github.io/anarres
+repo_name: 'anarres-org/anarres'
+repo_url: 'https://github.com/anarres-org/anarres'
+
+plugins:
+  - search
+  - autolinks
+  - git-revision-date-localized:
+      type: timeago
+
+theme:
+  name: material
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences

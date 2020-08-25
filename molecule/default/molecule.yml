@@ -4,13 +4,9 @@ driver:
   name: vagrant
   provider:
     name: virtualbox
-lint:
-  name: yamllint
-  options:
-    config-file: molecule/default/.yamllint
 platforms:
   - name: stretch
-    box: debian/stretch64
+    box: debian/buster64
     interfaces:
       - network_name: private_network
         auto_config: true
@@ -18,14 +14,21 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-    memory: 2048
+    cpus: 4
+    memory: 4096
     groups:
       - anarres
+lint: |
+  set -e
+  yamllint -c molecule/default/.yamllint .
+  ansible-lint --exclude roles/
+  flake8
 provisioner:
   name: ansible
   playbooks:
     converge: ../../full.yml
   options:
+    tags: test
     extra-vars:
       testing: true
       docker_registry_mirror: http://172.16.100.1:5000
@@ -64,14 +67,7 @@ provisioner:
       grafana_admin_pass: changeme
       rstudio_pass: changeme
       moodle_db_user_pass: changeme
-  lint:
-    name: ansible-lint
-    options:
-      exclude:
-        - roles/
 scenario:
   name: default
 verifier:
   name: testinfra
-  lint:
-    name: flake8
