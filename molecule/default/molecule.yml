@@ -67,6 +67,7 @@ provisioner:
       grafana_admin_pass: changeme
       rstudio_pass: changeme
       moodle_db_user_pass: changeme
+      sharelatex_db_user_pass: changeme
 scenario:
   name: default
 verifier:
