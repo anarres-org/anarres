@@ -2785,7 +2785,16 @@
       --network "{{ sharelatex_network_name }}" \
       "{{ docker_image }}"
   pre_tasks:
-    - name: Create sharelatex directories
+    - name: Create sharelatex directories 750 www-data
+      become: true
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        owner: "{{ user_uid_33 }}"
+        group: "{{ group_gid_33 }}"
+        mode: 0750
+      with_dict: "{{ sharelatex_directory_www_data }}"
+    - name: Create sharelatex directories 700
       file:
         path: "{{ item.value }}"
         state: directory
@@ -2793,15 +2802,6 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
       with_dict: "{{ sharelatex_directory }}"
-    - name: Create sharelatex directories 750 www-data
-      become: true
-      file:
-        path: "{{ item }}"
-        state: directory
-        owner: "{{ user_uid_33 }}"
-        group: "{{ group_gid_33 }}"
-        mode: 0750
-      with_dict: "{{ sharelatex_directory_www_data }}"
   roles:
     - role: generic_docker_systemd
   tags: [ never, sharelatex ]
