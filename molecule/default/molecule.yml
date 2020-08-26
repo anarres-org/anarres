@@ -68,6 +68,7 @@ provisioner:
       rstudio_pass: changeme
       moodle_db_user_pass: changeme
       sharelatex_db_user_pass: changeme
+      tiddlywiki_pass: changeme
 scenario:
   name: default
 verifier:
