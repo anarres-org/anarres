@@ -748,3 +748,15 @@ sharelatex_redis_image: "{{ docker_db_redis_image }}"
 #sharelatex_ldap_email_attribute: 'mail'
 #sharelatex_ldap_name_attribute: 'cn'
 #sharelatex_ldap_last_name_attribute: 'sn'
+
+## TiddlyWiki
+
+tiddlywiki_docker_image: mazzolino/tiddlywiki
+tiddlywiki_domain: "tiddly.{{ base_domain }}"
+tiddlywiki_web_port: 3090
+
+tiddlywiki_user: tiddlywiki
+tiddlywiki_pass:
+
+tiddlywiki_directory:
+  data: "{{ data_path }}/tiddlywiki/data"

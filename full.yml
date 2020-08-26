@@ -3096,3 +3096,62 @@
     - never
     - sharelatex
     - test
+
+## TiddlyWiki
+
+- name: Deploy tiddlywiki in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: tiddlywiki
+    docker_image: "{{ tiddlywiki_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v "{{ tiddlywiki_directory.data }}:/var/lib/tiddlywiki" \
+      -e "USERNAME={{ tiddlywiki_user }}" \
+      -e "PASSWORD={{ tiddlywiki_pass }}" \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -p "{{ tiddlywiki_web_port }}:8080" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create tiddlywiki directories
+      file:
+        path: "{{ item.value }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+      with_dict: "{{ tiddlywiki_directory }}"
+  roles:
+    - role: generic_docker_systemd
+  tags: [ never, tiddlywiki ]
+
+- name: Get tiddlywiki subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ tiddlywiki_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt-request
+      tags: letsecrypt_request
+  tags: [ never, tiddlywiki ]
+
+- name: Configure nginx proxy for tiddlywiki
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ tiddlywiki_domain }}"
+    binded_port: "{{ tiddlywiki_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - tiddlywiki
+    - test
