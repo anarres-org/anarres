@@ -101,3 +101,5 @@ title: Supported services list
 * [ShareLatex](https://github.com/overleaf/overleaf) A web-based collaborative
    LaTeX editor. Using
    [sharelatex/sharelatex](https://hub.docker.com/r/sharelatex/sharelatex).
+* [TiddlyWiki](https://tiddlywiki.com/) A non-linear personal web notebook.
+   Using [mazzolino/tiddlywiki](https://hub.docker.com/r/mazzolino/tiddlywiki).
