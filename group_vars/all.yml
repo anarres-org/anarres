@@ -751,7 +751,7 @@ sharelatex_redis_image: "{{ docker_db_redis_image }}"
 
 ## TiddlyWiki
 
-tiddlywiki_docker_image: mazzolino/tiddlywiki
+tiddlywiki_docker_image: m0wer/tiddlywiki
 tiddlywiki_domain: "tiddly.{{ base_domain }}"
 tiddlywiki_web_port: 3090
 
