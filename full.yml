@@ -21,7 +21,7 @@
   become: true
   gather_facts: false
   roles:
-    - role: anarres-common
+    - role: anarres_common
   tags:
     - common
     - test

@@ -1,6 +1,3 @@
-[submodule "roles/anarres-common"]
-	path = roles/anarres-common
-	url = https://github.com/anarres-org/anarres-common
 [submodule "roles/anarres-sec"]
 	path = roles/anarres-sec
 	url = https://github.com/anarres-org/anarres-sec
@@ -16,3 +13,6 @@
 [submodule "roles/generic_docker_systemd"]
 	path = roles/generic_docker_systemd
 	url = https://github.com/anarres-org/generic_docker_systemd
+[submodule "roles/anarres_common"]
+	path = roles/anarres_common
+	url = https://github.com/anarres-org/anarres_common

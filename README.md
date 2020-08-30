@@ -42,7 +42,7 @@ distributions too or just requires a few changes.
 Included as submodules in *roles/*.
 
 * [iptables_raw](https://github.com/Nordeus/ansible_iptables_raw)
-* [anarres-common](https://github.com/anarres-org/anarres-common)
+* [anarres_common](https://github.com/anarres-org/anarres_common)
 * [anarres-sec](https://github.com/anarres-org/anarres-sec)
 * [letsencrypt-request](https://github.com/anarres-org/letsencrypt-request)
 * [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
