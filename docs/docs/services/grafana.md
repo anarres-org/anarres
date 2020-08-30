@@ -7,6 +7,9 @@ analytics and monitoring.
 
 * `grafana_docker_image`: Name for the service docker image.
 * `grafana_domain`: Domain/subdomain for the service.
+* `grafana_image_renderer_docker_image`: (Default:
+   `grafana/grafana-image-renderer:latest`) Name of the Docker image for the
+   Grafana external image rendering.
 * `grafana_directory`:
    * `conf`: Path on the host for persistent configurations.
    * `data`: Path on the host for persistent data.

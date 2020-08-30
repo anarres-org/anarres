@@ -536,6 +536,8 @@ influxdb_user_password:
 grafana_domain: "metrics.{{ base_domain }}"
 grafana_docker_image: grafana/grafana:latest
 
+grafana_image_renderer_docker_image: grafana/grafana-image-renderer:latest
+
 grafana_directory:
   conf: "{{ data_path }}/grafana/conf"
   data: "{{ data_path }}/grafana/data"

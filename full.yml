@@ -1976,6 +1976,7 @@
     service_name: grafana
     docker_image: "{{ grafana_docker_image }}"
     enable_db: false
+    create_network: true
     docker_command: |
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       --user 1000:1000 \
@@ -1983,9 +1984,9 @@
       -v "{{ grafana_directory.data }}":/var/lib/grafana \
       -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ grafana_internal_web_port }}:3000" \
-      {% if grafana_network is defined %}
+      -e "GF_RENDERING_SERVER_URL=http://grafana-image-renderer:8081/render" \
+      -e "GF_RENDERING_CALLBACK_URL=http://grafana:3000/" \
       --network {{ service_name }} \
-      {% endif %}
       "{{ docker_image }}"
   pre_tasks:
     - name: Create grafana directories
@@ -2004,6 +2005,29 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0600
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - grafana
+    - test
+
+- name: Deploy grafana image renderer in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: grafana-image-renderer
+    docker_image: "{{ grafana_image_renderer_docker_image }}"
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      --user 1000:1000 \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -e 'ENABLE_METRICS=true' \
+      --network grafana \
+      "{{ docker_image }}"
   roles:
     - role: generic_docker_systemd
   tags:
