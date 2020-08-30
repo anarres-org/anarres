@@ -21,8 +21,8 @@ platforms:
 lint: |
   set -e
   yamllint -c molecule/default/.yamllint .
-  ansible-lint --exclude roles/
-  flake8
+  ansible-lint --exclude roles/ --exclude molecule/ --exclude library/
+  flake8 --exclude roles,molecule,library
 provisioner:
   name: ansible
   playbooks:
