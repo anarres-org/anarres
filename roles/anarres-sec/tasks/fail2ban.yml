@@ -1,0 +1,21 @@
+---
+- name: Install fail2ban
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - fail2ban
+
+- name: Copy fail2ban sendxmpp action configuration
+  copy:
+    src: fail2ban-xmpp.conf
+    dest: /etc/fail2ban/action.d/xmpp.conf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Copy fail2ban configuration
+  template:
+    src: fail2ban.j2
+    dest: /etc/fail2ban/jail.local
+  notify: Restart fail2ban

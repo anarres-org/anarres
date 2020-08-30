@@ -1,0 +1,32 @@
+---
+- name: Install iptables
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - iptables-persistent
+
+- name: Disable IPv6 globally
+  lineinfile:
+    line: 'net.ipv6.conf.all.disable_ipv6 = 1'
+    state: present
+    insertafter: EOF
+    path: /etc/sysctl.conf
+  notify: Activate sysctl
+
+- name: Set basic iptables rules
+  iptables_raw:
+    name: default_rules
+    weight: 10
+    rules: "{{ iptables_rules_general }}"
+
+- name: Set basic iptables policies
+  iptables_raw:
+    name: default_policies
+    rules: "{{ iptables_policies_general }}"
+
+- name: Enable logging
+  iptables_raw:
+    name: enable_logging
+    weight: 99
+    rules: "{{ iptables_rules_logging }}"

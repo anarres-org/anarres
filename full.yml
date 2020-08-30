@@ -31,7 +31,7 @@
   become: true
   gather_facts: false
   roles:
-    - role: anarres-sec
+    - role: anarres_sec
   tags:
     - sec
     - test

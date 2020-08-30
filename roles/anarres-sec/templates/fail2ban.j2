@@ -1,0 +1,26 @@
+[DEFAULT]
+
+ignoreip  = 127.0.0.1/8 {{ fail2ban_trusted }}
+banaction = iptables-allports
+bantime   = 259200
+maxretry  = 2
+
+# Actions
+
+# XMPP notifications settings
+
+destxmpp = {{ fail2ban_xmpp_notify }}
+xmpprcfile = {{ sendxmpp_config }}
+
+action_xmpp = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+        xmpp[destxmpp="%(destxmpp)s", rcfile="%(xmpprcfile)s", name=%(__name__)s, bantime="%(bantime)s"]
+action =  %(action_xmpp)s
+
+# JAILS
+
+[sshd]
+enabled  = true
+port     = {{ ssh_port | default('22') }}
+filter   = sshd
+logpath  = /var/log/auth.log
+maxretry = 3

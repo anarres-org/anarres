@@ -43,7 +43,7 @@ Included as submodules in *roles/*.
 
 * [iptables_raw](https://github.com/Nordeus/ansible_iptables_raw)
 * [anarres_common](https://github.com/anarres-org/anarres_common)
-* [anarres-sec](https://github.com/anarres-org/anarres-sec)
+* [anarres_sec](https://github.com/anarres-org/anarres_sec)
 * [letsencrypt-request](https://github.com/anarres-org/letsencrypt-request)
 * [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
 * [generic_docker_systemd](https://github.com/anarres-org/generic_docker_systemd)

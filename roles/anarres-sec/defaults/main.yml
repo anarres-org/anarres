@@ -1,0 +1,41 @@
+---
+
+# sec
+
+# WARNING! This must be set to the port where `sshd` is listening. If you
+# change it, you must also change it on the server and restart sshd before
+# running the playbook. (In order to don't get locked out).
+ssh_port: 22
+
+## sendxmpp
+
+admin_xmpp:
+sendxmpp_config: '/root/.sendxmpprc'
+
+
+## fail2ban
+
+# CHANGEME! Abuses comming from this networks/ranges won't be taked into
+# account.
+fail2ban_trusted:
+
+fail2ban_xmpp_notify: "{{ admin_xmpp }}"
+
+## iptables
+
+iptables_rules_general: |
+  -A INPUT -m state --state INVALID -j DROP
+  -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+  -A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j LOG --log-prefix "DROPPED XMAS PACKET:"
+  -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+  -A INPUT -i lo -j ACCEPT
+  -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ ssh_port | default('22') }} -j ACCEPT
+  -A INPUT -p icmp --icmp-type 8 -j ACCEPT
+
+iptables_policies_general: |
+  -P INPUT DROP
+  -P FORWARD DROP
+  -P OUTPUT ACCEPT
+
+iptables_rules_logging: |
+  -A INPUT -j LOG
