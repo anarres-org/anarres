@@ -1,6 +1,3 @@
-[submodule "roles/letsencrypt-request"]
-	path = roles/letsencrypt-request
-	url = https://github.com/anarres-org/letsencrypt-request
 [submodule "roles/anarres-nginx"]
 	path = roles/anarres-nginx
 	url = https://github.com/anarres-org/anarres-nginx
@@ -16,3 +13,6 @@
 [submodule "roles/anarres_sec"]
 	path = roles/anarres_sec
 	url = https://github.com/anarres-org/anarres_sec
+[submodule "roles/letsencrypt_request"]
+	path = roles/letsencrypt_request
+	url = https://github.com/anarres-org/letsencrypt_request
