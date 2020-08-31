@@ -93,7 +93,7 @@
         - base_cert
         - letsencrypt_request
         - letsencrypt
-    - role: anarres-nginx
+    - role: anarres_nginx
       tags: nginx
   tags:
     - web-base

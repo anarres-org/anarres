@@ -45,7 +45,7 @@ Included as submodules in *roles/*.
 * [anarres_common](https://github.com/anarres-org/anarres_common)
 * [anarres_sec](https://github.com/anarres-org/anarres_sec)
 * [letsencrypt-request](https://github.com/anarres-org/letsencrypt-request)
-* [anarres-nginx](https://github.com/anarres-org/anarres-nginx)
+* [anarres_nginx](https://github.com/anarres-org/anarres_nginx)
 * [generic_docker_systemd](https://github.com/anarres-org/generic_docker_systemd)
 * [add_nginx_proxy_conf](https://github.com/anarres-org/add_nginx_proxy_conf)
 
