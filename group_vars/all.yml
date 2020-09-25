@@ -26,7 +26,7 @@ nvidia_runtime: false
 
 ## Following values will be used for the root account of every docker database
 db_pass:
-default_db_config_port: 9999 # Just make sure its available on the host
+default_db_config_port: 9999  # Just make sure its available on the host
 
 sendxmpp_jid: "{{ user_uid_1000 }}@{{ prosody_domain }}"
 sendxmpp_pass:
@@ -739,17 +739,17 @@ sharelatex_db_name: "sharelatex"
 
 sharelatex_redis_image: "{{ docker_db_redis_image }}"
 
-#### LDAP
+# ### LDAP
 #
-#sharelatex_enable_ldap: true
-#sharelatex_ldap_url: "{{ openldap_server_uri }}"
-#sharelatex_ldap_bind_dn: "{{ openldap_bind_dn }}"
-#sharelatex_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
-#sharelatex_ldap_search_base: "{{ openldap_search_base }}"
-#sharelatex_ldap_search_filter: "{{ '(uid={{username}})' }}"
-#sharelatex_ldap_email_attribute: 'mail'
-#sharelatex_ldap_name_attribute: 'cn'
-#sharelatex_ldap_last_name_attribute: 'sn'
+# sharelatex_enable_ldap: true
+# sharelatex_ldap_url: "{{ openldap_server_uri }}"
+# sharelatex_ldap_bind_dn: "{{ openldap_bind_dn }}"
+# sharelatex_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
+# sharelatex_ldap_search_base: "{{ openldap_search_base }}"
+# sharelatex_ldap_search_filter: "{{ '(uid={{username}})' }}"
+# sharelatex_ldap_email_attribute: 'mail'
+# sharelatex_ldap_name_attribute: 'cn'
+# sharelatex_ldap_last_name_attribute: 'sn'
 
 ## TiddlyWiki
 

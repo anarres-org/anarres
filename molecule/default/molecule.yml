@@ -20,7 +20,7 @@ platforms:
       - anarres
 lint: |
   set -e
-  yamllint -c molecule/default/.yamllint .
+  yamllint .
   ansible-lint --exclude roles/ --exclude molecule/ --exclude library/
   flake8 --exclude roles,molecule,library
 provisioner:
@@ -30,6 +30,7 @@ provisioner:
   options:
     tags: test
     extra-vars:
+      ansible_python_interpreter: /usr/bin/python3
       testing: true
       docker_registry_mirror: http://172.16.100.1:5000
       ansible_become: true
