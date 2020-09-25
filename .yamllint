@@ -14,3 +14,5 @@ rules:
 
 ignore: |
   molecule
+  roles
+  library
