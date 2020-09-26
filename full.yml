@@ -2,7 +2,7 @@
 
 - name: Initial tasks
   hosts: all
-  ecome: true
+  become: true
   gather_facts: false
   tasks:
     - name: Create data directory
