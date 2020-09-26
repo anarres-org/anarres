@@ -16,7 +16,7 @@
       lineinfile:
         path: /etc/hosts
         regexp: '^127.0.0.1'
-        line: "127.0.0.1       localhost {{ domain }}"
+        line: "127.0.0.1       localhost {{ base_domain }}"
         insertbefore: BOF
         state: present
   tags:
