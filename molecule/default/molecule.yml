@@ -5,7 +5,7 @@ driver:
   provider:
     name: virtualbox
 platforms:
-  - name: stretch
+  - name: buster
     box: debian/buster64
     interfaces:
       - network_name: private_network
