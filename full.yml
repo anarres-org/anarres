@@ -20,6 +20,10 @@
   hosts: all
   become: true
   gather_facts: false
+  pre_tasks:
+    - name: Gather facts
+      setup:
+        filter: ansible_*
   roles:
     - role: anarres_common
   tags:
