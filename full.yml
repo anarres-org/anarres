@@ -2,7 +2,7 @@
 
 - name: Initial tasks
   hosts: all
-  become: true
+  ecome: true
   gather_facts: false
   tasks:
     - name: Create data directory
@@ -12,6 +12,13 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
+    - name: Add domain to /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^127.0.0.1'
+        line: "127.0.0.1       localhost {{ domain }}"
+        insertbefore: BOF
+        state: present
   tags:
     - init
     - test
