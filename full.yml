@@ -99,7 +99,7 @@
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
       tags: iptables
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags:
         - base_cert
         - letsencrypt_request
@@ -153,7 +153,7 @@
     domain: "{{ registry_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -281,7 +281,7 @@
     domain: "{{ registry_web_interface_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -313,7 +313,7 @@
     domain: "{{ openldap_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.openldap restart
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -460,7 +460,7 @@
     domain: "{{ phpldapadmin_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -492,7 +492,7 @@
     domain: "{{ prosody_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -507,7 +507,7 @@
     domain: "{{ prosody_domain_muc }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
       when: prosody_enable_muc
   tags:
@@ -523,7 +523,7 @@
     domain: "{{ prosody_domain_upload }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.prosody restart
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
       when: prosody_enable_http_upload
   tags:
@@ -697,7 +697,7 @@
     domain: "{{ gitea_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -783,7 +783,7 @@
     domain: "{{ codimd_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -855,7 +855,7 @@
     domain: "{{ drone_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -978,7 +978,7 @@
     domain: "{{ drone_github_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1062,7 +1062,7 @@
     domain: "{{ transmission_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1142,7 +1142,7 @@
     domain: "{{ transmission_openvpn_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1226,7 +1226,7 @@
     domain: "{{ wallabag_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1301,7 +1301,7 @@
     domain: "{{ syncthing_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1451,7 +1451,7 @@
     domain: "{{ radicale_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1581,7 +1581,7 @@
     domain: "{{ nextcloud_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1679,7 +1679,7 @@
     domain: "{{ taiga_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -1846,7 +1846,7 @@
     domain: "{{ murmur_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service docker.murmur.service restart
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2054,7 +2054,7 @@
     domain: "{{ grafana_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2140,7 +2140,7 @@
     domain: "{{ home_assistant_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2215,7 +2215,7 @@
     domain: "{{ rstudio_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2287,7 +2287,7 @@
     domain: "{{ jellyfin_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2355,7 +2355,7 @@
     domain: "{{ portainer_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2419,7 +2419,7 @@
     domain: "{{ anki_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2516,7 +2516,7 @@
     domain: "{{ moodle_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2601,7 +2601,7 @@
     domain: "{{ jupyterhub_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2677,7 +2677,7 @@
     domain: "{{ jackett_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2745,7 +2745,7 @@
     domain: "{{ sonarr_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2813,7 +2813,7 @@
     domain: "{{ radarr_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2881,7 +2881,7 @@
     domain: "{{ lidarr_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -2949,7 +2949,7 @@
     domain: "{{ bazarr_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -3015,7 +3015,7 @@
     domain: "{{ ombi_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags:
     - never
@@ -3104,7 +3104,7 @@
     domain: "{{ sharelatex_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags: [ never, sharelatex ]
 
@@ -3172,7 +3172,7 @@
     domain: "{{ tiddlywiki_domain }}"
     letsencrypt_renew_hook: /usr/sbin/service nginx reload
   roles:
-    - role: letsencrypt-request
+    - role: letsencrypt_request
       tags: letsecrypt_request
   tags: [ never, tiddlywiki ]
 
