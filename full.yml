@@ -94,6 +94,7 @@
       iptables_raw:
         name: web_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
@@ -367,6 +368,7 @@
       iptables_raw:
         name: openldap_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
       tags: iptables
@@ -588,6 +590,7 @@
       iptables_raw:
         name: prosody_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           {{ prosody_iptables_c2s_rule }}
           {{ prosody_iptables_s2s_rule }}
@@ -679,6 +682,7 @@
       iptables_raw:
         name: gitea_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
       tags: iptables
@@ -1043,6 +1047,7 @@
       iptables_raw:
         name: transmission_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
           -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
@@ -1282,6 +1287,7 @@
       iptables_raw:
         name: syncthing_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
@@ -1356,6 +1362,7 @@
       iptables_raw:
         name: openvpn_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           {{ openvpn_iptables_p2p_rule }}
       tags: iptables
@@ -1509,6 +1516,7 @@
       iptables_raw:
         name: taskd_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
       tags: iptables
@@ -1779,6 +1787,7 @@
       iptables_raw:
         name: nfs_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ nfs_port | default('2049') }} -j ACCEPT
       tags: iptables
@@ -1825,6 +1834,7 @@
       iptables_raw:
         name: bind_dns_server_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ bind_dns_server_port }} -j ACCEPT
           -A INPUT -p udp -m state --state NEW -m udp --dport {{ bind_dns_server_port }} -j ACCEPT
@@ -1890,6 +1900,7 @@
       iptables_raw:
         name: murmur_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ murmur_port }} -j ACCEPT
           -A INPUT -p udp -m state --state NEW -m udp --dport {{ murmur_port }} -j ACCEPT
@@ -1965,6 +1976,7 @@
       iptables_raw:
         name: influxdb_rules
         weight: 20
+        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
         rules: |
           -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ influxdb_port }} -j ACCEPT
       when: influxdb_open_port
