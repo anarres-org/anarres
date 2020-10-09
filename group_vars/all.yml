@@ -31,7 +31,7 @@ default_db_config_port: 9999  # Just make sure its available on the host
 sendxmpp_jid: "{{ user_uid_1000 }}@{{ prosody_domain }}"
 sendxmpp_pass:
 
-keep_unmanaged: yes
+iptables_keep_unmanaged: yes
 
 ## anarres-sec
 
