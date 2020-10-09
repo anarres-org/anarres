@@ -346,7 +346,7 @@ openvpn_confiure_docker_command: "docker run -v {{ openvpn_directory.conf }}:/et
 openvpn_create_ca_command: "docker run -v {{ openvpn_directory.conf }}:/etc/openvpn --rm -it {{ openvpn_docker_image }} ovpn_initpki"
 
 openvpn_domain: "openvpn.{{ base_domain }}"
-openvpn_docker_image: kylemanna/openvpn:latest
+openvpn_docker_image: kylemanna/openvpn:2.3
 
 openvpn_directory:
   conf: "{{ data_path }}/openvpn/conf"
