@@ -1380,8 +1380,8 @@
         command: "{{ openvpn_create_ca_command }}"
         timeout: 600
         responses:
-          "Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
-          "Re-Enter New CA Key Passphrase": "{{ openvpn_ca_pass }}"
+          "Enter PEM pass phrase": "{{ openvpn_ca_pass }}"
+          "Verifying - Enter PEM pass phrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
   roles:
