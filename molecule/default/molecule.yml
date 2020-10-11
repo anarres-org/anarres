@@ -14,7 +14,7 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-      - "vm.disk :disk, size: '35GB', primary: true"
+      - 'disksize.size = "30GB"'
     cpus: 4
     memory: 4096
     groups:
