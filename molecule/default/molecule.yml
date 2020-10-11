@@ -6,7 +6,7 @@ driver:
     name: virtualbox
 platforms:
   - name: buster
-    box: debian/buster64
+    box: generic/debian10
     interfaces:
       - network_name: private_network
         auto_config: true
@@ -14,7 +14,7 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-      - 'disksize.size = "30GB"'
+        #- 'disksize.size = "30GB"'
     cpus: 4
     memory: 4096
     groups:
