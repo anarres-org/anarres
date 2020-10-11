@@ -2590,9 +2590,6 @@
         group: "{{ group_gid_1000 }}"
         mode: 0700
     - name: Download jupyterhub cull_idle script
-      get_url:
-        url: 'https://raw.githubusercontent.com/jupyterhub/jupyterhub/master/examples/cull-idle/cull_idle_servers.py'
-        dest: "{{ jupyterhub_directory.data }}/cull_idle_servers.py"
   post_tasks:
     - name: Pull jupyter Docker image
       docker_image:
