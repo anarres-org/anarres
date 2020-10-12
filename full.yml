@@ -2589,7 +2589,6 @@
         owner: "{{ user_uid_1000 }}"
         group: "{{ group_gid_1000 }}"
         mode: 0700
-    - name: Download jupyterhub cull_idle script
   post_tasks:
     - name: Pull jupyter Docker image
       docker_image:
