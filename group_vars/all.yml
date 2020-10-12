@@ -212,12 +212,12 @@ drone_runner_name: "drone-runner.{{ base_domain }}"
 ## Drone ssh runner
 
 drone_ssh_runner_docker_image: drone/drone-runner-ssh:1
-drone_ssh_runner_internal_web_port: 3000
+drone_ssh_runner_internal_web_port: 3032
 
 ## Drone for GitHub
 
 drone_github_docker_image: drone/drone:1
-drone_github_internal_web_port: 3031
+drone_github_internal_web_port: 3035
 drone_github_domain: "drone-github.{{ base_domain }}"
 
 drone_github_directory:
@@ -461,7 +461,7 @@ nfs_export_volumes: |
 
 user_uid_101: systemd-network
 
-bind_dns_server_docker_image: sameersbn/bind:latest
+bind_dns_server_docker_image: sameersbn/bind:9.16.1-20200524
 bind_dns_server_port: 53
 
 bind_dns_server_directory:
