@@ -3102,7 +3102,10 @@
       with_dict: "{{ sharelatex_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: [ never, sharelatex ]
+  tags:
+    - never
+    - sharelatex
+    - test
 
 - name: Get sharelatex subdomain Let's Encrypt certificate
   hosts: all
@@ -3114,7 +3117,10 @@
   roles:
     - role: letsencrypt_request
       tags: letsecrypt_request
-  tags: [ never, sharelatex ]
+  tags:
+    - never
+    - sharelatex
+    - test
 
 - name: Configure nginx proxy for sharelatex
   hosts: all
@@ -3170,7 +3176,10 @@
       with_dict: "{{ tiddlywiki_directory }}"
   roles:
     - role: generic_docker_systemd
-  tags: [ never, tiddlywiki ]
+  tags:
+    - never
+    - tiddlywiki
+    - test
 
 - name: Get tiddlywiki subdomain Let's Encrypt certificate
   hosts: all
@@ -3182,7 +3191,10 @@
   roles:
     - role: letsencrypt_request
       tags: letsecrypt_request
-  tags: [ never, tiddlywiki ]
+  tags:
+    - never
+    - tiddlywiki
+    - test
 
 - name: Configure nginx proxy for tiddlywiki
   hosts: all
