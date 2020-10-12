@@ -436,6 +436,8 @@ c.LDAPAuthenticator.lookup_dn_user_dn_attribute = '{{ jupyterhub_ldap_user_dn_at
 #              'environment':
 #          }
 #      ]
+import sys
+
 c.JupyterHub.services = [
     {
         'name': 'idle-culler',
