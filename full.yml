@@ -1825,8 +1825,9 @@
       file:
         path: "{{ item.value }}"
         owner: "{{ user_uid_101 }}"
+        group: "{{ group_gid_101 }}"
         state: directory
-        mode: 0700
+        mode: 0771
       with_dict: "{{ bind_dns_server_directory }}"
   post_tasks:
     - name: Add iptables rules for BIND DNS server
