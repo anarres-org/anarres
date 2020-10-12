@@ -60,9 +60,6 @@ title: Supported services list
 * [Grafana](https://grafana.com/): The open platform for beautiful
    analytics and monitoring. Using
    [grafana/grafana](https://hub.docker.com/r/grafana/grafana).
-* [Home Assistant](https://www.home-assistant.io/) Open source home automation
-   that puts local control and privacy first. Using
-   [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
 * [RStudio](https://www.rstudio.com/) provides popular open source and
    enterprise-ready professional software for the R statistical computing
    environment. Using
@@ -103,3 +100,6 @@ title: Supported services list
    [sharelatex/sharelatex](https://hub.docker.com/r/sharelatex/sharelatex).
 * [TiddlyWiki](https://tiddlywiki.com/) A non-linear personal web notebook.
    Using [mazzolino/tiddlywiki](https://hub.docker.com/r/mazzolino/tiddlywiki).
+* [Home Assistant](https://www.home-assistant.io/) Open source home automation
+   that puts local control and privacy first. Using
+   [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)

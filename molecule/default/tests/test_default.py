@@ -33,7 +33,6 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("murmur"),
     ("influxdb"),
     ("grafana"),
-    ("home_assistant"),
     ("rstudio"),
     ("jellyfin"),
     ("portainer"),
@@ -47,7 +46,8 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("bazarr"),
     ("ombi"),
     ("sharelatex"),
-    ("tiddlywiki")
+    ("tiddlywiki"),
+    ("home_assistant")
 ])
 def test_services_are_enabled_and_running(host, service):
     service = host.service("docker." + service + ".service")
