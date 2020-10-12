@@ -37,6 +37,7 @@ provisioner:
       ansible_become: true
       ansible_sudo: true
       user_uid_1000: vagrant
+      user_uid_101: systemd-timesync
       base_domain: anarres.local
       db_pass: changeme
       ssh_port: 22
