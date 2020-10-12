@@ -14,8 +14,8 @@ platforms:
         type: static
     instance_raw_config_args:
       - "vm.synced_folder '.', '/vagrant', disabled: true"
-    cpus: 4
-    memory: 4096
+    cpus: 6
+    memory: 8192
     groups:
       - anarres
 lint: |
