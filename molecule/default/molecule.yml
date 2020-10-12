@@ -13,7 +13,8 @@ platforms:
         ip: 172.16.100.12
         type: static
     instance_raw_config_args:
-      - "vm.synced_folder '.', '/vagrant', disabled: true"
+      - 'vm.synced_folder ".", "/vagrant", disabled: true'
+      - 'vm.provision "shell", inline: "swapoff -a"'
     cpus: 6
     memory: 8192
     groups:
