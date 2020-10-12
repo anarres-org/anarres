@@ -465,7 +465,6 @@ bind_dns_server_docker_image: sameersbn/bind:9.16.1-20200524
 bind_dns_server_port: 53
 
 bind_dns_server_directory:
-  base: "{{ data_path }}/bind_dns_server"
   data: "{{ data_path }}/bind_dns_server/data"
 
 ## Murmur
