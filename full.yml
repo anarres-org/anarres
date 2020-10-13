@@ -94,7 +94,7 @@
       iptables:
         chain: INPUT
         protocol: tcp
-        cstate: NEW
+        ctstate: NEW
         match: tcp
         destination_port: "{{ web_ports_http | default('80') }}"
         jump: ACCEPT
@@ -103,7 +103,7 @@
       iptables:
         chain: INPUT
         protocol: tcp
-        cstate: NEW
+        ctstate: NEW
         match: tcp
         destination_port: "{{ web_ports_https | default('443') }}"
         jump: ACCEPT
