@@ -96,7 +96,7 @@
         protocol: tcp
         cstate: NEW
         match: tcp
-        destination_port: {{ web_ports_http | default('80') }}
+        destination_port: "{{ web_ports_http | default('80') }}"
         jump: ACCEPT
         comment: web HTTP
     - name: Add iptables rules for web HTTPS
@@ -105,7 +105,7 @@
         protocol: tcp
         cstate: NEW
         match: tcp
-        destination_port: {{ web_ports_https | default('443') }}
+        destination_port: "{{ web_ports_https | default('443') }}"
         jump: ACCEPT
         comment: web HTTPS
       notify: save iptables
