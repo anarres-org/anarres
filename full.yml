@@ -379,12 +379,15 @@
   post_tasks:
     - name: Add iptables rules for OpenLDAP
       become: true
-      iptables_raw:
-        name: openldap_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ openldap_port_secure }} -j ACCEPT
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ openldap_port_secure }}"
+        jump: ACCEPT
+        comment: OpenLDAP
+      notify: save iptables
       tags: iptables
 
     - name: Install requiered python LDAP module
@@ -434,6 +437,9 @@
         bind_pw: "{{ openldap_admin_password }}"
       tags:
         - ldap-setup
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -600,18 +606,43 @@
           "Retype new password:": "{{ item.pass }}"
       with_items: "{{ prosody_users }}"
       no_log: true
-    - name: Add iptables rules for prosody
-      iptables_raw:
-        name: prosody_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          {{ prosody_iptables_c2s_rule }}
-          {{ prosody_iptables_s2s_rule }}
-          {% if prosody_enable_http %}
-          {{ prosody_iptables_https_rule }}
-          {% endif %}
+    - name: Add iptables rules for prosody c2c
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ prosody_port_c2s }}"
+        jump: ACCEPT
+        comment: Prosody c2c
+      notify: save iptables
       tags: iptables
+    - name: Add iptables rules for prosody s2s
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ prosody_port_s2s }}"
+        jump: ACCEPT
+        comment: Prosody s2s
+      notify: save iptables
+      tags: iptables
+    - name: Add iptables rules for prosody HTTPS
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ prosody_port_external_https }}"
+        jump: ACCEPT
+        comment: Prosody HTTPS
+      when: prosody_enable_http
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -693,13 +724,19 @@
   post_tasks:
     - name: Add iptables rules for gitea
       become: true
-      iptables_raw:
-        name: gitea_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ gitea_ssh_port | default('2222') }} -j ACCEPT
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ gitea_ssh_port  | default('2222')}}"
+        jump: ACCEPT
+        comment: Gitea SSH
+      notify: save iptables
       tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1057,15 +1094,31 @@
         dest: "{{ transmission_directory.conf }}/settings.json"
         force: "{{ override | default('no') }}"
   post_tasks:
-    - name: Add iptables rules for transmission
-      iptables_raw:
-        name: transmission_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ transmission_peer_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ transmission_peer_port }} -j ACCEPT
+    - name: Add iptables rules for transmission TCP
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ transmission_peer_port }}"
+        jump: ACCEPT
+        comment: Transmission TCP
+      notify: save iptables
       tags: iptables
+    - name: Add iptables rules for transmission UDP
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: "{{ transmission_peer_port }}"
+        jump: ACCEPT
+        comment: Transmission UDP
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1297,15 +1350,31 @@
         mode: 0700
       with_dict: "{{ syncthing_directory }}"
   post_tasks:
-    - name: Add iptables rules for syncthing
-      iptables_raw:
-        name: syncthing_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ syncthing_discovery_port }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ syncthing_listening_port }} -j ACCEPT
+    - name: Add iptables rules for syncthing discovery
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: "{{ syncthing_discovery_port }}"
+        jump: ACCEPT
+        comment: Syncthing discovery
+      notify: save iptables
       tags: iptables
+    - name: Add iptables rules for syncthing listening
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ syncthing_listening_port }}"
+        jump: ACCEPT
+        comment: Syncthing listening
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1373,12 +1442,15 @@
       notify: Configure openvpn container
   post_tasks:
     - name: Add iptables rules for openvpn
-      iptables_raw:
-        name: openvpn_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          {{ openvpn_iptables_p2p_rule }}
+      iptables:
+        chain: INPUT
+        protocol: "{{ openvpn_protocol }}"
+        ctstate: NEW
+        match: "{{ openvpn_protocol }}"
+        destination_port: "{{ openvpn_port }}"
+        jump: ACCEPT
+        comment: OpenVPN
+      notify: save iptables
       tags: iptables
   handlers:
     - name: Configure openvpn container
@@ -1398,6 +1470,8 @@
           "Verifying - Enter PEM pass phrase": "{{ openvpn_ca_pass }}"
           "Common Name": "{{ openvpn_ca_CN }}"
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1527,13 +1601,19 @@
       with_dict: "{{ taskd_directory }}"
   post_tasks:
     - name: Add iptables rules for taskd
-      iptables_raw:
-        name: taskd_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ taskd_port | default('53589') }} -j ACCEPT
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ taskd_port | deault('53589') }}"
+        jump: ACCEPT
+        comment: taskd
+      notify: save iptables
       tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1797,14 +1877,19 @@
         - nfsd
   post_tasks:
     - name: Add iptables rules for nfs
-      become: true
-      iptables_raw:
-        name: nfs_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ nfs_port | default('2049') }} -j ACCEPT
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ nfs_port | deault('2049') }}"
+        jump: ACCEPT
+        comment: NFS
+      notify: save iptables
       tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1844,16 +1929,31 @@
         mode: 0771
       with_dict: "{{ bind_dns_server_directory }}"
   post_tasks:
-    - name: Add iptables rules for BIND DNS server
-      become: true
-      iptables_raw:
-        name: bind_dns_server_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ bind_dns_server_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ bind_dns_server_port }} -j ACCEPT
+    - name: Add iptables rules for BIND DNS TCP
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ bind_dns_server_port }}"
+        jump: ACCEPT
+        comment: BIND DNS TCP
+      notify: save iptables
       tags: iptables
+    - name: Add iptables rules for BIND DNS UDP
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: "{{ bind_dns_server_port }}"
+        jump: ACCEPT
+        comment: BIND DNS UDP
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1911,15 +2011,31 @@
         mode: 0700
       with_dict: "{{ murmur_directory }}"
   post_tasks:
-    - name: Add iptables rules for murmur
-      iptables_raw:
-        name: murmur_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ murmur_port }} -j ACCEPT
-          -A INPUT -p udp -m state --state NEW -m udp --dport {{ murmur_port }} -j ACCEPT
+    - name: Add iptables rules for murmur TCP
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ murmur_port }}"
+        jump: ACCEPT
+        comment: Murmur UDP
+      notify: save iptables
       tags: iptables
+    - name: Add iptables rules for murmur UDP
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: "{{ murmur_port }}"
+        jump: ACCEPT
+        comment: Murmur UDP
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
@@ -1988,14 +2104,20 @@
       when: not database_influxdb_conf.stat.exists
   post_tasks:
     - name: Add iptables rules for influxdb
-      iptables_raw:
-        name: influxdb_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ influxdb_port }} -j ACCEPT
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: "{{ influxdb_port }}"
+        jump: ACCEPT
+        comment: InfluxDB
       when: influxdb_open_port
+      notify: save iptables
       tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: generic_docker_systemd
   tags:
