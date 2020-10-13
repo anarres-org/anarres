@@ -90,15 +90,29 @@
         owner: www-data
         group: www-data
         mode: "u=rwx,g=r,o="
-    - name: Add iptables rules for HTTP and HTTPS
-      iptables_raw:
-        name: web_rules
-        weight: 20
-        keep_unmanaged: "{{ iptables_keep_unmanaged }}"
-        rules: |
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_http | default('80') }} -j ACCEPT
-          -A INPUT -p tcp -m state --state NEW -m tcp --dport {{ web_ports_https | default('443') }} -j ACCEPT
+    - name: Add iptables rules for web HTTP
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        cstate: NEW
+        match: tcp
+        destination_port: {{ web_ports_http | default('80') }}
+        jump: ACCEPT
+        comment: web HTTP
+    - name: Add iptables rules for web HTTPS
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        cstate: NEW
+        match: tcp
+        destination_port: {{ web_ports_https | default('443') }}
+        jump: ACCEPT
+        comment: web HTTPS
+      notify: save iptables
       tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
   roles:
     - role: letsencrypt_request
       tags:
