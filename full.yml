@@ -2240,7 +2240,7 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       --cpus {{ rstudio_cpus_limit }} \
       --memory {{ rstudio_memory_limit }} \
-      -v "{{ rstudio_directory.data }}":/home/rstudio \
+      -v "{{ rstudio_directory.data }}:/home/{{ rstudio_user }}" \
       -v /etc/localtime:/etc/localtime:ro \
       -p "{{ rstudio_internal_web_port }}:8787" \
       -e "PASSWORD={{ rstudio_pass }}" \
