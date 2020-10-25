@@ -765,3 +765,17 @@ tiddlywiki_pass:
 
 tiddlywiki_directory:
   data: "{{ data_path }}/tiddlywiki/data"
+
+## Taskcafé
+
+taskcafe_docker_image: taskcafe/taskcafe:0.2.2
+taskcafe_internal_web_port: 8090
+taskcafe_domain: "kanban.{{ base_domain }}"
+
+taskcafe_db_image: "{{ docker_db_postgres_image }}"
+taskcafe_db_name: taskcafe
+taskcafe_db_user: taskcafe
+taskcafe_db_user_pass:
+
+taskcafe_directory:
+  db: "{{ data_path }}/taskcafe/db"

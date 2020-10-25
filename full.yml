@@ -3347,3 +3347,80 @@
     - never
     - home_assistant
     - test
+
+## Taskcafé
+
+- name: Deploy taskcafe in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    create_volume: false
+    service_name: taskcafe
+    docker_image: "{{ taskcafe_docker_image }}"
+    docker_db_image: "{{ taskcafe_db_image }}"
+    create_network: true
+    service_db_name: "{{ service_name }}-db"
+    db_type: postgres
+    docker_service_directory_db: "{{ taskcafe_directory.db }}"
+    db_user_pass: "{{ taskcafe_db_user_pass }}"
+    db_config_port: "{{ default_db_config_port }}"
+    db_name: "{{ taskcafe_db_name }}"
+    db_user: "{{ taskcafe_db_user }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -e "TASKCAFE_DATABASE_HOST=taskcafe-db" \
+      -e "TASKCAFE_DATABASE_NAME={{ taskcafe_db_name }}" \
+      -e "TASKCAFE_DATABASE_USER={{ taskcafe_db_user }}" \
+      -e "TASKCAFE_DATABASE_PASSWORD={{ taskcafe_db_user_pass }}" \
+      -e 'TASKCAFE_MIGRATE: "true"' \
+      -p "{{ taskcafe_internal_web_port }}:3333" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Create taskcafe directories 700 uid 1000
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ taskcafe_directory.db }}"
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - taskcafe
+    - test
+
+- name: Get taskcafe subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ taskcafe_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt_request
+      tags: letsecrypt_request
+  tags:
+    - never
+    - taskcafe
+    - test
+
+- name: Configure nginx proxy for taskcafe
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ taskcafe_domain }}"
+    binded_port: "{{ taskcafe_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - taskcafe
+    - test

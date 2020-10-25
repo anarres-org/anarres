@@ -72,6 +72,7 @@ provisioner:
       moodle_db_user_pass: changeme
       sharelatex_db_user_pass: changeme
       tiddlywiki_pass: changeme
+      taskcafe_db_user_pass: changeme
 scenario:
   name: default
 verifier:
