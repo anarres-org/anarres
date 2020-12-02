@@ -277,7 +277,7 @@ transmission_timezone:  # Example: Europe/Berlin
 ## Transmission-OpenVPN
 
 transmission_openvpn_domain: "tvpn.{{ base_domain }}"
-transmission_openvpn_docker_image: haugene/transmission-openvpn:latest-alpine
+transmission_openvpn_docker_image: haugene/transmission-openvpn:3.2
 transmission_openvpn_internal_web_port: 9091
 
 transmission_openvpn_dns: 1.1.1.1
