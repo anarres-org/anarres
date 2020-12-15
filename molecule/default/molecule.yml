@@ -15,6 +15,7 @@ platforms:
     instance_raw_config_args:
       - 'vm.synced_folder ".", "/vagrant", disabled: true'
       - 'vm.provision "shell", inline: "swapoff -a"'
+      - 'cache.synced_folder_opts = { owner: "_apt" }'
     cpus: 6
     memory: 8192
     groups:
