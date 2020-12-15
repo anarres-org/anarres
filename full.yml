@@ -1606,7 +1606,7 @@
         protocol: tcp
         ctstate: NEW
         match: tcp
-        destination_port: "{{ taskd_port | deault('53589') }}"
+        destination_port: "{{ taskd_port | default('53589') }}"
         jump: ACCEPT
         comment: taskd
       notify: save iptables
@@ -1882,7 +1882,7 @@
         protocol: tcp
         ctstate: NEW
         match: tcp
-        destination_port: "{{ nfs_port | deault('2049') }}"
+        destination_port: "{{ nfs_port | default('2049') }}"
         jump: ACCEPT
         comment: NFS
       notify: save iptables
