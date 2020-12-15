@@ -14,6 +14,9 @@ group_gid_1000: "{{ user_uid_1000 }}"
 user_uid_33: www-data
 group_gid_33: "{{ user_uid_33 }}"
 
+user_uid_999:
+group_gid_999: docker
+
 ca_certs_path: /etc/ssl/certs/ca-certificates.crt
 
 docker_db_image: mariadb:10
@@ -765,3 +768,19 @@ tiddlywiki_pass:
 
 tiddlywiki_directory:
   data: "{{ data_path }}/tiddlywiki/data"
+
+## Pi-hole
+
+pihole_docker_image: pihole/pihole:v5.2.1
+pihole_domain: "pihole.{{ base_domain }}"
+pihole_web_port: 5010
+
+pihole_pass:
+
+pihole_directory:
+  conf: "{{ data_path }}/pihole/conf"
+  dnsmasq: "{{ data_path }}/pihole/dnsmasq"
+
+pihole_lan_ip: "{{ ansible_default_ipv4.address }}"
+pihole_dns1: 1.1.1.1
+pihole_dns2: 8.8.8.8
