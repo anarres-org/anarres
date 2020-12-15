@@ -819,9 +819,6 @@
       file:
         path: "{{ item.value }}"
         state: directory
-        mode: 0700
-        owner: "{{ user_uid_1000 }}"
-        group: "{{ group_gid_1000 }}"
       with_dict: "{{ codimd_directory }}"
   roles:
     - role: generic_docker_systemd
