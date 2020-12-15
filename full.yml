@@ -98,7 +98,7 @@
         match: tcp
         destination_port: "{{ web_ports_http | default('80') }}"
         jump: ACCEPT
-        comment: web HTTP
+        #comment: web HTTP
     - name: Add iptables rules for web HTTPS
       iptables:
         chain: INPUT
@@ -107,7 +107,7 @@
         match: tcp
         destination_port: "{{ web_ports_https | default('443') }}"
         jump: ACCEPT
-        comment: web HTTPS
+        #comment: web HTTPS
       notify: save iptables
       tags: iptables
   handlers:
@@ -386,7 +386,7 @@
         match: tcp
         destination_port: "{{ openldap_port_secure }}"
         jump: ACCEPT
-        comment: OpenLDAP
+        #comment: OpenLDAP
       notify: save iptables
       tags: iptables
 
@@ -614,7 +614,7 @@
         match: tcp
         destination_port: "{{ prosody_port_c2s }}"
         jump: ACCEPT
-        comment: Prosody c2c
+        #comment: Prosody c2c
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for prosody s2s
@@ -625,7 +625,7 @@
         match: tcp
         destination_port: "{{ prosody_port_s2s }}"
         jump: ACCEPT
-        comment: Prosody s2s
+        #comment: Prosody s2s
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for prosody HTTPS
@@ -636,7 +636,7 @@
         match: tcp
         destination_port: "{{ prosody_port_external_https }}"
         jump: ACCEPT
-        comment: Prosody HTTPS
+        #comment: Prosody HTTPS
       when: prosody_enable_http
       notify: save iptables
       tags: iptables
@@ -731,7 +731,7 @@
         match: tcp
         destination_port: "{{ gitea_ssh_port  | default('2222')}}"
         jump: ACCEPT
-        comment: Gitea SSH
+        #comment: Gitea SSH
       notify: save iptables
       tags: iptables
   handlers:
@@ -1102,7 +1102,7 @@
         match: tcp
         destination_port: "{{ transmission_peer_port }}"
         jump: ACCEPT
-        comment: Transmission TCP
+        #comment: Transmission TCP
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for transmission UDP
@@ -1113,7 +1113,7 @@
         match: udp
         destination_port: "{{ transmission_peer_port }}"
         jump: ACCEPT
-        comment: Transmission UDP
+        #comment: Transmission UDP
       notify: save iptables
       tags: iptables
   handlers:
@@ -1358,7 +1358,7 @@
         match: udp
         destination_port: "{{ syncthing_discovery_port }}"
         jump: ACCEPT
-        comment: Syncthing discovery
+        #comment: Syncthing discovery
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for syncthing listening
@@ -1369,7 +1369,7 @@
         match: tcp
         destination_port: "{{ syncthing_listening_port }}"
         jump: ACCEPT
-        comment: Syncthing listening
+        #comment: Syncthing listening
       notify: save iptables
       tags: iptables
   handlers:
@@ -1449,7 +1449,7 @@
         match: "{{ openvpn_protocol }}"
         destination_port: "{{ openvpn_port }}"
         jump: ACCEPT
-        comment: OpenVPN
+        #comment: OpenVPN
       notify: save iptables
       tags: iptables
   handlers:
@@ -1608,7 +1608,7 @@
         match: tcp
         destination_port: "{{ taskd_port | default('53589') }}"
         jump: ACCEPT
-        comment: taskd
+        #comment: taskd
       notify: save iptables
       tags: iptables
   handlers:
@@ -1884,7 +1884,7 @@
         match: tcp
         destination_port: "{{ nfs_port | default('2049') }}"
         jump: ACCEPT
-        comment: NFS
+        #comment: NFS
       notify: save iptables
       tags: iptables
   handlers:
@@ -1937,7 +1937,7 @@
         match: tcp
         destination_port: "{{ bind_dns_server_port }}"
         jump: ACCEPT
-        comment: BIND DNS TCP
+        #comment: BIND DNS TCP
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for BIND DNS UDP
@@ -1948,7 +1948,7 @@
         match: udp
         destination_port: "{{ bind_dns_server_port }}"
         jump: ACCEPT
-        comment: BIND DNS UDP
+        #comment: BIND DNS UDP
       notify: save iptables
       tags: iptables
   handlers:
@@ -2019,7 +2019,7 @@
         match: tcp
         destination_port: "{{ murmur_port }}"
         jump: ACCEPT
-        comment: Murmur UDP
+        #comment: Murmur UDP
       notify: save iptables
       tags: iptables
     - name: Add iptables rules for murmur UDP
@@ -2030,7 +2030,7 @@
         match: udp
         destination_port: "{{ murmur_port }}"
         jump: ACCEPT
-        comment: Murmur UDP
+        #comment: Murmur UDP
       notify: save iptables
       tags: iptables
   handlers:
@@ -2111,7 +2111,7 @@
         match: tcp
         destination_port: "{{ influxdb_port }}"
         jump: ACCEPT
-        comment: InfluxDB
+        #comment: InfluxDB
       when: influxdb_open_port
       notify: save iptables
       tags: iptables
