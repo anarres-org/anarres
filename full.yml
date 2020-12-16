@@ -815,11 +815,17 @@
       --network "{{ codimd_network_name }}" \
       "{{ docker_image }}"
   pre_tasks:
-    - name: Create codimd directories
+    - name: Create codimd directory uploads
       file:
-        path: "{{ item.value }}"
+        path: "{{ codimd_directory.uploads }}"
         state: directory
-      with_dict: "{{ codimd_directory }}"
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+    - name: Create codimd directoriy db
+      file:
+        path: "{{ codimd_directory.db }}"
+        state: directory
   roles:
     - role: generic_docker_systemd
   tags:
