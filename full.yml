@@ -3257,6 +3257,126 @@
     - tiddlywiki
     - test
 
+## Pi-hole
+
+- name: Deploy pihole in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: pihole
+    docker_image: "{{ pihole_docker_image }}"
+    create_volume: false
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -v "{{ pihole_directory.conf }}:/etc/pihole/" \
+      -v "{{ pihole_directory.dnsmasq }}:/etc/dnsmasq.d/" \
+      -e "VIRTUAL_HOST={{ pihole_domain }}" \
+      -e "WEBPASSWORD={{ pihole_pass }}" \
+      -e "DNS1={{ pihole_dns1 }}" \
+      -e "DNS2={{ pihole_dns2 }}" \
+      -e "ServerIP={{ pihole_lan_ip }}" \
+      -v '/etc/localtime:/etc/localtime:ro' \
+      -p "{{ pihole_web_port }}:80" \
+      -p "53:53/tcp" \
+      -p "53:53/udp" \
+      -p "67:67/udp" \
+      "{{ docker_image }}"
+  pre_tasks:
+    - name: Gather facts
+      setup:
+        filter: ansible_*
+    - name: Create pihole directories 999:999
+      file:
+        path: "{{ pihole_directory.conf }}"
+        state: directory
+        mode: 0771
+        owner: "{{ user_uid_999 }}"
+        group: "{{ group_gid_999 }}"
+    - name: Create pihole directories
+      file:
+        path: "{{ pihole_directory.dnsmasq }}"
+        state: directory
+        mode: 0700
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+  post_tasks:
+    - name: Add iptables rules for pihole 53 tcp
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: NEW
+        match: tcp
+        destination_port: 53
+        jump: ACCEPT
+        comment: pihole
+      notify: save iptables
+      tags: iptables
+    - name: Add iptables rules for pihole 53 udp
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: 53
+        jump: ACCEPT
+        comment: pihole
+      notify: save iptables
+      tags: iptables
+    - name: Add iptables rules for pihole 67 udp
+      iptables:
+        chain: INPUT
+        protocol: udp
+        ctstate: NEW
+        match: udp
+        destination_port: 67
+        jump: ACCEPT
+        comment: pihole
+      notify: save iptables
+      tags: iptables
+  handlers:
+    - name: save iptables
+      command: netfilter-persistent save
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - pihole
+    - test
+
+- name: Get pihole subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ pihole_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt_request
+      tags: letsecrypt_request
+  tags:
+    - never
+    - pihole
+    - test
+
+- name: Configure nginx proxy for pihole
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ pihole_domain }}"
+    binded_port: "{{ pihole_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - pihole
+    - test
+
+# Keep Home Assistant last, otherwise it shuts down if not configured before
+# the tests.
 ## Home Assistant
 
 - name: Deploy home_assistant in docker

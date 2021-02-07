@@ -73,6 +73,7 @@ provisioner:
       moodle_db_user_pass: changeme
       sharelatex_db_user_pass: changeme
       tiddlywiki_pass: changeme
+      pihole_pass: changeme
 scenario:
   name: default
 verifier:
