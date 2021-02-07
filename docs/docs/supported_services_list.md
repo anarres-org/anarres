@@ -103,3 +103,4 @@ title: Supported services list
 * [Home Assistant](https://www.home-assistant.io/) Open source home automation
    that puts local control and privacy first. Using
    [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
+* [Pi-hole](https://pi-hole.net/) Netrwork-wide protection. Using [pihole/pihole - Docker Hub](https://hub.docker.com/r/pihole/pihole).
