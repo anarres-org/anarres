@@ -47,6 +47,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
     ("ombi"),
     ("sharelatex"),
     ("tiddlywiki"),
+    ("pihole"),
     ("home_assistant")
 ])
 def test_services_are_enabled_and_running(host, service):
