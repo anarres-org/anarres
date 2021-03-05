@@ -521,7 +521,7 @@ wikijs_ldap_search_base: "{{ openldap_search_base }}"
 
 ## InfluxDB
 
-influxdb_docker_image: influxdb:alpine
+influxdb_docker_image: influxdb:1.8-alpine
 
 influxdb_directory:
   data: "{{ data_path }}/influxdb/data"
