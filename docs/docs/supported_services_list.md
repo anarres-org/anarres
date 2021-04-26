@@ -104,3 +104,6 @@ title: Supported services list
    that puts local control and privacy first. Using
    [homeassistant/home-assistant](https://hub.docker.com/r/homeassistant/home-assistant)
 * [Pi-hole](https://pi-hole.net/) Netrwork-wide protection. Using [pihole/pihole - Docker Hub](https://hub.docker.com/r/pihole/pihole).
+* [grocy](https://grocy.info/) Web-based self-hosted groceries & household
+  management solution for your home. Using
+  [linuxserver/grocy](https://hub.docker.com/r/linuxserver/grocy).
