@@ -790,12 +790,9 @@ pihole_dns2: 8.8.8.8
 
 ## Grocy
 
-grocy_docker_tag: v3.0.1-10
 grocy_docker_image: "linuxserver/grocy:version-v3.0.1"
-grocy_web_docker_image: "grocy/nginx:{{ grocy_docker_tag }}"
 grocy_domain: "grocy.{{ base_domain }}"
 grocy_web_port: 5020
-
 
 grocy_directory:
   conf: "{{ data_path }}/grocy/conf"
