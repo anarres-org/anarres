@@ -3277,6 +3277,7 @@
       -e "DNS1={{ pihole_dns1 }}" \
       -e "DNS2={{ pihole_dns2 }}" \
       -e "ServerIP={{ pihole_lan_ip }}" \
+      -e "DNSMASQ_USER=root" \
       -v '/etc/localtime:/etc/localtime:ro' \
       -p "{{ pihole_web_port }}:80" \
       -p "53:53/tcp" \
