@@ -22,7 +22,7 @@ group_gid_999: docker
 
 ca_certs_path: /etc/ssl/certs/ca-certificates.crt
 
-docker_db_image: mariadb:10
+docker_db_image: mariadb:10.6
 docker_db_postgres_image: postgres:11
 docker_db_mongo_image: mongo:4
 docker_db_redis_image: redis:5
@@ -796,3 +796,23 @@ grocy_web_port: 5020
 
 grocy_directory:
   conf: "{{ data_path }}/grocy/conf"
+
+## Kimai
+
+kimai_domain: "kimai.{{ base_domain }}"
+kimai_docker_image: kimai/kimai2:apache
+kimai_internal_web_port: 5030
+
+kimai_directory:
+  db: "{{ data_path }}/kimai/db"
+
+kimai_admin_user: admin
+kimai_admin_email: "admin@{{ base_domain }}"
+kimai_admin_pass:
+
+### DB
+
+kimai_db_service_name: kimai-db
+kimai_db_name: kimai
+kimai_db_user: kimai
+kimai_db_user_pass:

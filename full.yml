@@ -3536,3 +3536,103 @@
     - never
     - home_assistant
     - test
+
+## Kimai
+
+- name: Deploy kimai in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: kimai
+    docker_image: "{{ kimai_docker_image }}"
+    create_volume: false
+    docker_service_directory_db: "{{ kimai_directory.db }}"
+    service_db_name: "{{ kimai_db_service_name }}"
+    db_name: "{{ kimai_db_name }}"
+    db_user: "{{ kimai_db_user }}"
+    db_user_pass: "{{ kimai_db_user_pass }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ kimai_internal_web_port }}:8001" \
+      -e "DATABASE_URL=mysql://{{ db_user }}:{{ db_user_pass }}@{{ service_db_name }}:3306/{{ db_name }}" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+
+  pre_tasks:
+    - name: Create kimai directories 700
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ kimai_directory.db }}"
+
+  post_tasks:
+    - name: Wait for service to start
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ kimai_internal_web_port }}"
+        status_code: 200
+      register: kaimai_wait_result
+      until: kaimai_wait_result.status == 200
+      retries: 60
+      delay: 5
+
+    - name: Register admin user
+      community.docker.docker_container_exec:
+        container: kimai
+        command: >-
+          /opt/kimai/bin/console kimai:user:create
+          {{ kimai_admin_user }}
+          {{ kimai_admin_email }}
+          ROLE_SUPER_ADMIN
+          {{ kimai_admin_pass }}
+
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - kimai
+    - test
+
+- name: Get kimai subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ kimai_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt_request
+      tags: letsecrypt_request
+  tags:
+    - never
+    - kimai
+    - test
+
+- name: Configure nginx proxy for kimai
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ kimai_domain }}"
+    binded_port: "{{ kimai_internal_web_port }}"
+    proxy_conf: |
+      proxy_pass        http://127.0.0.1:{{ binded_port }};
+      proxy_set_header  Host $http_host;
+      proxy_set_header  X-Real-IP $remote_addr;
+      proxy_set_header  X-Forwarded-Host $host:$server_port;
+      proxy_set_header  X-Forwarded-Server $host;
+      proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header  X-Forwarded-Proto $scheme;
+      proxy_set_header  X-Forwarded-Port $server_port;
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - kimai
+    - test
