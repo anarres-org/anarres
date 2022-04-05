@@ -803,6 +803,8 @@ kimai_domain: "kimai.{{ base_domain }}"
 kimai_docker_image: kimai/kimai2:apache
 kimai_internal_web_port: 5030
 
+kimai_app_secret: changeme
+
 kimai_directory:
   db: "{{ data_path }}/kimai/db"
 

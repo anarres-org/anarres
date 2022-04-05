@@ -3556,6 +3556,10 @@
       /usr/bin/docker run --rm --name "{{ service_name }}" \
       -p "{{ kimai_internal_web_port }}:8001" \
       -e "DATABASE_URL=mysql://{{ db_user }}:{{ db_user_pass }}@{{ service_db_name }}:3306/{{ db_name }}" \
+      -e "APP_SECRET={{ kimai_app_secret }}" \
+      -e "TRUSTED_PROXIES=localhost,127.0.0.1,172.0.0.0/8,{{ kimai_domain }}" \
+      -e "TRUSTED_HOSTS=localhost,127.0.0.1,172.0.0.0/8,{{ kimai_domain }}" \
+      -e "DATABASE_URL=mysql://{{ db_user }}:{{ db_user_pass }}@{{ service_db_name }}:3306/{{ db_name }}" \
       --network "{{ service_name }}" \
       "{{ docker_image }}"
 
@@ -3622,6 +3626,7 @@
     binded_port: "{{ kimai_internal_web_port }}"
     proxy_conf: |
       proxy_pass        http://127.0.0.1:{{ binded_port }};
+
       proxy_set_header  Host $http_host;
       proxy_set_header  X-Real-IP $remote_addr;
       proxy_set_header  X-Forwarded-Host $host:$server_port;
