@@ -107,3 +107,5 @@ title: Supported services list
 * [grocy](https://grocy.info/) Web-based self-hosted groceries & household
   management solution for your home. Using
   [linuxserver/grocy](https://hub.docker.com/r/linuxserver/grocy).
+* [Kimai](https://www.kimai.org/) Free Time-Tracking App. Using
+  [kimai/kimai2](https://hub.docker.com/r/kimai/kimai2).
