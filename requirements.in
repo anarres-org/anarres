@@ -1,0 +1,8 @@
+ansible
+ansible-lint
+molecule
+molecule-vagrant
+pip-tools
+python-vagrant
+testinfra
+yamllint
