@@ -357,7 +357,7 @@
       -e LDAP_ORGANISATION="{{ openldap_domain }}" \
       -e LDAP_DOMAIN="{{ openldap_domain }}" \
       -e LDAP_ADMIN_PASSWORD="{{ openldap_admin_password }}" \
-      -e LDAP_BASE_DN="{{ openldap_base_DN }}" \
+      -e LDAP_BASE_dn="{{ openldap_base_dn }}" \
       -e LDAP_READONLY_USER=true \
       -e LDAP_READONLY_USER_USERNAME=readonly \
       -e LDAP_READONLY_USER_PASSWORD="{{ openldap_readonly_password }}" \
@@ -402,38 +402,38 @@
 
     - name: Add groups organizational unit
       ldap_entry:
-        dn: "ou=groups,{{ openldap_base_DN }}"
+        dn: "ou=groups,{{ openldap_base_dn }}"
         objectClass: organizationalUnit
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
         validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
-        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_dn: "cn=admin,{{ openldap_base_dn }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:
         - ldap-setup
 
     - name: Add users organizational unit
       ldap_entry:
-        dn: "ou=users,{{ openldap_base_DN }}"
+        dn: "ou=users,{{ openldap_base_dn }}"
         objectClass: organizationalUnit
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
         validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
-        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_dn: "cn=admin,{{ openldap_base_dn }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:
         - ldap-setup
 
     - name: Add users group
       ldap_entry:
-        dn: "cn=users,ou=groups,{{ openldap_base_DN }}"
+        dn: "cn=users,ou=groups,{{ openldap_base_dn }}"
         objectClass: posixGroup
         attributes:
           gidNumber: 2000
         server_uri: "{{ openldap_server_uri }}"
         start_tls: false
         validate_certs: "{{ testing is undefined and openldap_validate_certs }}"
-        bind_dn: "cn=admin,{{ openldap_base_DN }}"
+        bind_dn: "cn=admin,{{ openldap_base_dn }}"
         bind_pw: "{{ openldap_admin_password }}"
       tags:
         - ldap-setup
@@ -1471,7 +1471,7 @@
         responses:
           "Enter PEM pass phrase": "{{ openvpn_ca_pass }}"
           "Verifying - Enter PEM pass phrase": "{{ openvpn_ca_pass }}"
-          "Common Name": "{{ openvpn_ca_CN }}"
+          "Common Name": "{{ openvpn_ca_cn }}"
           "Enter pass phrase for": "{{ openvpn_ca_pass }}"
     - name: save iptables
       command: netfilter-persistent save
@@ -1748,7 +1748,7 @@
       -e 'LDAP_ENABLE=true' \
       -e "LDAP_SERVER={{ taiga_ldap_server }}" \
       -e "LDAP_PORT={{ taiga_ldap_port }}" \
-      -e "LDAP_BIND_DN={{ taiga_ldap_bind_dn }}" \
+      -e "LDAP_BIND_dn={{ taiga_ldap_bind_dn }}" \
       -e "LDAP_BIND_PASSWORD={{ taiga_ldap_bind_credentials }}" \
       -e "LDAP_SEARCH_BASE={{ taiga_ldap_search_base }}" \
       -e "LDAP_SEARCH_PROPERTY={{ taiga_ldap_search_property }}" \

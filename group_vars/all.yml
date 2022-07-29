@@ -108,7 +108,7 @@ openldap_directory:
   conf: "{{ data_path }}/openldap/conf"
 
 openldap_organization:  # Example: anarres
-openldap_base_DN:  # Example: dc=anarres,dc=local
+openldap_base_dn:  # Example: dc=anarres,dc=local
 openldap_admin_password:
 openldap_readonly_password:
 
@@ -119,9 +119,9 @@ openldap_server_domain: "{{ base_domain }}"
 openldap_server_port: 636
 openldap_server_uri: "{{ openldap_server_protocol }}{{ openldap_server_domain }}:{{ openldap_server_port }}"
 openldap_validate_certs: true
-openldap_bind_dn: "cn=readonly,{{ openldap_base_DN }}"
+openldap_bind_dn: "cn=readonly,{{ openldap_base_dn }}"
 openldap_bind_credentials: "{{ openldap_readonly_password }}"
-openldap_search_base: "ou=users,{{ openldap_base_DN }}"
+openldap_search_base: "ou=users,{{ openldap_base_dn }}"
 
 ## phpLDAPadmin
 
@@ -129,7 +129,7 @@ phpldapadmin_domain: "ldap.{{ base_domain }}"
 phpldapadmin_docker_image: osixia/phpldapadmin:0.8.0
 phpldapadmin_internal_web_port: 4002
 
-phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_DN }}'}]}]}]"
+phpldapadmin_ldap_hosts: "#PYTHON2BASH:[{'openldap': [{'server': [{'tls': True}]},{'login': [{'bind_id': 'cn=admin,{{ openldap_base_dn }}'}]}]}]"
 
 ## Prosody
 
@@ -258,7 +258,7 @@ codimd_ldap_url: "{{ openldap_server_uri }}"
 codimd_ldap_bind_dn: "{{ openldap_bind_dn }}"
 codimd_ldap_bind_credentials: "{{ openldap_bind_credentials }}"
 codimd_ldap_search_base: "{{ openldap_search_base }}"
-codimd_ldap_search_filter: "{{ '(uid={{username}})' }}"
+codimd_ldap_search_filter: "(uid={{ username }})"
 codimd_ldap_search_attributes: 'uid, mail'
 codimd_ldap_user_field: 'uid'
 codimd_ldap_user_name_field: 'uid'
@@ -361,7 +361,7 @@ openvpn_port: 1194
 openvpn_protocol: udp
 
 openvpn_ca_pass:
-openvpn_ca_CN: "{{ openvpn_domain }}"
+openvpn_ca_cn: "{{ openvpn_domain }}"
 
 ## Radicale
 
