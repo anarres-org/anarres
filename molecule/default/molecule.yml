@@ -1,17 +1,20 @@
 ---
-
+dependency:
+  enabled: false
 driver:
   name: vagrant
   provider:
     name: virtualbox
 platforms:
   - name: buster
-    box: generic/debian10
+    box: debian/buster64
     interfaces:
       - network_name: private_network
         auto_config: true
         ip: 172.16.100.12
         type: static
+    config_options:
+      vbguest.auto_update: true
     instance_raw_config_args:
       - 'vm.synced_folder ".", "/vagrant", disabled: true'
       - 'vm.provision "shell", inline: "swapoff -a"'
@@ -22,8 +25,8 @@ platforms:
       - anarres
 lint: |
   set -e
-  yamllint .
-  ansible-lint --exclude roles/ --exclude molecule/ --exclude library/
+  yamllint -c .yamllint .
+  ansible-lint --exclude molecule/ --exclude library/ --exclude .github/
   flake8 --exclude roles,molecule,library
 provisioner:
   name: ansible
@@ -31,49 +34,51 @@ provisioner:
     converge: ../../full.yml
   options:
     tags: test
-    extra-vars:
-      ansible_python_interpreter: /usr/bin/python3
-      testing: true
-      docker_registry_mirror: http://172.16.100.1:5000
-      ansible_become: true
-      ansible_sudo: true
-      user_uid_1000: vagrant
-      user_uid_101: systemd-timesync
-      base_domain: anarres.local
-      db_pass: changeme
-      ssh_port: 22
-      registry_user: anarres
-      registry_pass: changeme
-      clair_db_user_pass: changeme
-      openldap_organization: anarres
-      openldap_base_dn: dc=anarres,dc=local
-      openldap_admin_password: changeme
-      openldap_readonly_password: changeme
-      gitea_ssh_port: 66
-      gitea_db_user_pass: changeme
-      drone_github_client_id: placeholder
-      drone_github_client_secret: placeholder
-      codimd_db_user_pass: changeme
-      transmission_user: transmission
-      transmission_pass: transmission
-      transmission_timezone: Europe/Berlin
-      wallabag_db_user_pass: changeme
-      openvpn_ca_pass: changeme
-      nextcloud_db_user_pass: changeme
-      taiga_secret_key: changeme
-      taiga_db_user_pass: changeme
-      user_uid_101: systemd-network
-      influxdb_db: telegraf
-      influxdb_admin_user: admin
-      influxdb_admin_password: changeme
-      influxdb_user: telegraf
-      influxdb_user_password: changeme
-      grafana_admin_pass: changeme
-      rstudio_pass: changeme
-      moodle_db_user_pass: changeme
-      sharelatex_db_user_pass: changeme
-      tiddlywiki_pass: changeme
-      pihole_pass: changeme
+    extra-vars: >-
+      {
+      "ansible_python_interpreter": "/usr/bin/python3",
+      "testing": "true",
+      "docker_registry_mirror": "http://172.16.100.1:5000",
+      "ansible_become": "true",
+      "ansible_sudo": "true",
+      "user_uid_1000": "vagrant",
+      "user_uid_101": "systemd-timesync",
+      "base_domain": "anarres.local",
+      "db_pass": "changeme",
+      "ssh_port": "22",
+      "registry_user": "anarres",
+      "registry_pass": "changeme",
+      "clair_db_user_pass": "changeme",
+      "openldap_organization": "anarres",
+      "openldap_base_dn": "dc=anarres,dc=local",
+      "openldap_admin_password": "changeme",
+      "openldap_readonly_password": "changeme",
+      "gitea_ssh_port": "66",
+      "gitea_db_user_pass": "changeme",
+      "drone_github_client_id": "placeholder",
+      "drone_github_client_secret": "placeholder",
+      "codimd_db_user_pass": "changeme",
+      "transmission_user": "transmission",
+      "transmission_pass": "transmission",
+      "transmission_timezone": "Europe/Berlin",
+      "wallabag_db_user_pass": "changeme",
+      "openvpn_ca_pass": "changeme",
+      "nextcloud_db_user_pass": "changeme",
+      "taiga_secret_key": "changeme",
+      "taiga_db_user_pass": "changeme",
+      "user_uid_101": "systemd-network",
+      "influxdb_db": "telegraf",
+      "influxdb_admin_user": "admin",
+      "influxdb_admin_password": "changeme",
+      "influxdb_user": "telegraf",
+      "influxdb_user_password": "changeme",
+      "grafana_admin_pass": "changeme",
+      "rstudio_pass": "changeme",
+      "moodle_db_user_pass": "changeme",
+      "sharelatex_db_user_pass": "changeme",
+      "tiddlywiki_pass": "changeme",
+      "pihole_pass": "changeme",
+      }
 scenario:
   name: default
 verifier:
