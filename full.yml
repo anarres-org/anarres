@@ -3641,3 +3641,78 @@
     - never
     - kimai
     - test
+
+## Uptime Kuma
+
+- name: Deploy kuma in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: kuma
+    docker_image: "{{ kuma_docker_image }}"
+    create_volume: false
+    enable_db: false
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ kuma_internal_web_port }}:3001" \
+      -v "{{ kuma_directory.data }}:/app/data" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+
+  pre_tasks:
+    - name: Create kuma directories 700
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0700
+      with_items:
+        - "{{ kuma_directory.data }}"
+
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - kuma
+    - test
+
+- name: Get kuma subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ kuma_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt_request
+      tags: letsecrypt_request
+  tags:
+    - never
+    - kuma
+    - test
+
+- name: Configure nginx proxy for kuma
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ kuma_domain }}"
+    binded_port: "{{ kuma_internal_web_port }}"
+    proxy_conf: |
+      proxy_set_header   X-Real-IP $remote_addr;
+      proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header   Host $host;
+      proxy_pass         http://127.0.0.1:{{ binded_port }}/;
+      proxy_http_version 1.1;
+      proxy_set_header   Upgrade $http_upgrade;
+      proxy_set_header   Connection "upgrade";
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - kuma
+    - test

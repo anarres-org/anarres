@@ -818,3 +818,12 @@ kimai_db_service_name: kimai-db
 kimai_db_name: kimai
 kimai_db_user: kimai
 kimai_db_user_pass:
+
+## Uptime Kuma
+
+kuma_domain: "status.{{ base_domain }}"
+kuma_docker_image: louislam/uptime-kuma:1
+kuma_internal_web_port: 5040
+
+kuma_directory:
+  data: "{{ data_path }}/kuma/data"

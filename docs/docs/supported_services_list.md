@@ -109,3 +109,5 @@ title: Supported services list
   [linuxserver/grocy](https://hub.docker.com/r/linuxserver/grocy).
 * [Kimai](https://www.kimai.org/) Free Time-Tracking App. Using
   [kimai/kimai2](https://hub.docker.com/r/kimai/kimai2).
+* [Uptime Kuma](https://uptime.kuma.pet/) A self-hosted monitoring tool. Using
+  [louislam/uptime-kuma - Docker Image | Docker Hub](https://hub.docker.com/r/louislam/uptime-kuma).
