@@ -827,3 +827,22 @@ kuma_internal_web_port: 5040
 
 kuma_directory:
   data: "{{ data_path }}/kuma/data"
+
+## Umami
+
+umami_domain: "analytics.{{ base_domain }}"
+umami_docker_image: ghcr.io/umami-software/umami:postgresql-latest
+umami_internal_web_port: 5050
+
+umami_hash_salt: changeme
+
+umami_directory:
+  db: "{{ data_path }}/umami/db"
+
+### DB
+
+umami_db_image: "{{ docker_db_postgres_image }}"
+umami_db_service_name: umami-db
+umami_db_name: umami
+umami_db_user: umami
+umami_db_user_pass:

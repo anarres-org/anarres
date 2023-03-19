@@ -3716,3 +3716,80 @@
     - never
     - kuma
     - test
+
+## Umami
+
+- name: Deploy umami in docker
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    service_name: umami
+    docker_image: "{{ umami_docker_image }}"
+    create_volume: false
+    create_network: true
+    docker_service_directory_db: "{{ umami_directory.db }}"
+    service_db_name: "{{ umami_db_service_name }}"
+    db_type: postgres
+    docker_db_image: "{{ umami_db_image }}"
+    db_config_port: 5432
+    db_name: "{{ umami_db_name }}"
+    db_user: "{{ umami_db_user }}"
+    db_user_pass: "{{ umami_db_user_pass }}"
+    docker_command: |
+      /usr/bin/docker run --rm --name "{{ service_name }}" \
+      -p "{{ umami_internal_web_port }}:3000" \
+      -e "DATABASE_URL=postgresql://{{ db_user }}:{{ db_user_pass }}@{{ service_db_name }}:5432/{{ db_name }}" \
+      -e "DATABASE_TYPE=postgresql" \
+      -e "HASH_SALT={{ umami_hash_salt }}" \
+      --network "{{ service_name }}" \
+      "{{ docker_image }}"
+
+  pre_tasks:
+    - name: Create umami directories 700
+      become: true
+      file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user_uid_1000 }}"
+        group: "{{ group_gid_1000 }}"
+        mode: 0700
+      with_items:
+        - "{{ umami_directory.db }}"
+
+  roles:
+    - role: generic_docker_systemd
+  tags:
+    - never
+    - umami
+    - test
+
+- name: Get umami subdomain Let's Encrypt certificate
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ umami_domain }}"
+    letsencrypt_renew_hook: /usr/sbin/service nginx reload
+  roles:
+    - role: letsencrypt_request
+      tags: letsecrypt_request
+  tags:
+    - never
+    - umami
+    - test
+
+- name: Configure nginx proxy for umami
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    domain: "{{ umami_domain }}"
+    binded_port: "{{ umami_internal_web_port }}"
+  roles:
+    - role: add_nginx_proxy_conf
+      tags: proxy
+  tags:
+    - never
+    - umami
+    - test

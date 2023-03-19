@@ -55,6 +55,7 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
         ("home_assistant"),
         ("kimai"),
         ("kuma"),
+        ("umami"),
     ],
 )
 def test_services_are_enabled_and_running(host, service):

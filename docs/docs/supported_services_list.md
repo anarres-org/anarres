@@ -111,3 +111,6 @@ title: Supported services list
   [kimai/kimai2](https://hub.docker.com/r/kimai/kimai2).
 * [Uptime Kuma](https://uptime.kuma.pet/) A self-hosted monitoring tool. Using
   [louislam/uptime-kuma - Docker Image | Docker Hub](https://hub.docker.com/r/louislam/uptime-kuma).
+* [umami](https://umami.is/) Umami is a simple, fast, privacy-focused
+  alternative to Google Analytics. Using
+  [Package umami](https://github.com/umami-software/umami/pkgs/container/umami).
