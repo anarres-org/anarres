@@ -599,7 +599,7 @@ jellyfin_nvidia_runtime: "{{ nvidia_runtime }}"
 
 ## Portainer
 
-portainer_docker_image: portainer/portainer
+portainer_docker_image: portainer/portainer-ce:latest
 portainer_internal_web_port: 3060
 portainer_domain: "portainer.{{ base_domain }}"
 
